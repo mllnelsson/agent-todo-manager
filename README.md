@@ -9,7 +9,7 @@ A state management system with a structured database at its core, exposed via a 
 | Module | Role |
 |--------|------|
 | `db`  | Schema, migrations, and source of truth for all project state |
-| `cli` | Agent-facing interface, reads and mutates state directly via the DB |
+| `atm-cli` | Agent-facing interface, reads and mutates state directly via the DB |
 | `api` | Thin FastAPI layer, serves state to the GUI |
 | `gui` | Lightweight Vite app, renders current state via the API |
 
@@ -17,6 +17,8 @@ A state management system with a structured database at its core, exposed via a 
 
 ### `db`
 The source of truth. All state lives here. The other three modules are downstream of it.
+
+See the db [schema](./db/quick_reference.md) for the information model.
 
 ### `cli`
 Built for agent consumption, not humans. Hits the DB directly.
