@@ -110,6 +110,7 @@ story is handled automatically by application logic, never by the agent.
 
 ---
 
+
 ## completions
 
 | Column      | Type    | Constraints                                                             |
@@ -120,11 +121,16 @@ story is handled automatically by application logic, never by the agent.
 | action      | TEXT    | NOT NULL, CHECK(action IN ('started','completed'))                      |
 | agent_name  | TEXT    | NOT NULL                                                                |
 | session_id  | TEXT    | NOT NULL                                                                |
+| branch      | TEXT    | nullable                                                                |
 | created_at  | TEXT    | NOT NULL, ISO 8601                                                      |
 | updated_at  | TEXT    | NOT NULL, ISO 8601                                                      |
 
 A log of every state transition across stories, tasks, and steps. One row per event.
 `entity_id` is a UUID referencing the relevant table determined by `entity_type`.
+
+`branch` is nullable — not all completions occur in a branch context. Branch activity
+at the task or story level can be inferred by querying completions by entity — no need
+to store branch on the entities themselves.
 
 This table is the source of truth for who did what and when. The GUI derives kanban
 state and activity timelines from this log. The status columns on the entity tables

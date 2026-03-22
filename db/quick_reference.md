@@ -12,8 +12,9 @@
 ## steps
 (**id**, seq, task_id→tasks, title, description, status, created_at, updated_at)
  
+
 ## completions
-(**id**, entity_type, entity_id, action, agent_name, session_id, created_at, updated_at)
+(**id**, entity_type, entity_id, action, agent_name, session_id, branch, created_at, updated_at)
 
 ---
 ## Reference Key
