@@ -1,0 +1,413 @@
+/* =============================================================
+   AGENT TODO MANAGER — MISSION CONTROL
+   ============================================================= */
+
+:root {
+  --bg-base:      #050810;
+  --bg-surface:   #090D1A;
+  --bg-elevated:  #0D1220;
+  --bg-hover:     #111828;
+
+  --border-dim:   #141E35;
+  --border-mid:   #1D2B47;
+  --border-bright: #2A3F62;
+
+  --text-hi:      #D0DDF0;
+  --text-mid:     #6A85AA;
+  --text-lo:      #364D6A;
+
+  --c-todo:       #344F6E;
+  --c-progress:   #E8950A;
+  --c-done:       #00C48C;
+  --c-bug:        #F0404A;
+  --c-accent:     #1E80FF;
+
+  --font-ui:   'Chakra Petch', sans-serif;
+  --font-data: 'JetBrains Mono', monospace;
+
+  --radius: 2px;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-hi);
+  font-family: var(--font-data);
+  line-height: 1.6;
+  min-height: 100vh;
+  /* Subtle blueprint grid */
+  background-image:
+    linear-gradient(rgba(30, 128, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 128, 255, 0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ── Project Header ─────────────────────────────────────────── */
+.project-header {
+  margin-bottom: 3.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.project-header::before {
+  content: '// PROJECT';
+  display: block;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  color: var(--text-lo);
+  letter-spacing: 0.25em;
+  margin-bottom: 0.6rem;
+}
+
+.project-title {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.project-title h1 {
+  font-family: var(--font-ui);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #E4EEFF;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.project-header > p {
+  color: var(--text-mid);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  max-width: 64ch;
+}
+
+.project-meta {
+  font-size: 0.72rem;
+  color: var(--text-lo);
+  display: flex;
+  gap: 2rem;
+}
+
+/* ── Section Wrappers ──────────────────────────────────────── */
+.stories-section,
+.floating-tasks-section,
+.activity-section {
+  margin-bottom: 3.5rem;
+}
+
+.stories-section > h2,
+.floating-tasks-section > h2,
+.activity-section > h2 {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-lo);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.stories-section > h2::before       { content: '01'; }
+.floating-tasks-section > h2::before { content: '02'; }
+.activity-section > h2::before       { content: '03'; }
+
+.stories-section > h2::before,
+.floating-tasks-section > h2::before,
+.activity-section > h2::before {
+  font-family: var(--font-data);
+  color: var(--c-accent);
+  font-size: 0.62rem;
+  opacity: 0.7;
+}
+
+.stories-section > h2::after,
+.floating-tasks-section > h2::after,
+.activity-section > h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-dim);
+}
+
+/* ── Status Badges ──────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.15em 0.55em;
+  border-radius: var(--radius);
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Status dot */
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badge--todo {
+  background: rgba(52, 79, 110, 0.12);
+  color: var(--c-todo);
+  border: 1px solid rgba(52, 79, 110, 0.25);
+}
+.badge--todo::before {
+  background: var(--c-todo);
+}
+
+.badge--in-progress {
+  background: rgba(232, 149, 10, 0.1);
+  color: var(--c-progress);
+  border: 1px solid rgba(232, 149, 10, 0.3);
+}
+.badge--in-progress::before {
+  background: var(--c-progress);
+  animation: blink-dot 1.4s ease-in-out infinite;
+}
+
+.badge--completed {
+  background: rgba(0, 196, 140, 0.08);
+  color: var(--c-done);
+  border: 1px solid rgba(0, 196, 140, 0.2);
+}
+.badge--completed::before {
+  background: var(--c-done);
+}
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--c-progress); }
+  50%       { opacity: 0.3; box-shadow: none; }
+}
+
+/* ── Dim completed items ───────────────────────────────────── */
+[data-status="completed"] { opacity: 0.45; }
+
+/* ── Address labels (1.2.3) ────────────────────────────────── */
+.address {
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  color: var(--c-accent);
+  opacity: 0.5;
+  min-width: 3em;
+  display: inline-block;
+}
+
+/* ── Stories ───────────────────────────────────────────────── */
+.story {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-left: 2px solid var(--c-todo);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0.75rem;
+  transition: border-left-color 0.2s ease;
+}
+
+.story[data-status="in_progress"] { border-left-color: var(--c-progress); }
+.story[data-status="completed"]   { border-left-color: var(--c-done); }
+.story[data-status="todo"]        { border-left-color: var(--c-todo); }
+
+.story-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.story-header h3 {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-hi);
+  letter-spacing: 0.03em;
+  flex: 1;
+}
+
+.story-description {
+  color: var(--text-mid);
+  font-size: 0.8rem;
+  margin: 0.15rem 0 1rem 3.4em;
+  line-height: 1.55;
+}
+
+/* ── Tasks ─────────────────────────────────────────────────── */
+.task-list {
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+.task {
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-dim);
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+
+.task-title {
+  font-weight: 500;
+  font-size: 0.85rem;
+  flex: 1;
+  color: var(--text-hi);
+}
+
+.task-description {
+  color: var(--text-mid);
+  font-size: 0.76rem;
+  margin: 0.15rem 0 0.5rem 3.4em;
+  line-height: 1.5;
+}
+
+/* ── Steps ─────────────────────────────────────────────────── */
+.step-list {
+  padding-left: 1.2rem;
+  margin-top: 0.4rem;
+  border-left: 1px solid var(--border-mid);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.18rem 0;
+  font-size: 0.78rem;
+}
+
+.step-title {
+  flex: 1;
+  color: var(--text-mid);
+}
+
+/* ── Bugs & Hotfixes ───────────────────────────────────────── */
+.floating-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .floating-columns { grid-template-columns: 1fr; }
+}
+
+.floating-group h3 {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--text-lo);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Activity Feed ─────────────────────────────────────────── */
+.activity-feed {
+  display: grid;
+  grid-template-columns: 9.5em 9em 5.5em 1fr 9em;
+  font-size: 0.78rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  overflow: hidden;
+}
+
+.activity-header {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.6rem;
+  color: var(--text-lo);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.65rem 0.8rem;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.activity-row { display: contents; }
+
+.activity-row > * {
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--border-dim);
+  align-self: center;
+}
+
+.activity-action--started   { color: var(--c-accent); font-weight: 600; }
+.activity-action--completed { color: var(--c-done);   font-weight: 600; }
+
+.activity-time   { color: var(--text-lo); font-size: 0.72rem; }
+.activity-agent  { color: var(--text-mid); }
+.activity-entity { color: var(--text-hi); font-size: 0.75rem; }
+.activity-branch { color: var(--text-lo); font-size: 0.72rem; }
+
+@media (max-width: 768px) {
+  .activity-feed { grid-template-columns: 1fr; }
+  .activity-header { display: none; }
+  .activity-row {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .activity-row > * { padding: 0; border: none; display: inline; }
+}
+
+/* ── Empty / Error / Loading states ───────────────────────── */
+.empty-state {
+  color: var(--text-lo);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.loading-state {
+  color: var(--text-lo);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.loading-state::after {
+  content: ' ▋';
+  animation: blink-cursor 0.9s step-end infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.error-state {
+  color: var(--c-bug);
+  padding: 1rem;
+  border: 1px solid rgba(240, 64, 74, 0.4);
+  background: rgba(240, 64, 74, 0.06);
+  font-size: 0.85rem;
+}

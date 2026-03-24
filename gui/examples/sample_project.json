@@ -1,0 +1,819 @@
+{
+  "id": "00000000-0000-0000-0000-000000000001",
+  "title": "Agent Todo Manager",
+  "description": "A task management system designed for coding agents. Stores projects, stories, tasks, and steps in SQLite. Exposes a REST API consumed by a read-only GUI dashboard.",
+  "status": "in_progress",
+  "created_at": "2026-03-10T09:00:00Z",
+  "updated_at": "2026-03-24T10:00:00Z",
+  "stories": [
+    {
+      "id": "00000000-0000-0000-0000-000000000010",
+      "seq": 1,
+      "title": "Database layer",
+      "description": "Design the SQLite schema and implement SQLAlchemy ORM models with repository functions for all five tables. Include Pydantic DTOs for every write operation.",
+      "status": "completed",
+      "created_at": "2026-03-10T09:05:00Z",
+      "updated_at": "2026-03-18T17:00:00Z",
+      "tasks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000100",
+          "seq": 1,
+          "prefix": null,
+          "title": "Design schema",
+          "description": "Produce the schema.md information model document.",
+          "status": "completed",
+          "created_at": "2026-03-10T09:10:00Z",
+          "updated_at": "2026-03-12T16:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000001000001",
+              "seq": 1,
+              "title": "Define entity types and relationships",
+              "description": "Identify the five tables and how they relate.",
+              "status": "completed",
+              "created_at": "2026-03-10T09:15:00Z",
+              "updated_at": "2026-03-11T14:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000001000002",
+              "seq": 2,
+              "title": "Document addressing scheme",
+              "description": "Write the x.y.z and prefix.y addressing rules.",
+              "status": "completed",
+              "created_at": "2026-03-11T14:00:00Z",
+              "updated_at": "2026-03-12T11:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000001000003",
+              "seq": 3,
+              "title": "Write schema.md",
+              "description": "Produce the final schema.md with column tables.",
+              "status": "completed",
+              "created_at": "2026-03-12T11:00:00Z",
+              "updated_at": "2026-03-12T16:00:00Z"
+            }
+          ]
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000101",
+          "seq": 2,
+          "prefix": null,
+          "title": "SQLAlchemy ORM models",
+          "description": "Implement db/database/model.py with all five ORM classes.",
+          "status": "completed",
+          "created_at": "2026-03-13T09:00:00Z",
+          "updated_at": "2026-03-15T17:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000002000001",
+              "seq": 1,
+              "title": "Create DeclarativeBase and TimestampMixin",
+              "description": "Set up base ORM infrastructure.",
+              "status": "completed",
+              "created_at": "2026-03-13T09:05:00Z",
+              "updated_at": "2026-03-13T11:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000002000002",
+              "seq": 2,
+              "title": "Map Project, Story, Task, Step, Completion",
+              "description": "Implement all five ORM models with relationships.",
+              "status": "completed",
+              "created_at": "2026-03-13T11:00:00Z",
+              "updated_at": "2026-03-14T16:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000002000003",
+              "seq": 3,
+              "title": "Verify FK cascades and nullable columns",
+              "description": "Check story_id and prefix nullability.",
+              "status": "completed",
+              "created_at": "2026-03-14T16:00:00Z",
+              "updated_at": "2026-03-15T17:00:00Z"
+            }
+          ]
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000102",
+          "seq": 3,
+          "prefix": null,
+          "title": "Repository functions",
+          "description": "Implement CRUD repos for all entities in db/repo/.",
+          "status": "completed",
+          "created_at": "2026-03-16T09:00:00Z",
+          "updated_at": "2026-03-18T17:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000003000001",
+              "seq": 1,
+              "title": "project.py repo",
+              "description": "create, get, list, list_active, update, delete.",
+              "status": "completed",
+              "created_at": "2026-03-16T09:05:00Z",
+              "updated_at": "2026-03-16T17:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000003000002",
+              "seq": 2,
+              "title": "story.py repo",
+              "description": "CRUD for stories scoped to a project.",
+              "status": "completed",
+              "created_at": "2026-03-17T09:00:00Z",
+              "updated_at": "2026-03-17T14:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000003000003",
+              "seq": 3,
+              "title": "task.py repo",
+              "description": "CRUD for tasks; handle floating vs story-scoped seq.",
+              "status": "completed",
+              "created_at": "2026-03-17T14:00:00Z",
+              "updated_at": "2026-03-18T12:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000003000004",
+              "seq": 4,
+              "title": "step.py and completion.py repos",
+              "description": "CRUD for steps; append-only create for completions.",
+              "status": "completed",
+              "created_at": "2026-03-18T12:00:00Z",
+              "updated_at": "2026-03-18T17:00:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000020",
+      "seq": 2,
+      "title": "API layer",
+      "description": "Build a FastAPI application that wraps the db repos. Expose read endpoints for all entity types. The GUI polls these endpoints; no writes from the GUI.",
+      "status": "in_progress",
+      "created_at": "2026-03-19T09:00:00Z",
+      "updated_at": "2026-03-24T10:00:00Z",
+      "tasks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000200",
+          "seq": 1,
+          "prefix": null,
+          "title": "FastAPI app setup",
+          "description": "Bootstrap the FastAPI app with DB engine wiring.",
+          "status": "completed",
+          "created_at": "2026-03-19T09:05:00Z",
+          "updated_at": "2026-03-20T17:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000004000001",
+              "seq": 1,
+              "title": "Add FastAPI and uvicorn to api/pyproject.toml",
+              "description": "Add runtime dependencies.",
+              "status": "completed",
+              "created_at": "2026-03-19T09:10:00Z",
+              "updated_at": "2026-03-19T10:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000004000002",
+              "seq": 2,
+              "title": "Create FastAPI app instance and lifespan handler",
+              "description": "Wire up DB engine from ATM_DB env var.",
+              "status": "completed",
+              "created_at": "2026-03-19T10:00:00Z",
+              "updated_at": "2026-03-20T17:00:00Z"
+            }
+          ]
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000201",
+          "seq": 2,
+          "prefix": null,
+          "title": "Project endpoints",
+          "description": "GET /projects and GET /projects/{id} with nested stories.",
+          "status": "in_progress",
+          "created_at": "2026-03-21T09:00:00Z",
+          "updated_at": "2026-03-24T10:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000005000001",
+              "seq": 1,
+              "title": "GET /projects — list all active projects",
+              "description": "Return list of Project response models.",
+              "status": "completed",
+              "created_at": "2026-03-21T09:05:00Z",
+              "updated_at": "2026-03-22T12:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000005000002",
+              "seq": 2,
+              "title": "GET /projects/{id} — fetch one project with full tree",
+              "description": "Nested response: stories → tasks → steps.",
+              "status": "in_progress",
+              "created_at": "2026-03-22T12:00:00Z",
+              "updated_at": "2026-03-24T09:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000005000003",
+              "seq": 3,
+              "title": "Include floating tasks (bugs/hotfixes) in response",
+              "description": "Add bugs and hotfixes lists to the project response.",
+              "status": "todo",
+              "created_at": "2026-03-22T12:00:00Z",
+              "updated_at": "2026-03-22T12:00:00Z"
+            }
+          ]
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000202",
+          "seq": 3,
+          "prefix": null,
+          "title": "Story and task endpoints",
+          "description": "Remaining CRUD endpoints for stories, tasks, and steps.",
+          "status": "todo",
+          "created_at": "2026-03-24T09:00:00Z",
+          "updated_at": "2026-03-24T09:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000006000001",
+              "seq": 1,
+              "title": "GET /projects/{id}/stories",
+              "description": "List stories for a project.",
+              "status": "todo",
+              "created_at": "2026-03-24T09:00:00Z",
+              "updated_at": "2026-03-24T09:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000006000002",
+              "seq": 2,
+              "title": "GET /stories/{id}/tasks and GET /tasks/{id}/steps",
+              "description": "Nested resource endpoints for tasks and steps.",
+              "status": "todo",
+              "created_at": "2026-03-24T09:00:00Z",
+              "updated_at": "2026-03-24T09:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000006000003",
+              "seq": 3,
+              "title": "POST /completions — record a state transition",
+              "description": "Append a completion row; update entity status.",
+              "status": "todo",
+              "created_at": "2026-03-24T09:00:00Z",
+              "updated_at": "2026-03-24T09:00:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000030",
+      "seq": 3,
+      "title": "GUI layer",
+      "description": "Read-only Vite/TypeScript dashboard that polls the API every 3 seconds and renders the current project state as a kanban. No user interaction; no writes.",
+      "status": "todo",
+      "created_at": "2026-03-24T10:00:00Z",
+      "updated_at": "2026-03-24T10:00:00Z",
+      "tasks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000300",
+          "seq": 1,
+          "prefix": null,
+          "title": "Project view",
+          "description": "Render a single project with its stories and task statuses.",
+          "status": "todo",
+          "created_at": "2026-03-24T10:00:00Z",
+          "updated_at": "2026-03-24T10:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000007000001",
+              "seq": 1,
+              "title": "Define types.ts",
+              "description": "Mirror Pydantic response models as TS interfaces.",
+              "status": "todo",
+              "created_at": "2026-03-24T10:00:00Z",
+              "updated_at": "2026-03-24T10:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000007000002",
+              "seq": 2,
+              "title": "Implement api.ts",
+              "description": "fetchProject(id) and fetchProjects() using the REST API.",
+              "status": "todo",
+              "created_at": "2026-03-24T10:00:00Z",
+              "updated_at": "2026-03-24T10:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000007000003",
+              "seq": 3,
+              "title": "Implement render.ts — kanban layout",
+              "description": "Three columns: TODO / IN_PROGRESS / COMPLETED per story.",
+              "status": "todo",
+              "created_at": "2026-03-24T10:00:00Z",
+              "updated_at": "2026-03-24T10:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000007000004",
+              "seq": 4,
+              "title": "Wire up main.ts polling loop",
+              "description": "Poll every 3 s; call render on each tick.",
+              "status": "todo",
+              "created_at": "2026-03-24T10:00:00Z",
+              "updated_at": "2026-03-24T10:00:00Z"
+            }
+          ]
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000301",
+          "seq": 2,
+          "prefix": null,
+          "title": "Activity timeline",
+          "description": "Render a chronological feed of completion events below the kanban.",
+          "status": "todo",
+          "created_at": "2026-03-24T10:00:00Z",
+          "updated_at": "2026-03-24T10:00:00Z",
+          "steps": [
+            {
+              "id": "00000000-0000-0000-0000-000008000001",
+              "seq": 1,
+              "title": "Fetch GET /completions from API",
+              "description": "Add fetchCompletions() to api.ts.",
+              "status": "todo",
+              "created_at": "2026-03-24T10:00:00Z",
+              "updated_at": "2026-03-24T10:00:00Z"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000008000002",
+              "seq": 2,
+              "title": "Render timeline in render.ts",
+              "description": "Each row: timestamp, agent, action, entity address.",
+              "status": "todo",
+              "created_at": "2026-03-24T10:00:00Z",
+              "updated_at": "2026-03-24T10:00:00Z"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bugs": [
+    {
+      "id": "00000000-0000-0000-0000-000000000400",
+      "seq": 1,
+      "prefix": "b",
+      "title": "Fix seq counter off-by-one on story tasks",
+      "description": "When a story has only floating tasks the seq counter starts at 2 instead of 1. Reproduce with a fresh project, add a floating task, then add a story task and check the seq.",
+      "status": "todo",
+      "created_at": "2026-03-23T14:00:00Z",
+      "updated_at": "2026-03-23T14:00:00Z",
+      "steps": [
+        {
+          "id": "00000000-0000-0000-0000-000009000001",
+          "seq": 1,
+          "title": "Reproduce with a minimal test case",
+          "description": "Write a pytest that creates floating task then story task.",
+          "status": "todo",
+          "created_at": "2026-03-23T14:05:00Z",
+          "updated_at": "2026-03-23T14:05:00Z"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000009000002",
+          "seq": 2,
+          "title": "Fix next_seq logic in task repo",
+          "description": "Separate the floating-task seq query from story-task seq.",
+          "status": "todo",
+          "created_at": "2026-03-23T14:05:00Z",
+          "updated_at": "2026-03-23T14:05:00Z"
+        }
+      ]
+    }
+  ],
+  "hotfixes": [],
+  "completions": [
+    {
+      "id": "00000000-0000-0000-aaaa-000000000001",
+      "entity_type": "story",
+      "entity_id": "00000000-0000-0000-0000-000000000010",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-10T09:05:00Z",
+      "updated_at": "2026-03-10T09:05:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000002",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000100",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-10T09:10:00Z",
+      "updated_at": "2026-03-10T09:10:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000003",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000001000001",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-10T09:15:00Z",
+      "updated_at": "2026-03-10T09:15:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000004",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000001000001",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-11T14:00:00Z",
+      "updated_at": "2026-03-11T14:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000005",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000001000002",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-11T14:00:00Z",
+      "updated_at": "2026-03-11T14:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000006",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000001000002",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-12T11:00:00Z",
+      "updated_at": "2026-03-12T11:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000007",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000001000003",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-12T11:00:00Z",
+      "updated_at": "2026-03-12T11:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000008",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000001000003",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-12T16:00:00Z",
+      "updated_at": "2026-03-12T16:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000009",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000100",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-001",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-12T16:00:00Z",
+      "updated_at": "2026-03-12T16:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000010",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000101",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-13T09:00:00Z",
+      "updated_at": "2026-03-13T09:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000011",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000002000001",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-13T09:05:00Z",
+      "updated_at": "2026-03-13T09:05:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000012",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000002000001",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-13T11:00:00Z",
+      "updated_at": "2026-03-13T11:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000013",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000002000002",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-13T11:00:00Z",
+      "updated_at": "2026-03-13T11:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000014",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000002000002",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-14T16:00:00Z",
+      "updated_at": "2026-03-14T16:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000015",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000002000003",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-14T16:00:00Z",
+      "updated_at": "2026-03-14T16:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000016",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000002000003",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-15T17:00:00Z",
+      "updated_at": "2026-03-15T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000017",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000101",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-002",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-15T17:00:00Z",
+      "updated_at": "2026-03-15T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000018",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000102",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-16T09:00:00Z",
+      "updated_at": "2026-03-16T09:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000019",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000001",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-16T09:05:00Z",
+      "updated_at": "2026-03-16T09:05:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000020",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000001",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-16T17:00:00Z",
+      "updated_at": "2026-03-16T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000021",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000002",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-17T09:00:00Z",
+      "updated_at": "2026-03-17T09:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000022",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000002",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-17T14:00:00Z",
+      "updated_at": "2026-03-17T14:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000023",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000003",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-17T14:00:00Z",
+      "updated_at": "2026-03-17T14:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000024",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000003",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-18T12:00:00Z",
+      "updated_at": "2026-03-18T12:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000025",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000004",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-18T12:00:00Z",
+      "updated_at": "2026-03-18T12:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000026",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000003000004",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-18T17:00:00Z",
+      "updated_at": "2026-03-18T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000027",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000102",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-18T17:00:00Z",
+      "updated_at": "2026-03-18T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000028",
+      "entity_type": "story",
+      "entity_id": "00000000-0000-0000-0000-000000000010",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-003",
+      "branch": "feat/db-layer",
+      "created_at": "2026-03-18T17:00:00Z",
+      "updated_at": "2026-03-18T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000029",
+      "entity_type": "story",
+      "entity_id": "00000000-0000-0000-0000-000000000020",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-19T09:00:00Z",
+      "updated_at": "2026-03-19T09:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000030",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000200",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-19T09:05:00Z",
+      "updated_at": "2026-03-19T09:05:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000031",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000004000001",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-19T09:10:00Z",
+      "updated_at": "2026-03-19T09:10:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000032",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000004000001",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-19T10:00:00Z",
+      "updated_at": "2026-03-19T10:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000033",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000004000002",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-19T10:00:00Z",
+      "updated_at": "2026-03-19T10:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000034",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000004000002",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-20T17:00:00Z",
+      "updated_at": "2026-03-20T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000035",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000200",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-004",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-20T17:00:00Z",
+      "updated_at": "2026-03-20T17:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000036",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000201",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-005",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-21T09:00:00Z",
+      "updated_at": "2026-03-21T09:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000037",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000005000001",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-005",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-21T09:05:00Z",
+      "updated_at": "2026-03-21T09:05:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000038",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000005000001",
+      "action": "completed",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-005",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-22T12:00:00Z",
+      "updated_at": "2026-03-22T12:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000039",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000005000002",
+      "action": "started",
+      "agent_name": "claude-sonnet-4-6",
+      "session_id": "sess-005",
+      "branch": "feat/api-layer",
+      "created_at": "2026-03-22T12:00:00Z",
+      "updated_at": "2026-03-22T12:00:00Z"
+    }
+  ]
+}
