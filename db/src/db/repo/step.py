@@ -3,8 +3,8 @@ import uuid
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
-from db.database import Step as StepRow
 from db.model import Status, Step, StepCreate, StepUpdate
+from db.orm import Step as StepRow
 
 
 def _next_seq(session: Session, task_id: uuid.UUID) -> int:

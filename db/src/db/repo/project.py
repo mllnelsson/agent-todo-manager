@@ -3,8 +3,8 @@ import uuid
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
-from db.database import Project as ProjectRow
 from db.model import Project, ProjectCreate, ProjectUpdate, Status
+from db.orm import Project as ProjectRow
 
 
 def _to_model(row: ProjectRow) -> Project:

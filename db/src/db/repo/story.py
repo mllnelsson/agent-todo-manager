@@ -3,8 +3,8 @@ import uuid
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
-from db.database import Story as StoryRow
 from db.model import Status, Story, StoryCreate, StoryUpdate
+from db.orm import Story as StoryRow
 
 
 def _next_seq(session: Session, project_id: uuid.UUID) -> int:

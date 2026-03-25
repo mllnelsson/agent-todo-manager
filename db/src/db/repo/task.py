@@ -3,8 +3,8 @@ import uuid
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
-from db.database import Task as TaskRow
 from db.model import Status, Task, TaskCreate, TaskUpdate
+from db.orm import Task as TaskRow
 
 
 def _next_story_seq(session: Session, story_id: uuid.UUID) -> int:
@@ -73,9 +73,7 @@ def get_task_by_seq(engine: Engine, story_id: str, seq: int) -> Task | None:
         return _to_model(row) if row else None
 
 
-def get_floating_task_by_seq(
-    engine: Engine, project_id: str, seq: int
-) -> Task | None:
+def get_floating_task_by_seq(engine: Engine, project_id: str, seq: int) -> Task | None:
     """Look up a floating task (bug/hotfix) by its project-scoped seq."""
     with Session(engine) as session:
         stmt = select(TaskRow).where(
