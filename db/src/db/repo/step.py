@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
-from db.model import Status, Step, StepCreate, StepUpdate
+from db.models import Status, Step, StepCreate, StepUpdate
 from db.orm import Step as StepRow
 
 

@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
-from db.model import Action, Completion, CompletionCreate, EntityType
+from db.models import Action, Completion, CompletionCreate, EntityType
 from db.orm import Completion as CompletionRow
 
 

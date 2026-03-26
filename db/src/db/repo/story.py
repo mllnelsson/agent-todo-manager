@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
-from db.model import Status, Story, StoryCreate, StoryUpdate
+from db.models import Status, Story, StoryCreate, StoryUpdate
 from db.orm import Story as StoryRow
 
 

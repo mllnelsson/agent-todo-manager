@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
-from db.model import Project, ProjectCreate, ProjectUpdate, Status
+from db.models import Project, ProjectCreate, ProjectUpdate, Status
 from db.orm import Project as ProjectRow
 
 

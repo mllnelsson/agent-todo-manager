@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
-from db.model import Status, Task, TaskCreate, TaskUpdate
+from db.models import Status, Task, TaskCreate, TaskUpdate
 from db.orm import Task as TaskRow
 
 
