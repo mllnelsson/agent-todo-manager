@@ -1,7 +1,15 @@
 [project]
 name = "api"
 version = "0.1.0"
-description = "Add your description here"
+description = "FastAPI backend for the agent todo manager GUI"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "db",
+    "fastapi>=0.115.0",
+    "pydantic-settings>=2.0.0",
+    "uvicorn>=0.34.0",
+]
+
+[tool.uv.sources]
+db = { workspace = true }
