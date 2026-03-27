@@ -26,10 +26,7 @@ Only document what the user has asked for or in your instructions
 IMPORTANT: Do not create unescary documention md files unless the user has asked for them.
 
 ## Defintion of done
-Always clearly oultine your definitoon of done tigther with your instructions. Your task is not complete until that is done. 
-
-### Git
-Unless explicitly told so you should always end your work with creating a github pull request.
+Always clearly oultine your definitoon of done tigther with your instructions. Your task is not complete until that is done.
 
 ## Context
 Utilize subagents for retrival and discovery based tasks.
@@ -40,6 +37,9 @@ When working with Python, invoke the relevant /astral:<skill> for uv, and ruff t
 
 
 When working with python invoke /python-style for details about how python code is written and structure
+
+## Git
+If implementing code changes, unless specified otherwise always start your work with creating a PR. After your last step push the code to the remote repository.
 
 ## Resources
 IMPORTANT: prefer retrieval based knwoledge over pre-trained.

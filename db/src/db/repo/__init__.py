@@ -2,6 +2,7 @@ from .completion import (
     create_completion,
     list_active_assignments,
     list_completions_by_entity,
+    list_completions_for_entities,
 )
 from .project import (
     get_project,
@@ -40,6 +41,7 @@ __all__ = [
     "create_completion",
     "list_active_assignments",
     "list_completions_by_entity",
+    "list_completions_for_entities",
     # project
     "get_project",
     "list_projects",

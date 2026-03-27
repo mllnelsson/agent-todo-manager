@@ -49,6 +49,21 @@ def list_completions_by_entity(engine: Engine, entity_id: str) -> list[Completio
         return [_to_model(r) for r in rows]
 
 
+def list_completions_for_entities(engine: Engine, entity_ids: list[str]) -> list[Completion]:
+    """All completions for a set of entity IDs, ordered by created_at."""
+    if not entity_ids:
+        return []
+    with Session(engine) as session:
+        uuids = [uuid.UUID(eid) for eid in entity_ids]
+        stmt = (
+            select(CompletionRow)
+            .where(CompletionRow.entity_id.in_(uuids))
+            .order_by(CompletionRow.created_at)
+        )
+        rows = session.execute(stmt).scalars().all()
+        return [_to_model(r) for r in rows]
+
+
 def list_active_assignments(engine: Engine) -> list[Completion]:
     """Completions where the latest record per entity_id has action=started."""
     with Session(engine) as session:
