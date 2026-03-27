@@ -12,9 +12,9 @@ class Project(BaseModel):
     title: str
     description: str
     status: Status
-    stories = list[Story]
-    bugs = list[Task]
-    hotfixes = list[Task]
+    stories: list[Story] = []
+    bugs: list[Task] = []
+    hotfixes: list[Task] = []
     created_at: datetime
     updated_at: datetime
 

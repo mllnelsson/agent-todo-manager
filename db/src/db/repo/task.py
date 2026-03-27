@@ -85,17 +85,6 @@ def get_floating_task_by_seq(engine: Engine, project_id: str, seq: int) -> Task 
         return _to_model(row) if row else None
 
 
-def list_tasks_by_story(engine: Engine, story_id: str) -> list[Task]:
-    with Session(engine) as session:
-        stmt = (
-            select(TaskRow)
-            .where(TaskRow.story_id == uuid.UUID(story_id))
-            .order_by(TaskRow.seq)
-        )
-        rows = session.execute(stmt).scalars().all()
-        return [_to_model(r) for r in rows]
-
-
 def list_floating_tasks(engine: Engine, project_id: str) -> list[Task]:
     """All tasks with no parent story (bugs, hotfixes, etc.)."""
     with Session(engine) as session:
@@ -105,18 +94,6 @@ def list_floating_tasks(engine: Engine, project_id: str) -> list[Task]:
                 TaskRow.project_id == uuid.UUID(project_id),
                 TaskRow.story_id.is_(None),
             )
-            .order_by(TaskRow.seq)
-        )
-        rows = session.execute(stmt).scalars().all()
-        return [_to_model(r) for r in rows]
-
-
-def list_tasks_by_project(engine: Engine, project_id: str) -> list[Task]:
-    """All tasks belonging to a project, story-bound and floating."""
-    with Session(engine) as session:
-        stmt = (
-            select(TaskRow)
-            .where(TaskRow.project_id == uuid.UUID(project_id))
             .order_by(TaskRow.seq)
         )
         rows = session.execute(stmt).scalars().all()

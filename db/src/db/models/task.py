@@ -13,7 +13,7 @@ class Task(BaseModel):
     description: str
     prefix: str | None
     status: Status
-    steps = list[Step]
+    steps: list[Step] = []
     created_at: datetime
     updated_at: datetime
 

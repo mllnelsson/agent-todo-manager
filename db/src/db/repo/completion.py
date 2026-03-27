@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
 from db.models import Action, Completion, CompletionCreate, EntityType
@@ -38,18 +38,36 @@ def create_completion(engine: Engine, data: CompletionCreate) -> Completion:
         return _to_model(row)
 
 
-def get_completion(engine: Engine, completion_id: str) -> Completion | None:
-    with Session(engine) as session:
-        row = session.get(CompletionRow, uuid.UUID(completion_id))
-        return _to_model(row) if row else None
-
-
 def list_completions_by_entity(engine: Engine, entity_id: str) -> list[Completion]:
     with Session(engine) as session:
         stmt = (
             select(CompletionRow)
             .where(CompletionRow.entity_id == uuid.UUID(entity_id))
             .order_by(CompletionRow.created_at)
+        )
+        rows = session.execute(stmt).scalars().all()
+        return [_to_model(r) for r in rows]
+
+
+def list_active_assignments(engine: Engine) -> list[Completion]:
+    """Completions where the latest record per entity_id has action=started."""
+    with Session(engine) as session:
+        subq = (
+            select(
+                CompletionRow.entity_id,
+                func.max(CompletionRow.created_at).label("latest"),
+            )
+            .group_by(CompletionRow.entity_id)
+            .subquery()
+        )
+        stmt = (
+            select(CompletionRow)
+            .join(
+                subq,
+                (CompletionRow.entity_id == subq.c.entity_id)
+                & (CompletionRow.created_at == subq.c.latest),
+            )
+            .where(CompletionRow.action == Action.STARTED)
         )
         rows = session.execute(stmt).scalars().all()
         return [_to_model(r) for r in rows]

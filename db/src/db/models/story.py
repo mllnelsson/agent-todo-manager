@@ -12,7 +12,7 @@ class Story(BaseModel):
     title: str
     description: str
     status: Status
-    tasks = list[Task]
+    tasks: list[Task] = []
     created_at: datetime
     updated_at: datetime
 

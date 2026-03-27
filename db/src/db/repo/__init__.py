@@ -1,15 +1,12 @@
 from .completion import (
     create_completion,
-    get_completion,
+    list_active_assignments,
     list_completions_by_entity,
 )
 from .project import (
-    create_project,
-    delete_project,
     get_project,
     list_active_projects,
     list_projects,
-    update_project,
 )
 from .step import (
     create_step,
@@ -17,7 +14,6 @@ from .step import (
     get_next_step,
     get_step,
     get_step_by_seq,
-    list_steps,
     update_step,
 )
 from .story import (
@@ -36,23 +32,18 @@ from .task import (
     get_task,
     get_task_by_seq,
     list_floating_tasks,
-    list_tasks_by_project,
-    list_tasks_by_story,
     update_task,
 )
 
 __all__ = [
     # completion
     "create_completion",
-    "get_completion",
+    "list_active_assignments",
     "list_completions_by_entity",
     # project
-    "create_project",
     "get_project",
     "list_projects",
     "list_active_projects",
-    "update_project",
-    "delete_project",
     # story
     "create_story",
     "get_story",
@@ -66,8 +57,6 @@ __all__ = [
     "get_task",
     "get_task_by_seq",
     "get_floating_task_by_seq",
-    "list_tasks_by_story",
-    "list_tasks_by_project",
     "list_floating_tasks",
     "update_task",
     "delete_task",
@@ -76,7 +65,6 @@ __all__ = [
     "get_step",
     "get_step_by_seq",
     "get_next_step",
-    "list_steps",
     "update_step",
     "delete_step",
 ]

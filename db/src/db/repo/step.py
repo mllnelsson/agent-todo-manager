@@ -75,17 +75,6 @@ def get_next_step(engine: Engine, task_id: str) -> Step | None:
         return _to_model(row) if row else None
 
 
-def list_steps(engine: Engine, task_id: str) -> list[Step]:
-    with Session(engine) as session:
-        stmt = (
-            select(StepRow)
-            .where(StepRow.task_id == uuid.UUID(task_id))
-            .order_by(StepRow.seq)
-        )
-        rows = session.execute(stmt).scalars().all()
-        return [_to_model(r) for r in rows]
-
-
 def update_step(engine: Engine, step_id: str, data: StepUpdate) -> Step | None:
     with Session(engine) as session:
         row = session.get(StepRow, uuid.UUID(step_id))
