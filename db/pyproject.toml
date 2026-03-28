@@ -92,3 +92,14 @@ type = "exec"
 executable = "ruff"
 options = "check --fix REVISION_SCRIPT_FILENAME"
 
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-env>=1.6.0",
+]
+
+[tool.pytest.ini_options]
+env = [
+    "ATM_DATABASE_URL=sqlite:///:memory:",
+]
+
