@@ -1,19 +1,22 @@
 import type { Project } from './types.ts';
-import projectData from '../examples/sample_project.json';
 
 export interface DataProvider {
   getProject(id: string): Promise<Project>;
   listProjects(): Promise<Project[]>;
 }
 
-class StaticProvider implements DataProvider {
-  async getProject(_id: string): Promise<Project> {
-    return projectData as unknown as Project;
+class HTTPProvider implements DataProvider {
+  async getProject(id: string): Promise<Project> {
+    const res = await fetch(`/api/projects/${id}`);
+    if (!res.ok) throw new Error(`Failed to fetch project: ${res.status} ${res.statusText}`);
+    return res.json() as Promise<Project>;
   }
 
   async listProjects(): Promise<Project[]> {
-    return [projectData as unknown as Project];
+    const res = await fetch('/api/projects');
+    if (!res.ok) throw new Error(`Failed to fetch projects: ${res.status} ${res.statusText}`);
+    return res.json() as Promise<Project[]>;
   }
 }
 
-export const provider: DataProvider = new StaticProvider();
+export const provider: DataProvider = new HTTPProvider();

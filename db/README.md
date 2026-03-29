@@ -1,15 +1,6 @@
-# atm
+# db
 
-Agent task manager. A structured DB at the core, exposed via a CLI for agent interaction, a thin API for the GUI, and a Vite frontend for state visibility.
-
-## Architecture
-
-| Module    | Role |
-|-----------|------|
-| `db`      | Schema and migrations. Source of truth. |
-| `atm-cli` | Agent-facing CLI. Reads and mutates state directly via the DB. |
-| `api`     | Thin FastAPI layer. Bridges DB and GUI. |
-| `gui`     | Vite app. Renders current state. Read-only. |
+Schema, migrations, ORM, and repository layer. The source of truth for all project state.
 
 ## Data Model
 
@@ -20,17 +11,43 @@ project → stories → tasks → steps
         ↘ floating tasks   ↗
 ```
 
-All state transitions are logged in `completions`, including agent name, session, and branch. See [`db/schema.md`](db/schema.md) for the full information model.
+All state transitions are logged in `completions`, including agent name, session, and branch.
 
-## CLI Contract
+## Setup
 
-- Output: always JSON to stdout, no envelope wrapping, nulls stripped
-- Errors: `{"error": "code", "context": "..."}` to stdout
-- Logs and diagnostics: stderr only
-- No interactive prompts. Ever.
-- Exit codes: `0` success, `1` user error, `2` system error
-- Stack: Python + Typer + Pydantic (`model_dump(exclude_none=True)`)
+**Prerequisites:** Python 3.12+, [uv](https://docs.astral.sh/uv/)
 
-## Not Optimising For
+Install dependencies from the workspace root:
 
-Pretty output, shell completion, Rich formatting. Set `TYPER_USE_RICH=0` in agent context.
+```sh
+uv sync
+```
+
+## Configuration
+
+The database URL is read from the `ATM_DATABASE_URL` environment variable. Copy the example and set a path:
+
+```sh
+cp .env.example .env
+# Edit .env and set ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
+```
+
+## Running Migrations
+
+Migrations are managed with Alembic. Run from the `db/` directory:
+
+```sh
+cd db
+uv run alembic upgrade head
+```
+
+This creates the database file (if using SQLite) and applies all schema migrations.
+
+## Tests
+
+```sh
+cd db
+uv run pytest
+```
+
+Tests run against an in-memory SQLite database.

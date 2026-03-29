@@ -35,6 +35,47 @@ Thin [FastAPI](https://fastapi.tiangolo.com/) service. Exists solely to bridge t
 ### `gui`
 [Vite](https://vitejs.dev/) app for observing current state. No business logic. Read-oriented.
 
+## Getting Started
+
+**Prerequisites:** Python 3.12+, [uv](https://docs.astral.sh/uv/), Node.js 18+
+
+### 1. Configure the database
+
+```sh
+cp .env.example .env
+# Edit .env and set: ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
+```
+
+### 2. Install dependencies
+
+```sh
+uv sync       # Python (db + api)
+cd gui && npm install
+```
+
+### 3. Run migrations
+
+```sh
+cd db
+uv run alembic upgrade head
+```
+
+### 4. Start the API
+
+```sh
+cd api
+uv run uvicorn main:app --reload
+# → http://localhost:8000
+```
+
+### 5. Start the GUI
+
+```sh
+cd gui
+npm run dev
+# → http://localhost:5173
+```
+
 ## What We're NOT Optimizing For
 
 - Pretty CLI output
