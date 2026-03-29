@@ -1,31 +1,6 @@
-import type { Completion, Project, Status, Step, Story, Task } from './types.ts';
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function badge(status: Status): string {
-  const label: Record<Status, string> = {
-    todo: 'TODO',
-    in_progress: 'IN PROGRESS',
-    completed: 'COMPLETED',
-  };
-  const cls = status.replace('_', '-');
-  return `<span class="badge badge--${cls}">${label[status]}</span>`;
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+import type { Completion, Project, Step, Story, Task } from './types.ts';
+import { badge, buildTabBar, escapeHtml, formatDate } from './render-utils.ts';
+import type { TabId } from './render-utils.ts';
 
 function buildEntityIndex(project: Project): Map<string, string> {
   const index = new Map<string, string>();
@@ -53,7 +28,7 @@ function buildEntityIndex(project: Project): Map<string, string> {
   return index;
 }
 
-function buildStep(step: Step, address: string): string {
+export function buildStep(step: Step, address: string): string {
   return `
     <div class="step" data-status="${step.status}">
       <span class="address">${escapeHtml(address)}</span>
@@ -149,13 +124,9 @@ function buildActivityFeed(completions: Completion[], entityIndex: Map<string, s
     </div>`;
 }
 
-export function renderProject(project: Project): void {
-  const app = document.getElementById('app');
-  if (!app) return;
-
+function buildProjectDetail(project: Project): string {
   const entityIndex = buildEntityIndex(project);
   const hasFloating = project.bugs.length > 0 || project.hotfixes.length > 0;
-
   const storiesHtml = project.stories.map(buildStory).join('');
 
   const floatingHtml = hasFloating
@@ -169,29 +140,68 @@ export function renderProject(project: Project): void {
       </section>`
     : '';
 
+  return `
+    <header class="project-header">
+      <div class="project-title">
+        <h1>${escapeHtml(project.title)}</h1>
+        ${badge(project.status)}
+      </div>
+      <p>${escapeHtml(project.description)}</p>
+      <div class="project-meta">
+        <span>Updated: ${formatDate(project.updated_at)}</span>
+      </div>
+    </header>
+
+    <section class="stories-section">
+      <h2>Stories</h2>
+      ${storiesHtml || '<p class="empty-state">No stories yet.</p>'}
+    </section>
+
+    ${floatingHtml}
+
+    <section class="activity-section">
+      <h2>Activity</h2>
+      ${buildActivityFeed(project.completions, entityIndex)}
+    </section>`;
+}
+
+export function renderProjectTab(projects: Project[], selectedId: string | null, activeTab: TabId): void {
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  const selected = projects.find((p) => p.id === selectedId) ?? null;
+
+  const navItems = projects
+    .map((p) => {
+      const active = p.id === selectedId ? ' project-nav-item--active' : '';
+      return `
+        <button class="project-nav-item${active}" data-project-id="${p.id}">
+          <span class="project-nav-title">${escapeHtml(p.title)}</span>
+          ${badge(p.status)}
+        </button>`;
+    })
+    .join('');
+
+  const detailHtml = selected
+    ? buildProjectDetail(selected)
+    : '<p class="empty-state">Select a project.</p>';
+
   app.innerHTML = `
-    <main class="container">
-      <header class="project-header">
-        <div class="project-title">
-          <h1>${escapeHtml(project.title)}</h1>
-          ${badge(project.status)}
-        </div>
-        <p>${escapeHtml(project.description)}</p>
-        <div class="project-meta">
-          <span>Updated: ${formatDate(project.updated_at)}</span>
-        </div>
-      </header>
+    ${buildTabBar(activeTab)}
+    <div class="project-layout">
+      <aside class="project-sidebar">
+        <div class="project-sidebar-label">// PROJECTS</div>
+        ${navItems || '<p class="empty-state">No projects.</p>'}
+      </aside>
+      <main class="project-main">
+        ${detailHtml}
+      </main>
+    </div>`;
+}
 
-      <section class="stories-section">
-        <h2>Stories</h2>
-        ${storiesHtml || '<p class="empty-state">No stories yet.</p>'}
-      </section>
+export function renderProject(project: Project): void {
+  const app = document.getElementById('app');
+  if (!app) return;
 
-      ${floatingHtml}
-
-      <section class="activity-section">
-        <h2>Activity</h2>
-        ${buildActivityFeed(project.completions, entityIndex)}
-      </section>
-    </main>`;
+  app.innerHTML = `<main class="container">${buildProjectDetail(project)}</main>`;
 }

@@ -1,4 +1,4 @@
-# Project Name
+# Agent Todo Manager
 
 ## Overview
 
@@ -8,10 +8,10 @@ A state management system with a structured database at its core, exposed via a 
 
 | Module | Role |
 |--------|------|
-| `db`  | Schema, migrations, and source of truth for all project state |
+| `db`      | Schema, migrations, and source of truth for all project state |
 | `atm-cli` | Agent-facing interface, reads and mutates state directly via the DB |
-| `api` | Thin FastAPI layer, serves state to the GUI |
-| `gui` | Lightweight Vite app, renders current state via the API |
+| `api`     | Thin FastAPI layer, serves state to the GUI |
+| `gui`     | Vite dashboard, renders live state via the API |
 
 ## Modules
 
@@ -30,10 +30,15 @@ Built for agent consumption, not humans. Hits the DB directly.
 - **Stack:** Python + [Typer](https://typer.tiangolo.com/) + Pydantic (`model_dump(exclude_none=True)`)
 
 ### `api`
-Thin [FastAPI](https://fastapi.tiangolo.com/) service. Exists solely to bridge the DB and the GUI. Not a general-purpose API.
+Thin [FastAPI](https://fastapi.tiangolo.com/) service. Bridges the DB and the GUI. Not a general-purpose API.
 
 ### `gui`
-[Vite](https://vitejs.dev/) app for observing current state. No business logic. Read-oriented.
+[Vite](https://vitejs.dev/) dashboard for observing live state. Two views:
+
+- **Projects** — sidebar lists all projects; selecting one shows stories, tasks, steps, bugs, hotfixes, and activity feed
+- **Agents** — shows all in-progress tasks across all projects, grouped by the agent working on each
+
+No business logic. Read-only.
 
 ## Getting Started
 

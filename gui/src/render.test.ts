@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { renderProject } from './render.ts';
+import { renderProject } from './render-project.ts';
 import type { Completion, Project, Step, Story, Task } from './types.ts';
 
 // --- Factory helpers ---
