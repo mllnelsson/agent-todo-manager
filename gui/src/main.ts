@@ -23,9 +23,11 @@ async function tick(): Promise<void> {
       selectedProjectId = projects[0].id;
     }
     if (activeTab === 'projects') {
-      renderProjectTab(projects, selectedProjectId, activeTab);
+      const selected = selectedProjectId ? await provider.getProject(selectedProjectId) : null;
+      renderProjectTab(projects, selected, activeTab);
     } else {
-      renderAgentTab(projects, activeTab);
+      const fullProjects = await Promise.all(projects.map((p) => provider.getProject(p.id)));
+      renderAgentTab(fullProjects, activeTab);
     }
   } catch (err) {
     renderError(err instanceof Error ? err.message : 'Unknown error');

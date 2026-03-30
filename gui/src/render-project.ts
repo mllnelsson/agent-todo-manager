@@ -165,15 +165,13 @@ function buildProjectDetail(project: Project): string {
     </section>`;
 }
 
-export function renderProjectTab(projects: Project[], selectedId: string | null, activeTab: TabId): void {
+export function renderProjectTab(projects: Project[], selected: Project | null, activeTab: TabId): void {
   const app = document.getElementById('app');
   if (!app) return;
 
-  const selected = projects.find((p) => p.id === selectedId) ?? null;
-
   const navItems = projects
     .map((p) => {
-      const active = p.id === selectedId ? ' project-nav-item--active' : '';
+      const active = p.id === selected?.id ? ' project-nav-item--active' : '';
       return `
         <button class="project-nav-item${active}" data-project-id="${p.id}">
           <span class="project-nav-title">${escapeHtml(p.title)}</span>
