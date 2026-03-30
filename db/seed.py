@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from db.engine import create_db_engine
 from db.orm import Completion, Project, Step, Story, Task
 
-SAMPLE = Path(__file__).parent.parent / "gui" / "examples" / "sample_project.json"
+EXAMPLES_DIR = Path(__file__).parent.parent / "gui" / "examples"
 
 
 def _dt(value: str) -> datetime:
@@ -110,12 +110,13 @@ def seed(session: Session, data: dict) -> None:
 
 
 def main() -> None:
-    data = json.loads(SAMPLE.read_text())
     engine = create_db_engine()
     with Session(engine) as session:
-        seed(session, data)
+        for path in sorted(EXAMPLES_DIR.glob("*.json")):
+            data = json.loads(path.read_text())
+            seed(session, data)
+            print(f"Seeded project: {data['title']}")
         session.commit()
-    print(f"Seeded project: {data['title']}")
 
 
 if __name__ == "__main__":

@@ -267,9 +267,9 @@
       "seq": 3,
       "title": "GUI layer",
       "description": "Read-only Vite/TypeScript dashboard that polls the API every 3 seconds and renders the current project state as a kanban. No user interaction; no writes.",
-      "status": "todo",
+      "status": "in_progress",
       "created_at": "2026-03-24T10:00:00Z",
-      "updated_at": "2026-03-24T10:00:00Z",
+      "updated_at": "2026-03-30T09:00:00Z",
       "tasks": [
         {
           "id": "00000000-0000-0000-0000-000000000300",
@@ -277,16 +277,16 @@
           "prefix": null,
           "title": "Project view",
           "description": "Render a single project with its stories and task statuses.",
-          "status": "todo",
+          "status": "in_progress",
           "created_at": "2026-03-24T10:00:00Z",
-          "updated_at": "2026-03-24T10:00:00Z",
+          "updated_at": "2026-03-30T09:00:00Z",
           "steps": [
             {
               "id": "00000000-0000-0000-0000-000007000001",
               "seq": 1,
               "title": "Define types.ts",
               "description": "Mirror Pydantic response models as TS interfaces.",
-              "status": "todo",
+              "status": "in_progress",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             },
@@ -359,16 +359,16 @@
       "prefix": "b",
       "title": "Fix seq counter off-by-one on story tasks",
       "description": "When a story has only floating tasks the seq counter starts at 2 instead of 1. Reproduce with a fresh project, add a floating task, then add a story task and check the seq.",
-      "status": "todo",
+      "status": "in_progress",
       "created_at": "2026-03-23T14:00:00Z",
-      "updated_at": "2026-03-23T14:00:00Z",
+      "updated_at": "2026-03-30T08:30:00Z",
       "steps": [
         {
           "id": "00000000-0000-0000-0000-000009000001",
           "seq": 1,
           "title": "Reproduce with a minimal test case",
           "description": "Write a pytest that creates floating task then story task.",
-          "status": "todo",
+          "status": "in_progress",
           "created_at": "2026-03-23T14:05:00Z",
           "updated_at": "2026-03-23T14:05:00Z"
         },
@@ -814,6 +814,61 @@
       "branch": "feat/api-layer",
       "created_at": "2026-03-22T12:00:00Z",
       "updated_at": "2026-03-22T12:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000040",
+      "entity_type": "story",
+      "entity_id": "00000000-0000-0000-0000-000000000030",
+      "action": "started",
+      "agent_name": "claude-opus-4-6",
+      "session_id": "sess-006",
+      "branch": "feat/gui-layer",
+      "created_at": "2026-03-30T09:00:00Z",
+      "updated_at": "2026-03-30T09:00:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000041",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000300",
+      "action": "started",
+      "agent_name": "claude-opus-4-6",
+      "session_id": "sess-006",
+      "branch": "feat/gui-layer",
+      "created_at": "2026-03-30T09:05:00Z",
+      "updated_at": "2026-03-30T09:05:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000042",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000007000001",
+      "action": "started",
+      "agent_name": "claude-opus-4-6",
+      "session_id": "sess-006",
+      "branch": "feat/gui-layer",
+      "created_at": "2026-03-30T09:10:00Z",
+      "updated_at": "2026-03-30T09:10:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000043",
+      "entity_type": "task",
+      "entity_id": "00000000-0000-0000-0000-000000000400",
+      "action": "started",
+      "agent_name": "claude-haiku-4-5",
+      "session_id": "sess-007",
+      "branch": "fix/seq-bug",
+      "created_at": "2026-03-30T08:30:00Z",
+      "updated_at": "2026-03-30T08:30:00Z"
+    },
+    {
+      "id": "00000000-0000-0000-aaaa-000000000044",
+      "entity_type": "step",
+      "entity_id": "00000000-0000-0000-0000-000009000001",
+      "action": "started",
+      "agent_name": "claude-haiku-4-5",
+      "session_id": "sess-007",
+      "branch": "fix/seq-bug",
+      "created_at": "2026-03-30T08:35:00Z",
+      "updated_at": "2026-03-30T08:35:00Z"
     }
   ]
 }
