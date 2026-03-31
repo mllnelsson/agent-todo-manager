@@ -4,13 +4,15 @@ All functions are importable from `db.repo`. Every function takes an `Engine` as
 
 ---
 
+> **Lazy vs eager loading:** List functions return shallow models with empty child lists (`stories/tasks/steps = []`). Get-by-id and get-by-seq functions eager-load all children.
+
 ## Project
 
 | Function | Signature | Returns | Notes |
 |---|---|---|---|
-| `get_project` | `(engine, project_id: str)` | `Project \| None` | Eagerly loads stories → tasks → steps, and floating bugs/hotfixes |
-| `list_projects` | `(engine)` | `list[Project]` | All projects, flat (no nested relations) |
-| `list_active_projects` | `(engine)` | `list[Project]` | Projects where `status != COMPLETED` |
+| `get_project` | `(engine, project_id: str)` | `Project \| None` | Full: stories → tasks → steps, floating bugs/hotfixes |
+| `list_projects` | `(engine)` | `list[Project]` | Shallow — no nested relations |
+| `list_active_projects` | `(engine)` | `list[Project]` | Shallow — `status != COMPLETED` |
 
 ---
 
@@ -19,10 +21,10 @@ All functions are importable from `db.repo`. Every function takes an `Engine` as
 | Function | Signature | Returns | Notes |
 |---|---|---|---|
 | `create_story` | `(engine, data: StoryCreate)` | `Story` | Auto-assigns next `seq` within the project |
-| `get_story` | `(engine, story_id: str)` | `Story \| None` | Lookup by UUID |
-| `get_story_by_seq` | `(engine, project_id: str, seq: int)` | `Story \| None` | Lookup by project-scoped seq |
-| `list_stories` | `(engine, project_id: str)` | `list[Story]` | All stories ordered by seq |
-| `list_active_stories` | `(engine, project_id: str)` | `list[Story]` | Stories where `status != COMPLETED`, ordered by seq |
+| `get_story` | `(engine, story_id: str)` | `Story \| None` | Full: tasks → steps, lookup by UUID |
+| `get_story_by_seq` | `(engine, project_id: str, seq: int)` | `Story \| None` | Full: tasks → steps, lookup by project-scoped seq |
+| `list_stories` | `(engine, project_id: str)` | `list[Story]` | Shallow — ordered by seq |
+| `list_active_stories` | `(engine, project_id: str)` | `list[Story]` | Shallow — `status != COMPLETED`, ordered by seq |
 | `update_story` | `(engine, story_id: str, data: StoryUpdate)` | `Story \| None` | Patches title, description, status |
 | `delete_story` | `(engine, story_id: str)` | `bool` | Returns `False` if not found |
 
@@ -33,10 +35,10 @@ All functions are importable from `db.repo`. Every function takes an `Engine` as
 | Function | Signature | Returns | Notes |
 |---|---|---|---|
 | `create_task` | `(engine, data: TaskCreate)` | `Task` | Seq scoped to story if `story_id` set, otherwise project-scoped (floating) |
-| `get_task` | `(engine, task_id: str)` | `Task \| None` | Lookup by UUID |
-| `get_task_by_seq` | `(engine, story_id: str, seq: int)` | `Task \| None` | Lookup by story-scoped seq |
-| `get_floating_task_by_seq` | `(engine, project_id: str, seq: int)` | `Task \| None` | Lookup floating task (no story) by project-scoped seq |
-| `list_floating_tasks` | `(engine, project_id: str)` | `list[Task]` | Tasks with no parent story, ordered by seq |
+| `get_task` | `(engine, task_id: str)` | `Task \| None` | Full: steps, lookup by UUID |
+| `get_task_by_seq` | `(engine, story_id: str, seq: int)` | `Task \| None` | Full: steps, lookup by story-scoped seq |
+| `get_floating_task_by_seq` | `(engine, project_id: str, seq: int)` | `Task \| None` | Full: steps, lookup floating task by project-scoped seq |
+| `list_floating_tasks` | `(engine, project_id: str)` | `list[Task]` | Shallow — tasks with no parent story, ordered by seq |
 | `update_task` | `(engine, task_id: str, data: TaskUpdate)` | `Task \| None` | Patches title, description, status, prefix |
 | `delete_task` | `(engine, task_id: str)` | `bool` | Returns `False` if not found |
 

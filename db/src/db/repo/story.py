@@ -1,10 +1,12 @@
 import uuid
 
 from sqlalchemy import Engine, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
-from db.models import Status, Story, StoryCreate, StoryUpdate
+from db.models import Status, Step, Story, StoryCreate, StoryUpdate, Task
+from db.orm import Step as StepRow
 from db.orm import Story as StoryRow
+from db.orm import Task as TaskRow
 
 
 def _next_seq(session: Session, project_id: uuid.UUID) -> int:
@@ -13,13 +15,40 @@ def _next_seq(session: Session, project_id: uuid.UUID) -> int:
     return (max_seq or 0) + 1
 
 
-def _to_model(row: StoryRow) -> Story:
+def _step_to_model(row: StepRow) -> Step:
+    return Step(
+        id=str(row.id),
+        seq=row.seq,
+        title=row.title,
+        description=row.description,
+        status=Status(row.status),
+        created_at=row.created_at,
+        updated_at=row.updated_at,
+    )
+
+
+def _task_to_model(row: TaskRow) -> Task:
+    return Task(
+        id=str(row.id),
+        seq=row.seq,
+        title=row.title,
+        description=row.description,
+        prefix=row.prefix,
+        status=Status(row.status),
+        steps=sorted([_step_to_model(s) for s in row.steps], key=lambda s: s.seq),
+        created_at=row.created_at,
+        updated_at=row.updated_at,
+    )
+
+
+def _to_model(row: StoryRow, *, full: bool = False) -> Story:
     return Story(
         id=str(row.id),
         seq=row.seq,
         title=row.title,
         description=row.description,
         status=Status(row.status),
+        tasks=sorted([_task_to_model(t) for t in row.tasks], key=lambda t: t.seq) if full else [],
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -45,18 +74,24 @@ def create_story(engine: Engine, data: StoryCreate) -> Story:
 
 def get_story(engine: Engine, story_id: str) -> Story | None:
     with Session(engine) as session:
-        row = session.get(StoryRow, uuid.UUID(story_id))
-        return _to_model(row) if row else None
+        stmt = (
+            select(StoryRow)
+            .where(StoryRow.id == uuid.UUID(story_id))
+            .options(selectinload(StoryRow.tasks).selectinload(TaskRow.steps))
+        )
+        row = session.execute(stmt).scalar_one_or_none()
+        return _to_model(row, full=True) if row else None
 
 
 def get_story_by_seq(engine: Engine, project_id: str, seq: int) -> Story | None:
     with Session(engine) as session:
-        stmt = select(StoryRow).where(
-            StoryRow.project_id == uuid.UUID(project_id),
-            StoryRow.seq == seq,
+        stmt = (
+            select(StoryRow)
+            .where(StoryRow.project_id == uuid.UUID(project_id), StoryRow.seq == seq)
+            .options(selectinload(StoryRow.tasks).selectinload(TaskRow.steps))
         )
         row = session.execute(stmt).scalar_one_or_none()
-        return _to_model(row) if row else None
+        return _to_model(row, full=True) if row else None
 
 
 def list_stories(engine: Engine, project_id: str) -> list[Story]:
