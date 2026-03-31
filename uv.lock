@@ -80,6 +80,7 @@ source = { editable = "atm-cli" }
 dependencies = [
     { name = "db" },
     { name = "pydantic" },
+    { name = "pydantic-settings" },
     { name = "typer" },
 ]
 
@@ -87,6 +88,7 @@ dependencies = [
 requires-dist = [
     { name = "db", editable = "db" },
     { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "pydantic-settings", specifier = ">=2.13.1" },
     { name = "typer", specifier = ">=0.24.1" },
 ]
 
