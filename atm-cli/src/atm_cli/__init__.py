@@ -1,8 +1,3 @@
-from db.model import Task
+from .main import main
 
-task = Task(id="1")
-
-
-def main() -> None:
-    print("Hello from atm-cli!")
-    print(f"This is the first task {task}")
+__all__ = ["main"]

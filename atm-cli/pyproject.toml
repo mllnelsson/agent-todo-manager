@@ -15,7 +15,7 @@ dependencies = [
 db = { workspace = true }
 
 [project.scripts]
-atm-cli = "atm_cli:main"
+atm = "atm_cli:main"
 
 [build-system]
 requires = ["uv_build>=0.10.9,<0.11.0"]
