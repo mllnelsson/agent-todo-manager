@@ -35,8 +35,9 @@ Always refer the skills and documentaion.
 ## Skills
 When working with Python, invoke the relevant /astral:<skill> for uv, and ruff to ensure best practices are followed.
 
-
-When working with python invoke /python-style for details about how python code is written and structure
+## Writing or reviewing code
+IMPORTANT: Always use /coding-guidelines skill before writing any code.
+Ensure you use the appropiate language specific skill where depending on the languague.
 
 ## Git
 If implementing code changes, unless specified otherwise always start your work with creating a PR. After your last step push the code to the remote repository.
