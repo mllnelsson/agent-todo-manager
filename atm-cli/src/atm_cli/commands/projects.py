@@ -10,6 +10,11 @@ app = typer.Typer(no_args_is_help=True)
 
 @app.command("get")
 def get(id: str) -> None:
+    """Fetch a project by ID and print it as JSON.
+
+    Args:
+        id: UUID of the project.
+    """
     engine = get_engine()
     try:
         project = get_project_by_id(id, engine)

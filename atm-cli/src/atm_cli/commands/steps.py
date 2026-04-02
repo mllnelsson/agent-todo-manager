@@ -22,6 +22,12 @@ def get(
     seq: int,
     task: str = typer.Option(..., "--task", help="Task ID"),
 ) -> None:
+    """Fetch a step by its task-scoped sequence number and print it as JSON.
+
+    Args:
+        seq: Task-scoped sequence number of the step.
+        task: UUID of the parent task.
+    """
     engine = get_engine()
     try:
         step = get_step_by_task_seq(task, seq, engine)
@@ -34,6 +40,11 @@ def get(
 
 @app.command("next")
 def next_cmd(task: str = typer.Option(..., "--task", help="Task ID")) -> None:
+    """Fetch the next pending (TODO) step for a task and print it as JSON.
+
+    Args:
+        task: UUID of the task.
+    """
     engine = get_engine()
     try:
         step = get_next_pending_step(task, engine)
@@ -50,6 +61,13 @@ def create(
     title: str = typer.Option(..., "--title"),
     description: str = typer.Option(..., "--description"),
 ) -> None:
+    """Create a new step under a task and print it as JSON.
+
+    Args:
+        task: UUID of the parent task.
+        title: Step title.
+        description: Step description.
+    """
     engine = get_engine()
     try:
         step = create_step_for_task(StepCreate(task_id=task, title=title, description=description), engine)
@@ -64,6 +82,13 @@ def update(
     title: str | None = typer.Option(None, "--title"),
     description: str | None = typer.Option(None, "--description"),
 ) -> None:
+    """Update fields on a step and print the result as JSON.
+
+    Args:
+        id: UUID of the step to update.
+        title: New title, if updating.
+        description: New description, if updating.
+    """
     engine = get_engine()
     try:
         step = update_step_by_id(id, StepUpdate(title=title, description=description), engine)
@@ -81,6 +106,14 @@ def start(
     session: str = typer.Option(..., "--session", help="Session ID"),
     branch: str | None = typer.Option(None, "--branch", help="Git branch"),
 ) -> None:
+    """Mark a step as IN_PROGRESS, recording which agent claimed it.
+
+    Args:
+        id: UUID of the step to start.
+        agent: Name of the agent claiming the step.
+        session: Agent session identifier.
+        branch: Git branch the agent is working on, if any.
+    """
     engine = get_engine()
     try:
         step = start_step(id, agent, session, branch, engine)
@@ -100,6 +133,14 @@ def complete(
     session: str = typer.Option(..., "--session", help="Session ID"),
     branch: str | None = typer.Option(None, "--branch", help="Git branch"),
 ) -> None:
+    """Mark a step as COMPLETED, cascading completion to the task and story if applicable.
+
+    Args:
+        id: UUID of the step to complete.
+        agent: Name of the agent completing the step.
+        session: Agent session identifier.
+        branch: Git branch the agent worked on, if any.
+    """
     engine = get_engine()
     try:
         step = complete_step(id, agent, session, branch, engine)

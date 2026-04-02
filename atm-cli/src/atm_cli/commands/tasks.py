@@ -27,6 +27,14 @@ def _is_uuid(value: str) -> bool:
 
 
 def _render_task_md(task) -> str:
+    """Render a task as a markdown string, including its steps with their statuses.
+
+    Args:
+        task: Task object with seq, title, description, and steps attributes.
+
+    Returns:
+        Markdown-formatted string representation of the task.
+    """
     status_map = {
         Status.TODO: "TODO",
         Status.IN_PROGRESS: "IN_PROGRESS",
@@ -47,6 +55,14 @@ def get(
     project: str | None = typer.Option(None, "--project", help="Project ID (for floating task seq lookup)"),
     md: bool = typer.Option(False, "--md", help="Render as markdown"),
 ) -> None:
+    """Fetch a task by UUID or sequence number and print it as JSON or markdown.
+
+    Args:
+        id_or_seq: UUID of the task, or its sequence number within a story or project.
+        story: Story UUID — required when id_or_seq is a sequence number for a story task.
+        project: Project UUID — required when id_or_seq is a sequence number for a floating task.
+        md: When True, render output as markdown instead of JSON.
+    """
     engine = get_engine()
     try:
         if _is_uuid(id_or_seq):
@@ -70,6 +86,11 @@ def get(
 
 @app.command("list-floating")
 def list_floating(project: str = typer.Option(..., "--project", help="Project ID")) -> None:
+    """List all floating (story-less) tasks for a project and print them as JSON.
+
+    Args:
+        project: UUID of the project.
+    """
     engine = get_engine()
     try:
         tasks = list_floating_tasks_for_project(project, engine)
@@ -86,6 +107,15 @@ def create(
     title: str = typer.Option(..., "--title"),
     description: str = typer.Option(..., "--description"),
 ) -> None:
+    """Create a new task under a story or as a floating task under a project.
+
+    Args:
+        story: Story UUID — use for story-linked tasks. Mutually exclusive with project.
+        project: Project UUID — use for floating tasks not linked to a story.
+        prefix: Short prefix to categorise the floating task (e.g. b=bug, h=hotfix).
+        title: Task title.
+        description: Task description.
+    """
     engine = get_engine()
     try:
         if story is None and project is None:
@@ -111,6 +141,15 @@ def update(
     status: str | None = typer.Option(None, "--status"),
     prefix: str | None = typer.Option(None, "--prefix"),
 ) -> None:
+    """Update fields on a task and print the result as JSON.
+
+    Args:
+        id: UUID of the task to update.
+        title: New title, if updating.
+        description: New description, if updating.
+        status: New status value, if updating.
+        prefix: New prefix, if updating.
+    """
     engine = get_engine()
     try:
         data = TaskUpdate(
