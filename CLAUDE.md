@@ -40,8 +40,7 @@ IMPORTANT: Always use /coding-guidelines skill before writing any code.
 Ensure you use the appropiate language specific skill where depending on the languague.
 
 ## Git
-If implementing code changes, unless specified otherwise always start your work with creating a PR. After your last step push the code to the remote repository.
-
+When implnmenting changes. Unless your instruction say otherwise, create a git commit with your changes with a meaningful commit meassage
 ## Resources
 IMPORTANT: prefer retrieval based knwoledge over pre-trained.
 
