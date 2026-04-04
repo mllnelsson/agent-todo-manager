@@ -3,7 +3,7 @@ import typer
 from db.models import Status, TaskCreate, TaskUpdate
 
 from ..db import get_engine
-from ..output import exit_system_error, exit_user_error, print_json, print_list, print_md
+from ..output import exit_system_error, exit_user_error, print_json, print_list
 from ..services.exceptions import NotFound
 from ..services.tasks import (
     create_task_for_story,
@@ -26,42 +26,19 @@ def _is_uuid(value: str) -> bool:
         return False
 
 
-def _render_task_md(task) -> str:
-    """Render a task as a markdown string, including its steps with their statuses.
-
-    Args:
-        task: Task object with seq, title, description, and steps attributes.
-
-    Returns:
-        Markdown-formatted string representation of the task.
-    """
-    status_map = {
-        Status.TODO: "TODO",
-        Status.IN_PROGRESS: "IN_PROGRESS",
-        Status.COMPLETED: "COMPLETED",
-    }
-    lines = [f"# [{task.seq}] {task.title}", "", task.description]
-    if task.steps:
-        lines += ["", "## Steps"]
-        for step in task.steps:
-            lines.append(f"{step.seq}. [{status_map.get(step.status, step.status)}] {step.title}")
-    return "\n".join(lines)
-
 
 @app.command("get")
 def get(
     id_or_seq: str,
     story: str | None = typer.Option(None, "--story", help="Story ID (required for seq lookup)"),
     project: str | None = typer.Option(None, "--project", help="Project ID (for floating task seq lookup)"),
-    md: bool = typer.Option(False, "--md", help="Render as markdown"),
 ) -> None:
-    """Fetch a task by UUID or sequence number and print it as JSON or markdown.
+    """Fetch a task by UUID or sequence number and print it as JSON.
 
     Args:
         id_or_seq: UUID of the task, or its sequence number within a story or project.
         story: Story UUID — required when id_or_seq is a sequence number for a story task.
         project: Project UUID — required when id_or_seq is a sequence number for a floating task.
-        md: When True, render output as markdown instead of JSON.
     """
     engine = get_engine()
     try:
@@ -74,10 +51,7 @@ def get(
         else:
             raise typer.BadParameter("--story or --project is required when using a sequence number")
 
-        if md:
-            print_md(_render_task_md(task))
-        else:
-            print_json(task)
+        print_json(task)
     except NotFound as e:
         exit_user_error("not_found", str(e))
     except Exception as e:

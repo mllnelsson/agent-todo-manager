@@ -36,5 +36,6 @@ Load the common foundation first: `/atm`
 ## Notes
 
 - Tasks must be decomposed into steps before a Dev agent can execute them. A task with no steps cannot be started.
+- The step **description** is the implementation specification — it should contain enough detail for a dev agent to complete the step without further questions. Write descriptions as clear, actionable instructions.
 - Use `--story` to create a story-linked task. Use `--project` for floating tasks (bugs, hotfixes not part of a story).
 - Status values for stories and tasks: `todo` | `in_progress` | `completed`

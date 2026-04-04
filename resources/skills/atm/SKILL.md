@@ -37,7 +37,7 @@ Both agents use these commands:
 | Command | Purpose |
 |---|---|
 | `uv run atm projects get <PROJECT_ID>` | Load project context |
-| `uv run atm tasks get <ID_OR_SEQ> [--story STORY_ID] [--project PROJECT_ID] [--md]` | Fetch task details (JSON or markdown) |
+| `uv run atm tasks get <ID_OR_SEQ> [--story STORY_ID] [--project PROJECT_ID]` | Fetch task details as JSON |
 | `uv run atm completions active` | List all active in-progress step assignments |
 | `uv run atm completions list --entity <ENTITY_ID>` | Check completion history for a specific entity |
 

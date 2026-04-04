@@ -132,10 +132,10 @@ Update fields on a story and print the result as JSON.
 #### tasks get
 
 ```
-uv run atm tasks get ID_OR_SEQ [--story STORY_ID] [--project PROJECT_ID] [--md]
+uv run atm tasks get ID_OR_SEQ [--story STORY_ID] [--project PROJECT_ID]
 ```
 
-Fetch a task by UUID or sequence number and print it as JSON or markdown.
+Fetch a task by UUID or sequence number and print it as JSON.
 
 **Arguments**
 
@@ -149,12 +149,10 @@ Fetch a task by UUID or sequence number and print it as JSON or markdown.
 |---|---|---|---|
 | `--story` | string (UUID) | Conditional | Required when `ID_OR_SEQ` is a seq for a story task |
 | `--project` | string (UUID) | Conditional | Required when `ID_OR_SEQ` is a seq for a floating task |
-| `--md` | flag | No | Render output as markdown instead of JSON |
 
 **Notes**
 
 - When using a sequence number, exactly one of `--story` or `--project` must be supplied.
-- Markdown output includes the task title, description, and a numbered step list with statuses.
 
 ---
 

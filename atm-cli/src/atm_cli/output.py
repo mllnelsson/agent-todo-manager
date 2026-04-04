@@ -22,15 +22,6 @@ def print_list(data: list[BaseModel]) -> None:
     print(json.dumps([d.model_dump(exclude_none=True) for d in data], default=str))
 
 
-def print_md(text: str) -> None:
-    """Print plain text (markdown) to stdout.
-
-    Args:
-        text: Text to print.
-    """
-    print(text)
-
-
 def print_error(code: str, context: str) -> None:
     """Print a JSON-encoded error object to stdout.
 

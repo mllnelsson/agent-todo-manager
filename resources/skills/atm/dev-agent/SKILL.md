@@ -19,7 +19,7 @@ Load the common foundation first: `/atm`
 
 ## Workflow
 
-1. **Receive or discover task** → `tasks get <TASK_ID> --md`
+1. **Receive task export** — the agent is given a self-contained markdown export (produced by `atm-admin tasks export <TASK_ID>`). This document contains the task ID, description, and all steps with their IDs and implementation descriptions. No further CLI queries are needed to understand the work.
 2. **Get next pending step** → `steps next --task <TASK_ID>`
 3. **Claim step** → `steps start <STEP_ID> --agent <AGENT_NAME> --session $ATM_SESSION_ID [--branch <BRANCH>]`
 4. **Do the work**
@@ -29,7 +29,7 @@ Load the common foundation first: `/atm`
 ## Initialization
 
 The Dev agent is either:
-- Given a task ID directly by the caller → go to step 2
+- Given a task export markdown by the caller → go to step 2 using the task ID from the export
 - Discovering incomplete work → use `completions active` to find in-progress assignments
 
 ## Notes
