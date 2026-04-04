@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Engine, func, select
+from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session
 
 from db.models import Action, Completion, CompletionCreate, EntityType
@@ -49,7 +49,9 @@ def list_completions_by_entity(engine: Engine, entity_id: str) -> list[Completio
         return [_to_model(r) for r in rows]
 
 
-def list_completions_for_entities(engine: Engine, entity_ids: list[str]) -> list[Completion]:
+def list_completions_for_entities(
+    engine: Engine, entity_ids: list[str]
+) -> list[Completion]:
     """All completions for a set of entity IDs, ordered by created_at."""
     if not entity_ids:
         return []
@@ -62,6 +64,18 @@ def list_completions_for_entities(engine: Engine, entity_ids: list[str]) -> list
         )
         rows = session.execute(stmt).scalars().all()
         return [_to_model(r) for r in rows]
+
+
+def delete_completions_by_entity_ids(engine: Engine, entity_ids: list[str]) -> int:
+    if not entity_ids:
+        return 0
+    with Session(engine) as session:
+        uuids = [uuid.UUID(eid) for eid in entity_ids]
+        result = session.execute(
+            delete(CompletionRow).where(CompletionRow.entity_id.in_(uuids))
+        )
+        session.commit()
+        return result.rowcount
 
 
 def list_active_assignments(engine: Engine) -> list[Completion]:

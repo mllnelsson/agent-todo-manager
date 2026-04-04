@@ -1,9 +1,10 @@
 import uuid
 
-from sqlalchemy import Engine, func, select
+from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from db.models import Status, Step, Story, StoryCreate, StoryUpdate, Task
+from db.orm import Completion as CompletionRow
 from db.orm import Step as StepRow
 from db.orm import Story as StoryRow
 from db.orm import Task as TaskRow
@@ -48,7 +49,9 @@ def _to_model(row: StoryRow, *, full: bool = False) -> Story:
         title=row.title,
         description=row.description,
         status=Status(row.status),
-        tasks=sorted([_task_to_model(t) for t in row.tasks], key=lambda t: t.seq) if full else [],
+        tasks=sorted([_task_to_model(t) for t in row.tasks], key=lambda t: t.seq)
+        if full
+        else [],
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -137,10 +140,33 @@ def update_story(engine: Engine, story_id: str, data: StoryUpdate) -> Story | No
 
 
 def delete_story(engine: Engine, story_id: str) -> bool:
+    sid = uuid.UUID(story_id)
     with Session(engine) as session:
-        row = session.get(StoryRow, uuid.UUID(story_id))
+        row = session.get(StoryRow, sid)
         if not row:
             return False
+        task_ids = [
+            r.id
+            for r in session.execute(
+                select(TaskRow.id).where(TaskRow.story_id == sid)
+            ).all()
+        ]
+        step_ids = []
+        if task_ids:
+            step_ids = [
+                r.id
+                for r in session.execute(
+                    select(StepRow.id).where(StepRow.task_id.in_(task_ids))
+                ).all()
+            ]
+        entity_ids = [sid] + task_ids + step_ids
+        session.execute(
+            delete(CompletionRow).where(CompletionRow.entity_id.in_(entity_ids))
+        )
+        if step_ids:
+            session.execute(delete(StepRow).where(StepRow.id.in_(step_ids)))
+        if task_ids:
+            session.execute(delete(TaskRow).where(TaskRow.id.in_(task_ids)))
         session.delete(row)
         session.commit()
         return True

@@ -1,13 +1,23 @@
 from .completion import (
     create_completion,
+    delete_completions_by_entity_ids,
     list_active_assignments,
     list_completions_by_entity,
     list_completions_for_entities,
 )
 from .project import (
+    create_project,
+    delete_project,
     get_project,
+    ingest_project,
     list_active_projects,
     list_projects,
+)
+from .queries import (
+    list_orphaned_tasks,
+    list_stale_steps,
+    list_stale_tasks,
+    list_todo_in_completed_stories,
 )
 from .step import (
     create_step,
@@ -39,13 +49,22 @@ from .task import (
 __all__ = [
     # completion
     "create_completion",
+    "delete_completions_by_entity_ids",
     "list_active_assignments",
     "list_completions_by_entity",
     "list_completions_for_entities",
     # project
+    "create_project",
+    "delete_project",
     "get_project",
+    "ingest_project",
     "list_projects",
     "list_active_projects",
+    # queries
+    "list_stale_tasks",
+    "list_stale_steps",
+    "list_orphaned_tasks",
+    "list_todo_in_completed_stories",
     # story
     "create_story",
     "get_story",

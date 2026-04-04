@@ -1,9 +1,10 @@
 import uuid
 
-from sqlalchemy import Engine, func, select
+from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session
 
 from db.models import Status, Step, StepCreate, StepUpdate
+from db.orm import Completion as CompletionRow
 from db.orm import Step as StepRow
 
 
@@ -92,10 +93,12 @@ def update_step(engine: Engine, step_id: str, data: StepUpdate) -> Step | None:
 
 
 def delete_step(engine: Engine, step_id: str) -> bool:
+    sid = uuid.UUID(step_id)
     with Session(engine) as session:
-        row = session.get(StepRow, uuid.UUID(step_id))
+        row = session.get(StepRow, sid)
         if not row:
             return False
+        session.execute(delete(CompletionRow).where(CompletionRow.entity_id == sid))
         session.delete(row)
         session.commit()
         return True

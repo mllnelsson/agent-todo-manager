@@ -1,0 +1,22 @@
+[project]
+name = "atm-admin"
+version = "0.1.0"
+description = "Admin CLI for ATM — human-facing project management and pruning"
+requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.24.1",
+    "rich>=14.0.0",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.1",
+    "db",
+]
+
+[tool.uv.sources]
+db = { workspace = true }
+
+[project.scripts]
+atm-admin = "atm_admin:main"
+
+[build-system]
+requires = ["uv_build>=0.10.9,<0.11.0"]
+build-backend = "uv_build"

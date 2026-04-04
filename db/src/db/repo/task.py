@@ -1,9 +1,10 @@
 import uuid
 
-from sqlalchemy import Engine, func, select
+from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from db.models import Status, Step, Task, TaskCreate, TaskUpdate
+from db.orm import Completion as CompletionRow
 from db.orm import Step as StepRow
 from db.orm import Task as TaskRow
 
@@ -43,7 +44,9 @@ def _to_model(row: TaskRow, *, full: bool = False) -> Task:
         description=row.description,
         prefix=row.prefix,
         status=Status(row.status),
-        steps=sorted([_step_to_model(s) for s in row.steps], key=lambda s: s.seq) if full else [],
+        steps=sorted([_step_to_model(s) for s in row.steps], key=lambda s: s.seq)
+        if full
+        else [],
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -143,10 +146,22 @@ def update_task(engine: Engine, task_id: str, data: TaskUpdate) -> Task | None:
 
 
 def delete_task(engine: Engine, task_id: str) -> bool:
+    tid = uuid.UUID(task_id)
     with Session(engine) as session:
-        row = session.get(TaskRow, uuid.UUID(task_id))
+        row = session.get(TaskRow, tid)
         if not row:
             return False
+        step_ids = [
+            r.id
+            for r in session.execute(
+                select(StepRow.id).where(StepRow.task_id == tid)
+            ).all()
+        ]
+        entity_ids = [tid] + step_ids
+        session.execute(
+            delete(CompletionRow).where(CompletionRow.entity_id.in_(entity_ids))
+        )
+        session.execute(delete(StepRow).where(StepRow.task_id == tid))
         session.delete(row)
         session.commit()
         return True

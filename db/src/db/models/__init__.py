@@ -1,4 +1,5 @@
 from .completions import Completion, CompletionCreate
+from .ingest import ProjectIngest, StepIngest, StoryIngest, TaskIngest
 from .project import Project, ProjectCreate, ProjectUpdate
 from .step import Step, StepCreate, StepUpdate
 from .story import Story, StoryCreate, StoryUpdate
@@ -8,6 +9,10 @@ from .utils import Action, EntityType, Status
 __all__ = [
     "Completion",
     "CompletionCreate",
+    "ProjectIngest",
+    "StepIngest",
+    "StoryIngest",
+    "TaskIngest",
     "Project",
     "ProjectCreate",
     "ProjectUpdate",
@@ -20,7 +25,6 @@ __all__ = [
     "Task",
     "TaskUpdate",
     "TaskCreate",
-    "TaskUpdate",
     "Action",
     "Status",
     "EntityType",
