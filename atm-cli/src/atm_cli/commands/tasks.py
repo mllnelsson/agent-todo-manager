@@ -4,13 +4,15 @@ from db.models import Status, TaskCreate, TaskUpdate
 
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
-from ..services.exceptions import NotFound
+from ..services.exceptions import InvalidStatus, NotFound
 from ..services.tasks import (
+    complete_task,
     create_task_for_story,
     get_floating_task_by_project_seq,
     get_task_by_id,
     get_task_by_story_seq,
     list_floating_tasks_for_project,
+    start_task,
     update_task_by_id,
 )
 
@@ -136,5 +138,43 @@ def update(
         print_json(task)
     except NotFound as e:
         exit_user_error("not_found", str(e))
+    except Exception as e:
+        exit_system_error("internal_error", str(e))
+
+
+@app.command("start")
+def start(
+    id: str,
+    agent: str = typer.Option(..., "--agent", help="Agent name"),
+    session: str = typer.Option(..., "--session", help="Session ID"),
+    branch: str | None = typer.Option(None, "--branch", help="Git branch"),
+) -> None:
+    engine = get_engine()
+    try:
+        task = start_task(id, agent, session, branch, engine)
+        print_json(task)
+    except NotFound as e:
+        exit_user_error("not_found", str(e))
+    except InvalidStatus as e:
+        exit_user_error("invalid_status", str(e))
+    except Exception as e:
+        exit_system_error("internal_error", str(e))
+
+
+@app.command("complete")
+def complete(
+    id: str,
+    agent: str = typer.Option(..., "--agent", help="Agent name"),
+    session: str = typer.Option(..., "--session", help="Session ID"),
+    branch: str | None = typer.Option(None, "--branch", help="Git branch"),
+) -> None:
+    engine = get_engine()
+    try:
+        task = complete_task(id, agent, session, branch, engine)
+        print_json(task)
+    except NotFound as e:
+        exit_user_error("not_found", str(e))
+    except InvalidStatus as e:
+        exit_user_error("invalid_status", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
