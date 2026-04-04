@@ -19,7 +19,7 @@ uv run atm [COMMAND_GROUP] [SUBCOMMAND] [ARGUMENTS] [OPTIONS]
 - A **task** is a discrete unit of work, either under a story or floating (not linked to a story).
 - A **step** is an atomic action within a task, executed sequentially by a Dev agent.
 
-**Completions** record when agents start or complete steps, providing an audit trail and active-assignment view.
+**Completions** record when agents start or complete tasks and steps, providing an audit trail and active-assignment view.
 
 Status values: `todo` | `in_progress` | `completed`
 
@@ -203,7 +203,7 @@ Create a new task and print it as JSON.
 uv run atm tasks update ID [--title TITLE] [--description DESCRIPTION] [--status STATUS] [--prefix PREFIX]
 ```
 
-Update fields on a task and print the result as JSON.
+Update fields on a task and print the result as JSON. Does **not** write a completion record — use `tasks start` / `tasks complete` for status transitions that must be tracked.
 
 **Arguments**
 
@@ -219,6 +219,64 @@ Update fields on a task and print the result as JSON.
 | `--description` | string | No | New description |
 | `--status` | string | No | New status: `todo` \| `in_progress` \| `completed` |
 | `--prefix` | string | No | New prefix |
+
+---
+
+#### tasks start
+
+```
+uv run atm tasks start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+```
+
+Mark a task as `in_progress`, recording which agent claimed it. Prints the updated task as JSON.
+
+**Arguments**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `ID` | string (UUID) | Yes | Task UUID |
+
+**Options**
+
+| Flag | Type | Required | Description |
+|---|---|---|---|
+| `--agent` | string | Yes | Name of the agent claiming the task |
+| `--session` | string (UUID) | Yes | Agent session identifier (`$ATM_SESSION_ID`) |
+| `--branch` | string | No | Git branch the agent is working on |
+
+**Notes**
+
+- The task must be in `todo` status. Starting an `in_progress` or `completed` task returns `invalid_status`.
+- Use this for tasks without steps. For tasks with steps, use `steps start` on the individual steps instead.
+
+---
+
+#### tasks complete
+
+```
+uv run atm tasks complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+```
+
+Mark a task as `completed`. Cascades: if the task belongs to a story and all tasks in that story are now done, the story is also marked completed. Prints the updated task as JSON.
+
+**Arguments**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `ID` | string (UUID) | Yes | Task UUID |
+
+**Options**
+
+| Flag | Type | Required | Description |
+|---|---|---|---|
+| `--agent` | string | Yes | Name of the agent completing the task |
+| `--session` | string (UUID) | Yes | Agent session identifier (`$ATM_SESSION_ID`) |
+| `--branch` | string | No | Git branch the agent worked on |
+
+**Notes**
+
+- The task must be in `in_progress` status. Completing a `todo` or already `completed` task returns `invalid_status`.
+- Use this for tasks without steps. For tasks with steps, completion cascades automatically via `steps complete`.
 
 ---
 
@@ -400,13 +458,13 @@ None.
 | Variable | Required | Description |
 |---|---|---|
 | `ATM_PROJECT_ID` | Yes | Default project UUID used by commands that accept `--project` |
-| `ATM_SESSION_ID` | Yes | Session UUID set by the agent spawner; passed to `steps start` / `steps complete` |
+| `ATM_SESSION_ID` | Yes | Session UUID set by the agent spawner; passed to `tasks start` / `tasks complete` / `steps start` / `steps complete` |
 
 ## INPUTS
 
 | Input | Description |
 |---|---|
-| Agent name | Identity string (e.g. `pm`, `dev`). Provided by the caller when spawning the agent. Used as `--agent` on `steps start` / `steps complete`. |
+| Agent name | Identity string (e.g. `pm`, `dev`). Provided by the caller when spawning the agent. Used as `--agent` on `tasks start` / `tasks complete` / `steps start` / `steps complete`. |
 
 ## SEE ALSO
 
