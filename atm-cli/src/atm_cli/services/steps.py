@@ -6,9 +6,11 @@ from db.models import (
     Step,
     StepCreate,
     StepUpdate,
-    TaskUpdate,
     StoryUpdate,
+    TaskUpdate,
 )
+from db.orm import Step as StepORM
+from db.orm import Task as TaskORM
 from db.repo import (
     create_completion,
     create_step,
@@ -21,7 +23,6 @@ from db.repo import (
     update_story,
     update_task,
 )
-from db.orm import Step as StepORM, Task as TaskORM
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
@@ -141,7 +142,7 @@ def start_step(
             branch=branch,
         ),
     )
-
+    # TODO: Might be an anti pattern with the get for te return
     updated = get_step(engine, step_id=step_id)
     assert updated is not None
     return updated
@@ -200,6 +201,7 @@ def complete_step(
 
     task = get_task(engine, task_id=task_id)
     assert task is not None
+    # TODO: This should be handled like other none checks
 
     if task.steps and all(s.status == Status.COMPLETED for s in task.steps):
         update_task(engine, task_id=task_id, data=TaskUpdate(status=Status.COMPLETED))
@@ -223,7 +225,9 @@ def complete_step(
             story = get_story(engine, story_id=story_id)
             assert story is not None
             if story.tasks and all(t.status == Status.COMPLETED for t in story.tasks):
-                update_story(engine, story_id=story_id, data=StoryUpdate(status=Status.COMPLETED))
+                update_story(
+                    engine, story_id=story_id, data=StoryUpdate(status=Status.COMPLETED)
+                )
                 create_completion(
                     engine,
                     data=CompletionCreate(

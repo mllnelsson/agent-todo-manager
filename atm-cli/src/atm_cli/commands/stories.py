@@ -18,6 +18,7 @@ app = typer.Typer(no_args_is_help=True)
 
 def _is_uuid(value: str) -> bool:
     import uuid
+
     try:
         uuid.UUID(value)
         return True
@@ -45,7 +46,9 @@ def list_cmd(project: str = typer.Option(..., "--project", help="Project ID")) -
 @app.command("get")
 def get(
     id_or_seq: str,
-    project: str | None = typer.Option(None, "--project", help="Project ID (required for seq lookup)"),
+    project: str | None = typer.Option(
+        None, "--project", help="Project ID (required for seq lookup)"
+    ),
 ) -> None:
     """Fetch a story by UUID or sequence number and print it as JSON.
 
@@ -59,7 +62,9 @@ def get(
             story = get_story_by_id(id_or_seq, engine)
         else:
             if project is None:
-                raise typer.BadParameter("--project is required when using a sequence number")
+                raise typer.BadParameter(
+                    "--project is required when using a sequence number"
+                )
             story = get_story_by_project_seq(project, int(id_or_seq), engine)
         print_json(story)
     except NotFound as e:
@@ -83,7 +88,10 @@ def create(
     """
     engine = get_engine()
     try:
-        story = create_story_for_project(StoryCreate(project_id=project, title=title, description=description), engine)
+        story = create_story_for_project(
+            StoryCreate(project_id=project, title=title, description=description),
+            engine,
+        )
         print_json(story)
     except Exception as e:
         exit_system_error("internal_error", str(e))

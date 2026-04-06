@@ -70,7 +70,9 @@ def create(
     """
     engine = get_engine()
     try:
-        step = create_step_for_task(StepCreate(task_id=task, title=title, description=description), engine)
+        step = create_step_for_task(
+            StepCreate(task_id=task, title=title, description=description), engine
+        )
         print_json(step)
     except Exception as e:
         exit_system_error("internal_error", str(e))
@@ -91,7 +93,9 @@ def update(
     """
     engine = get_engine()
     try:
-        step = update_step_by_id(id, StepUpdate(title=title, description=description), engine)
+        step = update_step_by_id(
+            id, StepUpdate(title=title, description=description), engine
+        )
         print_json(step)
     except NotFound as e:
         exit_user_error("not_found", str(e))

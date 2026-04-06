@@ -1,5 +1,12 @@
 from db.models import Story, StoryCreate, StoryUpdate
-from db.repo import create_story, get_project, get_story, get_story_by_seq, list_active_stories, update_story
+from db.repo import (
+    create_story,
+    get_project,
+    get_story,
+    get_story_by_seq,
+    list_active_stories,
+    update_story,
+)
 from sqlalchemy.engine import Engine
 
 from .exceptions import NotFound

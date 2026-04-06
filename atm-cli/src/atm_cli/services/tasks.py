@@ -1,4 +1,13 @@
-from db.models import Action, CompletionCreate, EntityType, Status, StoryUpdate, Task, TaskCreate, TaskUpdate
+from db.models import (
+    Action,
+    CompletionCreate,
+    EntityType,
+    Status,
+    StoryUpdate,
+    Task,
+    TaskCreate,
+    TaskUpdate,
+)
 from db.orm import Task as TaskORM
 from db.repo import (
     create_completion,
@@ -167,7 +176,9 @@ def complete_task(
         story = get_story(engine, story_id=story_id)
         assert story is not None
         if story.tasks and all(t.status == Status.COMPLETED for t in story.tasks):
-            update_story(engine, story_id=story_id, data=StoryUpdate(status=Status.COMPLETED))
+            update_story(
+                engine, story_id=story_id, data=StoryUpdate(status=Status.COMPLETED)
+            )
             create_completion(
                 engine,
                 data=CompletionCreate(

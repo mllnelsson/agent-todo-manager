@@ -21,6 +21,7 @@ app = typer.Typer(no_args_is_help=True)
 
 def _is_uuid(value: str) -> bool:
     import uuid
+
     try:
         uuid.UUID(value)
         return True
@@ -28,12 +29,15 @@ def _is_uuid(value: str) -> bool:
         return False
 
 
-
 @app.command("get")
 def get(
     id_or_seq: str,
-    story: str | None = typer.Option(None, "--story", help="Story ID (required for seq lookup)"),
-    project: str | None = typer.Option(None, "--project", help="Project ID (for floating task seq lookup)"),
+    story: str | None = typer.Option(
+        None, "--story", help="Story ID (required for seq lookup)"
+    ),
+    project: str | None = typer.Option(
+        None, "--project", help="Project ID (for floating task seq lookup)"
+    ),
 ) -> None:
     """Fetch a task by UUID or sequence number and print it as JSON.
 
@@ -51,7 +55,9 @@ def get(
         elif project:
             task = get_floating_task_by_project_seq(project, int(id_or_seq), engine)
         else:
-            raise typer.BadParameter("--story or --project is required when using a sequence number")
+            raise typer.BadParameter(
+                "--story or --project is required when using a sequence number"
+            )
 
         print_json(task)
     except NotFound as e:
@@ -61,7 +67,9 @@ def get(
 
 
 @app.command("list-floating")
-def list_floating(project: str = typer.Option(..., "--project", help="Project ID")) -> None:
+def list_floating(
+    project: str = typer.Option(..., "--project", help="Project ID"),
+) -> None:
     """List all floating (story-less) tasks for a project and print them as JSON.
 
     Args:
@@ -78,8 +86,12 @@ def list_floating(project: str = typer.Option(..., "--project", help="Project ID
 @app.command("create")
 def create(
     story: str | None = typer.Option(None, "--story", help="Story ID"),
-    project: str | None = typer.Option(None, "--project", help="Project ID (for floating tasks)"),
-    prefix: str | None = typer.Option(None, "--prefix", help="Prefix for floating tasks (b=bug, h=hotfix)"),
+    project: str | None = typer.Option(
+        None, "--project", help="Project ID (for floating tasks)"
+    ),
+    prefix: str | None = typer.Option(
+        None, "--prefix", help="Prefix for floating tasks (b=bug, h=hotfix)"
+    ),
     title: str = typer.Option(..., "--title"),
     description: str = typer.Option(..., "--description"),
 ) -> None:
