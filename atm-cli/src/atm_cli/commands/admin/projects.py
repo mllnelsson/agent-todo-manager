@@ -9,9 +9,9 @@ import db.repo as repo
 from db.models import ProjectCreate
 from db.models.ingest import ProjectIngest
 
-from ..db import get_engine
-from ..errors import NotFoundError
-from ..output import confirm, console, print_table
+from ...db import get_engine
+from .errors import NotFoundError
+from .output import confirm, console, print_table
 
 app = typer.Typer(name="projects", no_args_is_help=True)
 

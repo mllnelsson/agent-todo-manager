@@ -5,7 +5,6 @@ requires-python = ">=3.12"
 [manifest]
 members = [
     "api",
-    "atm-admin",
     "atm-cli",
     "db",
 ]
@@ -75,9 +74,9 @@ requires-dist = [
 ]
 
 [[package]]
-name = "atm-admin"
+name = "atm-cli"
 version = "0.1.0"
-source = { editable = "atm-admin" }
+source = { editable = "atm-cli" }
 dependencies = [
     { name = "db" },
     { name = "pydantic" },
@@ -92,25 +91,6 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-settings", specifier = ">=2.13.1" },
     { name = "rich", specifier = ">=14.0.0" },
-    { name = "typer", specifier = ">=0.24.1" },
-]
-
-[[package]]
-name = "atm-cli"
-version = "0.1.0"
-source = { editable = "atm-cli" }
-dependencies = [
-    { name = "db" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "db", editable = "db" },
-    { name = "pydantic", specifier = ">=2.12.5" },
-    { name = "pydantic-settings", specifier = ">=2.13.1" },
     { name = "typer", specifier = ">=0.24.1" },
 ]
 

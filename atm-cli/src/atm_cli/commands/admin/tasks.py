@@ -5,9 +5,9 @@ import typer
 import db.repo as repo
 from db.models import Status
 
-from ..db import get_engine
-from ..errors import NotFoundError
-from ..output import confirm, console
+from ...db import get_engine
+from .errors import NotFoundError
+from .output import confirm, console
 
 app = typer.Typer(name="tasks", no_args_is_help=True)
 

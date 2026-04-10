@@ -4,9 +4,9 @@ import typer
 
 import db.repo as repo
 
-from ..db import get_engine
-from ..errors import NotFoundError
-from ..output import confirm, console
+from ...db import get_engine
+from .errors import NotFoundError
+from .output import confirm, console
 
 app = typer.Typer(name="steps", no_args_is_help=True)
 

@@ -10,8 +10,8 @@ from db.repo.queries import (
     list_todo_in_completed_stories,
 )
 
-from ..db import get_engine
-from ..output import confirm, console, print_table
+from ...db import get_engine
+from .output import confirm, console, print_table
 
 app = typer.Typer(name="prune", no_args_is_help=True)
 
