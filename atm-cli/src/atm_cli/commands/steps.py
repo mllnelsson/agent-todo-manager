@@ -5,6 +5,7 @@ from db.models import StepCreate, StepUpdate
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json
 from ..services.exceptions import InvalidStatus, NotFound
+from ._input import resolve_description
 from ..services.steps import (
     complete_step,
     create_step_for_task,
@@ -59,7 +60,10 @@ def next_cmd(task: str = typer.Option(..., "--task", help="Task ID")) -> None:
 def create(
     task: str = typer.Option(..., "--task", help="Task ID"),
     title: str = typer.Option(..., "--title"),
-    description: str = typer.Option(..., "--description"),
+    description: str | None = typer.Option(None, "--description"),
+    description_file: str | None = typer.Option(
+        None, "--description-file", help="Path to a file containing the description"
+    ),
 ) -> None:
     """Create a new step under a task and print it as JSON.
 
@@ -67,11 +71,15 @@ def create(
         task: UUID of the parent task.
         title: Step title.
         description: Step description.
+        description_file: Path to a file containing the step description.
     """
     engine = get_engine()
     try:
+        description_text = resolve_description(description, description_file)
+        if description_text is None:
+            raise typer.BadParameter("--description or --description-file is required")
         step = create_step_for_task(
-            StepCreate(task_id=task, title=title, description=description), engine
+            StepCreate(task_id=task, title=title, description=description_text), engine
         )
         print_json(step)
     except Exception as e:
@@ -83,6 +91,9 @@ def update(
     id: str,
     title: str | None = typer.Option(None, "--title"),
     description: str | None = typer.Option(None, "--description"),
+    description_file: str | None = typer.Option(
+        None, "--description-file", help="Path to a file containing the description"
+    ),
 ) -> None:
     """Update fields on a step and print the result as JSON.
 
@@ -90,11 +101,13 @@ def update(
         id: UUID of the step to update.
         title: New title, if updating.
         description: New description, if updating.
+        description_file: Path to a file containing the new description.
     """
     engine = get_engine()
     try:
+        description_text = resolve_description(description, description_file)
         step = update_step_by_id(
-            id, StepUpdate(title=title, description=description), engine
+            id, StepUpdate(title=title, description=description_text), engine
         )
         print_json(step)
     except NotFound as e:

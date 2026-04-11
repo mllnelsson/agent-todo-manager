@@ -5,6 +5,7 @@ from db.models import Status, TaskCreate, TaskUpdate
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
 from ..services.exceptions import InvalidStatus, NotFound
+from ._input import resolve_description
 from ..services.tasks import (
     complete_task,
     create_task_for_story,
@@ -93,7 +94,10 @@ def create(
         None, "--prefix", help="Prefix for floating tasks (b=bug, h=hotfix)"
     ),
     title: str = typer.Option(..., "--title"),
-    description: str = typer.Option(..., "--description"),
+    description: str | None = typer.Option(None, "--description"),
+    description_file: str | None = typer.Option(
+        None, "--description-file", help="Path to a file containing the description"
+    ),
 ) -> None:
     """Create a new task under a story or as a floating task under a project.
 
@@ -103,17 +107,21 @@ def create(
         prefix: Short prefix to categorise the floating task (e.g. b=bug, h=hotfix).
         title: Task title.
         description: Task description.
+        description_file: Path to a file containing the task description.
     """
     engine = get_engine()
     try:
         if story is None and project is None:
             raise typer.BadParameter("--story or --project is required")
+        description_text = resolve_description(description, description_file)
+        if description_text is None:
+            raise typer.BadParameter("--description or --description-file is required")
         data = TaskCreate(
             story_id=story,
             project_id=project or "",
             prefix=prefix,
             title=title,
-            description=description,
+            description=description_text,
         )
         task = create_task_for_story(data, engine)
         print_json(task)
@@ -126,6 +134,9 @@ def update(
     id: str,
     title: str | None = typer.Option(None, "--title"),
     description: str | None = typer.Option(None, "--description"),
+    description_file: str | None = typer.Option(
+        None, "--description-file", help="Path to a file containing the description"
+    ),
     status: str | None = typer.Option(None, "--status"),
     prefix: str | None = typer.Option(None, "--prefix"),
 ) -> None:
@@ -135,14 +146,16 @@ def update(
         id: UUID of the task to update.
         title: New title, if updating.
         description: New description, if updating.
+        description_file: Path to a file containing the new description.
         status: New status value, if updating.
         prefix: New prefix, if updating.
     """
     engine = get_engine()
     try:
+        description_text = resolve_description(description, description_file)
         data = TaskUpdate(
             title=title,
-            description=description,
+            description=description_text,
             status=Status(status) if status else None,
             prefix=prefix,
         )

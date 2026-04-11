@@ -5,6 +5,7 @@ from db.models import StoryCreate, StoryUpdate, Status
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
 from ..services.exceptions import NotFound
+from ._input import resolve_description
 from ..services.stories import (
     create_story_for_project,
     get_story_by_id,
@@ -77,7 +78,10 @@ def get(
 def create(
     project: str = typer.Option(..., "--project", help="Project ID"),
     title: str = typer.Option(..., "--title"),
-    description: str = typer.Option(..., "--description"),
+    description: str | None = typer.Option(None, "--description"),
+    description_file: str | None = typer.Option(
+        None, "--description-file", help="Path to a file containing the description"
+    ),
 ) -> None:
     """Create a new story under a project and print it as JSON.
 
@@ -85,11 +89,15 @@ def create(
         project: UUID of the project.
         title: Story title.
         description: Story description.
+        description_file: Path to a file containing the story description.
     """
     engine = get_engine()
     try:
+        description_text = resolve_description(description, description_file)
+        if description_text is None:
+            raise typer.BadParameter("--description or --description-file is required")
         story = create_story_for_project(
-            StoryCreate(project_id=project, title=title, description=description),
+            StoryCreate(project_id=project, title=title, description=description_text),
             engine,
         )
         print_json(story)
@@ -102,6 +110,9 @@ def update(
     id: str,
     title: str | None = typer.Option(None, "--title"),
     description: str | None = typer.Option(None, "--description"),
+    description_file: str | None = typer.Option(
+        None, "--description-file", help="Path to a file containing the description"
+    ),
     status: str | None = typer.Option(None, "--status"),
 ) -> None:
     """Update fields on a story and print the result as JSON.
@@ -110,13 +121,15 @@ def update(
         id: UUID of the story to update.
         title: New title, if updating.
         description: New description, if updating.
+        description_file: Path to a file containing the new description.
         status: New status value, if updating.
     """
     engine = get_engine()
     try:
+        description_text = resolve_description(description, description_file)
         data = StoryUpdate(
             title=title,
-            description=description,
+            description=description_text,
             status=Status(status) if status else None,
         )
         story = update_story_by_id(id, data, engine)
