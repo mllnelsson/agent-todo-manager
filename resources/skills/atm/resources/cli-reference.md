@@ -83,6 +83,10 @@ Fetch a story by UUID or project-scoped sequence number and print it as JSON.
 |---|---|---|---|
 | `--project` | string (UUID) | Conditional | Required when `ID_OR_SEQ` is a sequence number |
 
+**Notes**
+
+- There is no `tasks list --story` command. The story response includes all of the story's tasks as an embedded array — use `stories get` to list a story's tasks.
+
 ---
 
 #### stories create

@@ -16,7 +16,7 @@ The `atm` CLI manages a hierarchy of project → story → task → step. Both P
 
 ## Agent Name
 
-Your caller provides your agent name (e.g. `pm`, `dev`). Pass it as the `--agent` flag when calling `steps start` and `steps complete`.
+Your caller provides your agent name (e.g. `pm`, `dev`). Pass it as the `--agent` flag when calling `tasks start`, `tasks complete`, `steps start`, and `steps complete`.
 
 ## Project ID Handling
 
