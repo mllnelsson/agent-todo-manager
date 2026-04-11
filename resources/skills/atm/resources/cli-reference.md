@@ -92,7 +92,7 @@ Fetch a story by UUID or project-scoped sequence number and print it as JSON.
 #### stories create
 
 ```
-uv run atm stories create --project PROJECT_ID --title TITLE --description DESCRIPTION
+uv run atm stories create --project PROJECT_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
 ```
 
 Create a new story under a project and print it as JSON.
@@ -103,14 +103,20 @@ Create a new story under a project and print it as JSON.
 |---|---|---|---|
 | `--project` | string (UUID) | Yes | Project UUID |
 | `--title` | string | Yes | Story title |
-| `--description` | string | Yes | Story description |
+| `--description` | string | Conditional | Story description (mutually exclusive with `--description-file`) |
+| `--description-file` | string (path) | Conditional | Path to a file containing the story description (mutually exclusive with `--description`) |
+
+**Notes**
+
+- Exactly one of `--description` or `--description-file` is required.
+- Prefer `--description-file` when the description is long or contains special characters — write to a tempfile and pass the path.
 
 ---
 
 #### stories update
 
 ```
-uv run atm stories update ID [--title TITLE] [--description DESCRIPTION] [--status STATUS]
+uv run atm stories update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS]
 ```
 
 Update fields on a story and print the result as JSON.
@@ -126,7 +132,8 @@ Update fields on a story and print the result as JSON.
 | Flag | Type | Required | Description |
 |---|---|---|---|
 | `--title` | string | No | New title |
-| `--description` | string | No | New description |
+| `--description` | string | No | New description (mutually exclusive with `--description-file`) |
+| `--description-file` | string (path) | No | Path to a file containing the new description (mutually exclusive with `--description`) |
 | `--status` | string | No | New status: `todo` \| `in_progress` \| `completed` |
 
 ---
@@ -179,7 +186,7 @@ List all floating (story-less) tasks for a project and print them as JSON.
 #### tasks create
 
 ```
-uv run atm tasks create (--story STORY_ID | --project PROJECT_ID) --title TITLE --description DESCRIPTION [--prefix PREFIX]
+uv run atm tasks create (--story STORY_ID | --project PROJECT_ID) --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX]
 ```
 
 Create a new task and print it as JSON.
@@ -191,20 +198,23 @@ Create a new task and print it as JSON.
 | `--story` | string (UUID) | Conditional | Story UUID — use for story-linked tasks. Mutually exclusive with `--project`. |
 | `--project` | string (UUID) | Conditional | Project UUID — use for floating tasks not linked to a story. Mutually exclusive with `--story`. |
 | `--title` | string | Yes | Task title |
-| `--description` | string | Yes | Task description |
+| `--description` | string | Conditional | Task description (mutually exclusive with `--description-file`) |
+| `--description-file` | string (path) | Conditional | Path to a file containing the task description (mutually exclusive with `--description`) |
 | `--prefix` | string | No | Short prefix for floating tasks (e.g. `b` = bug, `h` = hotfix) |
 
 **Notes**
 
 - Exactly one of `--story` or `--project` is required.
+- Exactly one of `--description` or `--description-file` is required.
 - `--prefix` applies only to floating tasks (i.e. when `--project` is used).
+- Prefer `--description-file` when the description is long or contains special characters — write to a tempfile and pass the path.
 
 ---
 
 #### tasks update
 
 ```
-uv run atm tasks update ID [--title TITLE] [--description DESCRIPTION] [--status STATUS] [--prefix PREFIX]
+uv run atm tasks update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS] [--prefix PREFIX]
 ```
 
 Update fields on a task and print the result as JSON. Does **not** write a completion record — use `tasks start` / `tasks complete` for status transitions that must be tracked.
@@ -220,7 +230,8 @@ Update fields on a task and print the result as JSON. Does **not** write a compl
 | Flag | Type | Required | Description |
 |---|---|---|---|
 | `--title` | string | No | New title |
-| `--description` | string | No | New description |
+| `--description` | string | No | New description (mutually exclusive with `--description-file`) |
+| `--description-file` | string (path) | No | Path to a file containing the new description (mutually exclusive with `--description`) |
 | `--status` | string | No | New status: `todo` \| `in_progress` \| `completed` |
 | `--prefix` | string | No | New prefix |
 
@@ -327,7 +338,7 @@ Get the next pending (`todo`) step for a task and print it as JSON. Returns `{"e
 #### steps create
 
 ```
-uv run atm steps create --task TASK_ID --title TITLE --description DESCRIPTION
+uv run atm steps create --task TASK_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
 ```
 
 Create a new step under a task and print it as JSON.
@@ -338,14 +349,20 @@ Create a new step under a task and print it as JSON.
 |---|---|---|---|
 | `--task` | string (UUID) | Yes | Task UUID |
 | `--title` | string | Yes | Step title |
-| `--description` | string | Yes | Step description |
+| `--description` | string | Conditional | Step description (mutually exclusive with `--description-file`) |
+| `--description-file` | string (path) | Conditional | Path to a file containing the step description (mutually exclusive with `--description`) |
+
+**Notes**
+
+- Exactly one of `--description` or `--description-file` is required.
+- Prefer `--description-file` when the description is long or contains special characters — write to a tempfile and pass the path.
 
 ---
 
 #### steps update
 
 ```
-uv run atm steps update ID [--title TITLE] [--description DESCRIPTION]
+uv run atm steps update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH]
 ```
 
 Update fields on a step and print the result as JSON.
@@ -361,7 +378,8 @@ Update fields on a step and print the result as JSON.
 | Flag | Type | Required | Description |
 |---|---|---|---|
 | `--title` | string | No | New title |
-| `--description` | string | No | New description |
+| `--description` | string | No | New description (mutually exclusive with `--description-file`) |
+| `--description-file` | string (path) | No | Path to a file containing the new description (mutually exclusive with `--description`) |
 
 **Notes**
 

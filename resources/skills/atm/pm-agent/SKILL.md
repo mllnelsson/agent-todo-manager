@@ -15,13 +15,13 @@ Load the common foundation first: `/atm`
 |---|---|
 | `uv run atm stories list --project <PROJECT_ID>` | List active stories |
 | `uv run atm stories get <ID_OR_SEQ> [--project PROJECT_ID]` | Fetch a story by UUID or seq |
-| `uv run atm stories create --project <PROJECT_ID> --title <TITLE> --description <DESC>` | Create a new story |
-| `uv run atm stories update <ID> [--title TITLE] [--description DESC] [--status STATUS]` | Update story fields or status |
-| `uv run atm tasks create --story <STORY_ID> --title <TITLE> --description <DESC>` | Create a task under a story |
-| `uv run atm tasks create --project <PROJECT_ID> --title <TITLE> --description <DESC> [--prefix PREFIX]` | Create a floating task (bug, hotfix) |
-| `uv run atm tasks update <ID> [--title TITLE] [--description DESC] [--status STATUS] [--prefix PREFIX]` | Update task fields |
+| `uv run atm stories create --project <PROJECT_ID> --title <TITLE> --description-file <PATH>` | Create a new story |
+| `uv run atm stories update <ID> [--title TITLE] [--description-file PATH] [--status STATUS]` | Update story fields or status |
+| `uv run atm tasks create --story <STORY_ID> --title <TITLE> --description-file <PATH>` | Create a task under a story |
+| `uv run atm tasks create --project <PROJECT_ID> --title <TITLE> --description-file <PATH> [--prefix PREFIX]` | Create a floating task (bug, hotfix) |
+| `uv run atm tasks update <ID> [--title TITLE] [--description-file PATH] [--status STATUS] [--prefix PREFIX]` | Update task fields |
 | `uv run atm tasks list-floating --project <PROJECT_ID>` | List floating tasks |
-| `uv run atm steps create --task <TASK_ID> --title <TITLE> --description <DESC>` | Define a step within a task |
+| `uv run atm steps create --task <TASK_ID> --title <TITLE> --description-file <PATH>` | Define a step within a task |
 | `uv run atm steps get <SEQ> --task <TASK_ID>` | Fetch step details |
 
 ## Workflow
@@ -37,5 +37,6 @@ Load the common foundation first: `/atm`
 
 - Tasks must have at least one step defined before a Dev agent can pick them up. Always create steps for every task before handoff.
 - The step **description** is the implementation specification — it should contain enough detail for a dev agent to complete the step without further questions. Write descriptions as clear, actionable instructions.
+- Always use `--description-file` rather than `--description` for descriptions. Write the content to a tempfile first, then pass the path. This avoids shell escaping issues with long text, newlines, and special characters: `cat > /tmp/desc.md << 'EOF' ... EOF && uv run atm steps create ... --description-file /tmp/desc.md`
 - Use `--story` to create a story-linked task. Use `--project` for floating tasks (bugs, hotfixes not part of a story).
 - Status values for stories and tasks: `todo` | `in_progress` | `completed`
