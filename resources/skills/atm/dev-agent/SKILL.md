@@ -25,7 +25,7 @@ There are two execution paths depending on whether the task has steps.
 
 ### Tasks with steps (standard path)
 
-1. **Receive task export** — the agent is given a self-contained markdown export (produced by `atm-admin tasks export <TASK_ID>`). This document contains the task ID, description, and all steps with their IDs and implementation descriptions. No further CLI queries are needed to understand the work.
+1. **Receive task export** — the agent is given a self-contained markdown export. This document contains the task ID, description, and all steps with their IDs and implementation descriptions. No further CLI queries are needed to understand the work.
 2. **Get next pending step** → `steps next --task <TASK_ID>`
 3. **Claim step** → `steps start <STEP_ID> --agent <AGENT_NAME> --session $ATM_SESSION_ID [--branch <BRANCH>]`
 4. **Do the work**
