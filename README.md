@@ -1,5 +1,6 @@
-#Agent Todo Manager
+# Agent Todo Manager
 
+![Project Dashboard](resources/images/atm.png)
 ## Overview
 
 A state management system with a structured database at its core, exposed via a Python CLI for agent interaction, a thin FastAPI backend for the GUI, and a Vite frontend for state visibility.
