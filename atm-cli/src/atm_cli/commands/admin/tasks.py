@@ -27,6 +27,8 @@ def _render_task_md(task) -> str:
         "",
         task.description or "",
     ]
+    if task.definition_of_done:
+        lines += ["", f"**Definition of Done:** {task.definition_of_done}"]
     if task.steps:
         lines += ["", "## Steps"]
         for step in task.steps:
@@ -38,6 +40,8 @@ def _render_task_md(task) -> str:
                 "",
                 step.description or "",
             ]
+            if step.definition_of_done:
+                lines += ["", f"**Definition of Done:** {step.definition_of_done}"]
     return "\n".join(lines)
 
 

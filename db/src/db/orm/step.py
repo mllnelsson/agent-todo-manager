@@ -19,4 +19,5 @@ class Step(TimestampMixin, Base):
     task: Mapped["Task"] = relationship(back_populates="steps")
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
+    definition_of_done: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(255))

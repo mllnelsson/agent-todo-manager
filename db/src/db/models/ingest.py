@@ -4,11 +4,13 @@ from pydantic import BaseModel
 class StepIngest(BaseModel):
     title: str
     description: str
+    definition_of_done: str | None = None
 
 
 class TaskIngest(BaseModel):
     title: str
     description: str
+    definition_of_done: str | None = None
     steps: list[StepIngest] = []
 
 

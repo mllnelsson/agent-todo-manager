@@ -128,3 +128,28 @@ def test_delete_task_removes_it(engine, task_id):
 
 def test_delete_task_returns_false_when_not_found(engine):
     assert delete_task(engine, str(uuid.uuid4())) is False
+
+
+def test_create_task_with_definition_of_done(engine, project_id, story_id):
+    task = create_task(
+        engine,
+        TaskCreate(
+            project_id=project_id,
+            story_id=story_id,
+            title="T",
+            description="d",
+            definition_of_done="All tests pass and PR approved",
+        ),
+    )
+    assert task.definition_of_done == "All tests pass and PR approved"
+
+
+def test_create_task_without_definition_of_done_defaults_to_none(engine, project_id, story_id):
+    task = create_task(engine, TaskCreate(project_id=project_id, story_id=story_id, title="T", description="d"))
+    assert task.definition_of_done is None
+
+
+def test_update_task_sets_definition_of_done(engine, task_id):
+    updated = update_task(engine, task_id, TaskUpdate(definition_of_done="Reviewed and deployed"))
+    assert updated is not None
+    assert updated.definition_of_done == "Reviewed and deployed"

@@ -106,3 +106,27 @@ def test_delete_step_removes_it(engine, step_id):
 
 def test_delete_step_returns_false_when_not_found(engine):
     assert delete_step(engine, str(uuid.uuid4())) is False
+
+
+def test_create_step_with_definition_of_done(engine, task_id):
+    step = create_step(
+        engine,
+        StepCreate(
+            task_id=task_id,
+            title="S",
+            description="d",
+            definition_of_done="Function returns correct value for all edge cases",
+        ),
+    )
+    assert step.definition_of_done == "Function returns correct value for all edge cases"
+
+
+def test_create_step_without_definition_of_done_defaults_to_none(engine, task_id):
+    step = create_step(engine, StepCreate(task_id=task_id, title="S", description="d"))
+    assert step.definition_of_done is None
+
+
+def test_update_step_sets_definition_of_done(engine, step_id):
+    updated = update_step(engine, step_id, StepUpdate(definition_of_done="Linted and tested"))
+    assert updated is not None
+    assert updated.definition_of_done == "Linted and tested"

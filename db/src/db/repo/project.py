@@ -18,6 +18,7 @@ def _step_to_model(row: StepRow) -> Step:
         seq=row.seq,
         title=row.title,
         description=row.description,
+        definition_of_done=row.definition_of_done,
         status=Status(row.status),
         created_at=row.created_at,
         updated_at=row.updated_at,
@@ -30,6 +31,7 @@ def _task_to_model(row: TaskRow) -> Task:
         seq=row.seq,
         title=row.title,
         description=row.description,
+        definition_of_done=row.definition_of_done,
         prefix=row.prefix,
         status=Status(row.status),
         steps=sorted([_step_to_model(s) for s in row.steps], key=lambda s: s.seq),
@@ -149,6 +151,7 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
                     prefix=None,
                     title=task_data.title,
                     description=task_data.description,
+                    definition_of_done=task_data.definition_of_done,
                     status=Status.TODO,
                 )
                 session.add(task_row)
@@ -159,6 +162,7 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
                         task_id=task_id,
                         title=step_data.title,
                         description=step_data.description,
+                        definition_of_done=step_data.definition_of_done,
                         status=Status.TODO,
                     )
                     session.add(step_row)
@@ -174,6 +178,7 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
                     prefix=prefix,
                     title=task_data.title,
                     description=task_data.description,
+                    definition_of_done=task_data.definition_of_done,
                     status=Status.TODO,
                 )
                 session.add(task_row)
@@ -184,6 +189,7 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
                         task_id=task_id,
                         title=step_data.title,
                         description=step_data.description,
+                        definition_of_done=step_data.definition_of_done,
                         status=Status.TODO,
                     )
                     session.add(step_row)
