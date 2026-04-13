@@ -23,8 +23,10 @@ Load the common foundation first: `/atm`
 2. **Get next pending step** → `steps next --task <TASK_ID>`
 3. **Claim step** → `steps start <STEP_ID> --agent <AGENT_NAME> --session $ATM_SESSION_ID [--branch <BRANCH>]`
 4. **Do the work**
-5. **Complete step** → `steps complete <STEP_ID> --agent <AGENT_NAME> --session $ATM_SESSION_ID [--branch <BRANCH>]`
-6. **Repeat steps 2–5** until `steps next` returns `not_found` (all steps done)
+5. **Verify the definition of done** — if the step has a `definition_of_done`, check every criterion before proceeding. Do not mark the step complete until all criteria are met.
+6. **Complete step** → `steps complete <STEP_ID> --agent <AGENT_NAME> --session $ATM_SESSION_ID [--branch <BRANCH>]`
+7. **Repeat steps 2–6** until `steps next` returns `not_found` (all steps done)
+8. **Verify the task definition of done** — if the task has a `definition_of_done`, verify it before finishing. If criteria are not met, continue working until they are.
 
 ## Initialization
 
@@ -40,3 +42,4 @@ The Dev agent is either:
 - `steps complete` cascades: if all steps in a task are complete, the task is marked completed. If all tasks in a story are complete, the story is marked completed.
 - A step must be in `todo` to be started and `in_progress` to be completed.
 - `steps next` returns `{"error": "not_found", ...}` when no pending steps remain — that signals the task is fully executed.
+- **Definition of done is a hard gate** — if a step or task has a `definition_of_done`, every criterion must be satisfied before calling `steps complete`. Never mark work complete on the assumption that criteria will be met later.
