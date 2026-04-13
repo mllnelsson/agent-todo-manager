@@ -81,6 +81,52 @@ npm run dev
 # → http://localhost:5173
 ```
 
+### 6. Create a project
+
+```sh
+uv run atm admin projects create --title "My Project"
+```
+
+This prints the project UUID — save it. You will set it as `ATM_PROJECT_ID` in the next step.
+
+To list existing projects:
+
+```sh
+uv run atm admin projects list
+```
+
+### 7. Install agent skills
+
+Copy the ATM skill directory into the target project's Claude Code skills folder:
+
+```sh
+cp -r resources/skills/atm /path/to/your/project/.claude/skills/atm
+```
+
+This installs three skills:
+
+| Skill file | Slash command | Role |
+|---|---|---|
+| `.claude/skills/atm/SKILL.md` | `/atm` | Common foundation — load this first |
+| `.claude/skills/atm/pm-agent/SKILL.md` | `/atm:pm-agent` | PM agent — plans stories, tasks, steps |
+| `.claude/skills/atm/dev-agent/SKILL.md` | `/atm:dev-agent` | Dev agent — executes steps |
+
+### 8. Configure agent environment
+
+Every agent session needs two environment variables:
+
+| Variable | Value | Description |
+|---|---|---|
+| `ATM_PROJECT_ID` | UUID from step 6 | Default project for all `--project` flags |
+| `ATM_SESSION_ID` | A unique UUID per session | Ties completions to a specific agent run — generate a fresh one each time you spawn an agent (e.g. `python -c "import uuid; print(uuid.uuid4())"`) |
+
+Set these before spawning an agent:
+
+```sh
+export ATM_PROJECT_ID=<uuid from step 6>
+export ATM_SESSION_ID=$(python -c "import uuid; print(uuid.uuid4())")
+```
+
 ## What We're NOT Optimizing For
 
 - Pretty CLI output
