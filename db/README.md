@@ -25,11 +25,10 @@ uv sync
 
 ## Configuration
 
-The database URL is read from the `ATM_DATABASE_URL` environment variable. Copy the example and set a path:
+The database URL is read from the `ATM_DATABASE_URL` environment variable. Add it to your shell config (`~/.bashrc` or `~/.zshrc`):
 
 ```sh
-cp .env.example .env
-# Edit .env and set ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
+export ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
 ```
 
 ## Running Migrations

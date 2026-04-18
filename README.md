@@ -47,10 +47,13 @@ No business logic. Read-only.
 
 ### 1. Configure the database
 
+Add the database URL to your shell configuration (`~/.bashrc` or `~/.zshrc`):
+
 ```sh
-cp .env.example .env
-# Edit .env and set: ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
+export ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
 ```
+
+Then reload: `source ~/.bashrc`
 
 ### 2. Install dependencies
 

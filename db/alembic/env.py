@@ -1,19 +1,23 @@
 import os
 from logging.config import fileConfig
 
-from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
-load_dotenv()
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", os.environ["ATM_DATABASE_URL"])
-print(os.environ["ATM_DATABASE_URL"])
+database_url = os.environ.get("ATM_DATABASE_URL")
+if not database_url:
+    raise RuntimeError(
+        "ATM_DATABASE_URL is not set. "
+        "Add 'export ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db' "
+        "to your shell config (~/.bashrc or ~/.zshrc) and restart your shell."
+    )
+config.set_main_option("sqlalchemy.url", database_url)
 from db.orm.base import Base  # noqa: E402
 from db.orm.project import Project  # noqa: E402, F401
 

@@ -25,7 +25,7 @@ Avoid OOP and introducing those patterns as much as possible. AI assistants have
 
 ## Config
 
-Use pydantic `BaseSettings` loaded from a `.env` file. Multiple `BaseSettings` classes are fine; avoid multiple `.env` files.
+Use pydantic `BaseSettings` to read configuration from environment variables. Set variables in your shell config (`~/.bashrc` or `~/.zshrc`), not project-local `.env` files.
 
 ```python
 from pydantic_settings import BaseSettings
@@ -33,8 +33,6 @@ from pydantic_settings import BaseSettings
 class AppConfig(BaseSettings):
     database_url: str
     debug: bool = False
-
-    model_config = SettingsConfigDict(env_file=".env")
 
 config = AppConfig()
 ```
