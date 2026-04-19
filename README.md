@@ -45,50 +45,59 @@ No business logic. Read-only.
 
 **Prerequisites:** Python 3.12+, [uv](https://docs.astral.sh/uv/), Node.js 18+
 
-### 1. Configure the database
+> `atm` is a globally installed tool (`uv tool install`). Other workspace commands (alembic, uvicorn) run via `uv run` from inside the repo.
 
-Add the database URL to your shell configuration (`~/.bashrc` or `~/.zshrc`):
+### 1. Install the `atm` CLI
+
+Easy path — clone, install, migrate, and configure the DB in one step:
 
 ```sh
-export ATM_DATABASE_URL=sqlite:////absolute/path/to/app.db
+bash <(curl -fsSL https://raw.githubusercontent.com/mllnelsson/agent-todo-manager/main/install.sh)
 ```
 
-Then reload: `source ~/.bashrc`
-
-### 2. Install dependencies
+Or manually:
 
 ```sh
+git clone git@github.com:mllnelsson/agent-todo-manager.git ~/.local/share/atm
+uv tool install ~/.local/share/atm/atm-cli
+```
+
+The install script:
+- Clones the repo to `~/.local/share/atm`
+- Installs `atm` globally via `uv tool install`
+- Runs DB migrations against `~/.local/share/atm/app.db`
+- Adds `ATM_DATABASE_URL` to your shell rc (`~/.zshrc` or `~/.bashrc`)
+
+After running, reload your shell and verify: `atm --help`
+
+### 2. Install GUI dependencies *(optional — only needed for the dashboard)*
+
+```sh
+cd ~/.local/share/atm
 uv sync       # Python (db + api)
 cd gui && npm install
 ```
 
-### 3. Run migrations
+### 3. Start the API *(optional)*
 
 ```sh
-cd db
-uv run alembic upgrade head
-```
-
-### 4. Start the API
-
-```sh
-cd api
+cd ~/.local/share/atm/api
 uv run uvicorn main:app --reload
 # → http://localhost:8000
 ```
 
-### 5. Start the GUI
+### 4. Start the GUI *(optional)*
 
 ```sh
-cd gui
+cd ~/.local/share/atm/gui
 npm run dev
 # → http://localhost:5173
 ```
 
-### 6. Create a project
+### 5. Create a project
 
 ```sh
-uv run atm admin projects create --title "My Project"
+atm admin projects create --title "My Project"
 ```
 
 This prints the project UUID — save it. You will set it as `ATM_PROJECT_ID` in the next step.
@@ -96,15 +105,15 @@ This prints the project UUID — save it. You will set it as `ATM_PROJECT_ID` in
 To list existing projects:
 
 ```sh
-uv run atm admin projects list
+atm admin projects list
 ```
 
-### 7. Install agent skills
+### 6. Install agent skills
 
 Copy the ATM skill directory into the target project's Claude Code skills folder:
 
 ```sh
-cp -r resources/skills/atm /path/to/your/project/.claude/skills/atm
+cp -r ~/.local/share/atm/resources/skills/atm /path/to/your/project/.claude/skills/atm
 ```
 
 This installs three skills:
@@ -115,20 +124,20 @@ This installs three skills:
 | `.claude/skills/atm/pm-agent/SKILL.md` | `/atm:pm-agent` | PM agent — plans stories, tasks, steps |
 | `.claude/skills/atm/dev-agent/SKILL.md` | `/atm:dev-agent` | Dev agent — executes steps |
 
-### 8. Configure agent environment
+### 7. Configure agent environment
 
 Every agent session needs two environment variables:
 
 | Variable | Value | Description |
 |---|---|---|
-| `ATM_PROJECT_ID` | UUID from step 6 | Default project for all `--project` flags |
-| `ATM_SESSION_ID` | A unique UUID per session | Ties completions to a specific agent run — generate a fresh one each time you spawn an agent (e.g. `python -c "import uuid; print(uuid.uuid4())"`) |
+| `ATM_PROJECT_ID` | UUID from step 5 | Default project for all `--project` flags |
+| `ATM_SESSION_ID` | A unique UUID per session | Ties completions to a specific agent run — generate a fresh one each time you spawn an agent (e.g. `python3 -c "import uuid; print(uuid.uuid4())"`) |
 
 Set these before spawning an agent:
 
 ```sh
-export ATM_PROJECT_ID=<uuid from step 6>
-export ATM_SESSION_ID=$(python -c "import uuid; print(uuid.uuid4())")
+export ATM_PROJECT_ID=<uuid from step 5>
+export ATM_SESSION_ID=$(python3 -c "import uuid; print(uuid.uuid4())")
 ```
 
 ## What We're NOT Optimizing For
