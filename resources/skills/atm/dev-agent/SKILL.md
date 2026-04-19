@@ -13,9 +13,9 @@ Load the common foundation first: `/atm`
 
 | Command | Purpose |
 |---|---|
-| `uv run atm steps next --task <TASK_ID>` | Get the next pending (TODO) step for a task |
-| `uv run atm steps start <STEP_ID> --agent <AGENT_NAME> --session <SESSION_ID> [--branch BRANCH]` | Claim a step as in-progress |
-| `uv run atm steps complete <STEP_ID> --agent <AGENT_NAME> --session <SESSION_ID> [--branch BRANCH]` | Mark a step done (cascades to task/story if all steps complete) |
+| `atm steps next --task <TASK_ID>` | Get the next pending (TODO) step for a task |
+| `atm steps start <STEP_ID> --agent <AGENT_NAME> --session <SESSION_ID> [--branch BRANCH]` | Claim a step as in-progress |
+| `atm steps complete <STEP_ID> --agent <AGENT_NAME> --session <SESSION_ID> [--branch BRANCH]` | Mark a step done (cascades to task/story if all steps complete) |
 
 ## Workflow
 

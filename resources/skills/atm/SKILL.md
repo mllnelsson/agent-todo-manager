@@ -27,7 +27,7 @@ Your caller provides your agent name (e.g. `pm`, `dev`). Pass it as the `--agent
 ## Invocation
 
 ```
-uv run atm [COMMAND_GROUP] [SUBCOMMAND] [FLAGS]
+atm [COMMAND_GROUP] [SUBCOMMAND] [FLAGS]
 ```
 
 ## Shared Commands
@@ -36,10 +36,10 @@ Both agents use these commands:
 
 | Command | Purpose |
 |---|---|
-| `uv run atm projects get <PROJECT_ID>` | Load project context |
-| `uv run atm tasks get <ID_OR_SEQ> [--story STORY_ID] [--project PROJECT_ID]` | Fetch task details as JSON |
-| `uv run atm completions active` | List all active in-progress step assignments |
-| `uv run atm completions list --entity <ENTITY_ID>` | Check completion history for a specific entity |
+| `atm projects get <PROJECT_ID>` | Load project context |
+| `atm tasks get <ID_OR_SEQ> [--story STORY_ID] [--project PROJECT_ID]` | Fetch task details as JSON |
+| `atm completions active` | List all active in-progress step assignments |
+| `atm completions list --entity <ENTITY_ID>` | Check completion history for a specific entity |
 
 ## Output
 

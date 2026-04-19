@@ -7,7 +7,7 @@
 ## SYNOPSIS
 
 ```
-uv run atm [COMMAND_GROUP] [SUBCOMMAND] [ARGUMENTS] [OPTIONS]
+atm [COMMAND_GROUP] [SUBCOMMAND] [ARGUMENTS] [OPTIONS]
 ```
 
 ## DESCRIPTION
@@ -32,7 +32,7 @@ Status values: `todo` | `in_progress` | `completed`
 #### projects get
 
 ```
-uv run atm projects get ID
+atm projects get ID
 ```
 
 Fetch a project by UUID and print it as JSON.
@@ -50,7 +50,7 @@ Fetch a project by UUID and print it as JSON.
 #### stories list
 
 ```
-uv run atm stories list --project PROJECT_ID
+atm stories list --project PROJECT_ID
 ```
 
 List all active stories for a project and print them as JSON.
@@ -66,7 +66,7 @@ List all active stories for a project and print them as JSON.
 #### stories get
 
 ```
-uv run atm stories get ID_OR_SEQ [--project PROJECT_ID]
+atm stories get ID_OR_SEQ [--project PROJECT_ID]
 ```
 
 Fetch a story by UUID or project-scoped sequence number and print it as JSON.
@@ -92,7 +92,7 @@ Fetch a story by UUID or project-scoped sequence number and print it as JSON.
 #### stories create
 
 ```
-uv run atm stories create --project PROJECT_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
+atm stories create --project PROJECT_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
 ```
 
 Create a new story under a project and print it as JSON.
@@ -116,7 +116,7 @@ Create a new story under a project and print it as JSON.
 #### stories update
 
 ```
-uv run atm stories update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS]
+atm stories update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS]
 ```
 
 Update fields on a story and print the result as JSON.
@@ -143,7 +143,7 @@ Update fields on a story and print the result as JSON.
 #### tasks get
 
 ```
-uv run atm tasks get ID_OR_SEQ [--story STORY_ID] [--project PROJECT_ID]
+atm tasks get ID_OR_SEQ [--story STORY_ID] [--project PROJECT_ID]
 ```
 
 Fetch a task by UUID or sequence number and print it as JSON.
@@ -170,7 +170,7 @@ Fetch a task by UUID or sequence number and print it as JSON.
 #### tasks list-floating
 
 ```
-uv run atm tasks list-floating --project PROJECT_ID
+atm tasks list-floating --project PROJECT_ID
 ```
 
 List all floating (story-less) tasks for a project and print them as JSON.
@@ -186,7 +186,7 @@ List all floating (story-less) tasks for a project and print them as JSON.
 #### tasks create
 
 ```
-uv run atm tasks create (--story STORY_ID | --project PROJECT_ID) --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX]
+atm tasks create (--story STORY_ID | --project PROJECT_ID) --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX]
 ```
 
 Create a new task and print it as JSON.
@@ -214,7 +214,7 @@ Create a new task and print it as JSON.
 #### tasks update
 
 ```
-uv run atm tasks update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS] [--prefix PREFIX]
+atm tasks update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS] [--prefix PREFIX]
 ```
 
 Update fields on a task and print the result as JSON. Does **not** write a completion record — use `tasks start` / `tasks complete` for status transitions that must be tracked.
@@ -240,7 +240,7 @@ Update fields on a task and print the result as JSON. Does **not** write a compl
 #### tasks start
 
 ```
-uv run atm tasks start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm tasks start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
 ```
 
 Mark a task as `in_progress`, recording which agent claimed it. Prints the updated task as JSON.
@@ -269,7 +269,7 @@ Mark a task as `in_progress`, recording which agent claimed it. Prints the updat
 #### tasks complete
 
 ```
-uv run atm tasks complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm tasks complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
 ```
 
 Mark a task as `completed`. Cascades: if the task belongs to a story and all tasks in that story are now done, the story is also marked completed. Prints the updated task as JSON.
@@ -300,7 +300,7 @@ Mark a task as `completed`. Cascades: if the task belongs to a story and all tas
 #### steps get
 
 ```
-uv run atm steps get SEQ --task TASK_ID
+atm steps get SEQ --task TASK_ID
 ```
 
 Fetch a step by its task-scoped sequence number and print it as JSON.
@@ -322,7 +322,7 @@ Fetch a step by its task-scoped sequence number and print it as JSON.
 #### steps next
 
 ```
-uv run atm steps next --task TASK_ID
+atm steps next --task TASK_ID
 ```
 
 Get the next pending (`todo`) step for a task and print it as JSON. Returns `{"error": "not_found", ...}` when no pending steps remain.
@@ -338,7 +338,7 @@ Get the next pending (`todo`) step for a task and print it as JSON. Returns `{"e
 #### steps create
 
 ```
-uv run atm steps create --task TASK_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
+atm steps create --task TASK_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
 ```
 
 Create a new step under a task and print it as JSON.
@@ -362,7 +362,7 @@ Create a new step under a task and print it as JSON.
 #### steps update
 
 ```
-uv run atm steps update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH]
+atm steps update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH]
 ```
 
 Update fields on a step and print the result as JSON.
@@ -390,7 +390,7 @@ Update fields on a step and print the result as JSON.
 #### steps start
 
 ```
-uv run atm steps start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm steps start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
 ```
 
 Mark a step as `in_progress`, recording which agent claimed it. Prints the updated step as JSON.
@@ -418,7 +418,7 @@ Mark a step as `in_progress`, recording which agent claimed it. Prints the updat
 #### steps complete
 
 ```
-uv run atm steps complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm steps complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
 ```
 
 Mark a step as `completed`. Cascades: if all steps in the task are done, the task is marked completed; if all tasks in the story are done, the story is marked completed. Prints the updated step as JSON.
@@ -448,7 +448,7 @@ Mark a step as `completed`. Cascades: if all steps in the task are done, the tas
 #### completions list
 
 ```
-uv run atm completions list --entity ENTITY_ID
+atm completions list --entity ENTITY_ID
 ```
 
 List all completion records for an entity (story, task, or step) and print them as JSON.
@@ -464,7 +464,7 @@ List all completion records for an entity (story, task, or step) and print them 
 #### completions active
 
 ```
-uv run atm completions active
+atm completions active
 ```
 
 List all active assignments (steps currently `in_progress`) with agent and session info. Prints as JSON.
