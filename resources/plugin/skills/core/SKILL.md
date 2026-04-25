@@ -1,22 +1,22 @@
 ---
-name: atm
-description: Common foundation for ATM CLI agents. Covers environment setup, project ID resolution, and commands used by both PM and Dev roles.
+name: core
+description: Common foundation for ATM CLI usage. Covers environment setup, project ID resolution, and commands shared by both plan and build roles.
 ---
 
 # ATM CLI — Common Foundation
 
-The `atm` CLI manages a hierarchy of project → story → task → step. Both PM and Dev agents use this skill as their common base.
+The `atm` CLI manages a hierarchy of project → story → task → step. Load this skill as the common base for both plan and build roles.
 
 ## Environment
 
 | Variable | Required | Description |
 |---|---|---|
 | `ATM_PROJECT_ID` | Yes | Default project UUID. Commands that accept `--project` use this unless overridden. Raise an error if empty and no `--project` flag is supplied. |
-| `ATM_SESSION_ID` | Yes | Session UUID. Set by whoever spawns the agent. Passed to `steps start` and `steps complete`. |
+| `ATM_SESSION_ID` | Yes | Session UUID. Set by whoever spawns the session. Passed to `steps start` and `steps complete`. |
 
-## Agent Name
+## Identity
 
-Your caller provides your agent name (e.g. `pm`, `dev`). Pass it as the `--agent` flag when calling `tasks start`, `tasks complete`, `steps start`, and `steps complete`.
+Your caller provides your name (e.g. `plan`, `build`). Pass it as the `--agent` flag when calling `tasks start`, `tasks complete`, `steps start`, and `steps complete`.
 
 ## Project ID Handling
 
@@ -31,8 +31,6 @@ atm [COMMAND_GROUP] [SUBCOMMAND] [FLAGS]
 ```
 
 ## Shared Commands
-
-Both agents use these commands:
 
 | Command | Purpose |
 |---|---|
@@ -51,7 +49,7 @@ Both agents use these commands:
 
 See `resources/cli-reference.md` for the complete man-page-style reference covering every command's arguments, options, and notes.
 
-## Agent Skills
+## Role Skills
 
-- **PM Agent** → `pm-agent/SKILL.md` (`/atm:pm-agent`)
-- **Dev Agent** → `dev-agent/SKILL.md` (`/atm:dev-agent`)
+- **Plan** → `plan/SKILL.md` (`/atm:core:plan`)
+- **Build** → `build/SKILL.md` (`/atm:core:build`)

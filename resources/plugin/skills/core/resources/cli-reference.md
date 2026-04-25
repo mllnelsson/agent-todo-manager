@@ -490,6 +490,6 @@ None.
 
 ## SEE ALSO
 
-- `SKILL.md` — common foundation (`/atm`)
-- `pm-agent/SKILL.md` — PM agent workflow (`/atm:pm-agent`)
-- `dev-agent/SKILL.md` — Dev agent workflow (`/atm:dev-agent`)
+- `SKILL.md` — common foundation (`/atm:core`)
+- `plan/SKILL.md` — plan agent workflow (`/atm:core:plan`)
+- `build/SKILL.md` — build agent workflow (`/atm:core:build`)

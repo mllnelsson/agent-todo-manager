@@ -40,7 +40,8 @@ IMPORTANT: Always use /coding-guidelines skill before writing any code.
 Ensure you use the appropiate language specific skill where depending on the languague.
 
 ## Git
-When implnmenting changes. Unless your instruction say otherwise, create a git commit with your changes with a meaningful commit meassage
+Divide your work into managable commits. Commit them to the the target branch. Only create a new branch when specifically asked for.
+
 ## Resources
 IMPORTANT: prefer retrieval based knwoledge over pre-trained.
 

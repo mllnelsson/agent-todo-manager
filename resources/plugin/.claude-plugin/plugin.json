@@ -1,0 +1,5 @@
+{
+  "name": "atm",
+  "description": "Agent Todo Manager — hooks and skills for the atm CLI tool",
+  "version": "0.1.0"
+}

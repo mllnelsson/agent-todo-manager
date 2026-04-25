@@ -1,15 +1,15 @@
 ---
-name: atm:pm-agent
-description: ATM skill for the PM agent. Plans and structures work — owns hierarchy creation (stories, tasks, steps).
+name: core:plan
+description: ATM skill for planning and structuring work — owns hierarchy creation (stories, tasks, steps).
 ---
 
-# ATM PM Agent
+# ATM Plan
 
-The PM agent plans and structures work. It creates and organises the hierarchy that Dev agents then execute.
+Load this skill to plan and structure work. It covers creating and organising the project hierarchy that the build role then executes.
 
-Load the common foundation first: `/atm`
+Load the common foundation first: `/atm:core`
 
-## PM-Only Commands
+## Commands
 
 | Command | Purpose |
 |---|---|
@@ -35,8 +35,8 @@ Load the common foundation first: `/atm`
 
 ## Notes
 
-- Tasks must have at least one step defined before a Dev agent can pick them up. Always create steps for every task before handoff.
-- The step **description** is the implementation specification — it should contain enough detail for a dev agent to complete the step without further questions. Write descriptions as clear, actionable instructions.
+- Tasks must have at least one step defined before the build role can pick them up. Always create steps for every task before handoff.
+- The step **description** is the implementation specification — it should contain enough detail to complete the step without further questions. Write descriptions as clear, actionable instructions.
 - Always use `--description-file` rather than `--description` for descriptions (and `--definition-of-done-file` rather than `--definition-of-done`). Write the content to a tempfile first, then pass the path. This avoids shell escaping issues with long text, newlines, and special characters: `cat > /tmp/desc.md << 'EOF' ... EOF && atm steps create ... --description-file /tmp/desc.md`
 - Use `--story` to create a story-linked task. Use `--project` for floating tasks (bugs, hotfixes not part of a story).
 - Status values for stories and tasks: `todo` | `in_progress` | `completed`
@@ -46,8 +46,8 @@ Load the common foundation first: `/atm`
 Both tasks and steps support an optional `definition_of_done` field — explicit, verifiable acceptance criteria for that unit of work.
 
 **When to write a definition of done:**
-- Write one for every task and step. A DoD makes handoff unambiguous: the Dev agent knows exactly when the work is considered complete.
-- Keep it concrete and testable. Avoid vague language — write criteria the Dev agent can check mechanically (e.g. "all tests pass", "endpoint returns 200 with schema X", "no lint errors").
+- Write one for every task and step. A DoD makes handoff unambiguous: the build role knows exactly when the work is considered complete.
+- Keep it concrete and testable. Avoid vague language — write criteria that can be checked mechanically (e.g. "all tests pass", "endpoint returns 200 with schema X", "no lint errors").
 
 **How to write it:**
 ```

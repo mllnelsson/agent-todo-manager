@@ -8,6 +8,7 @@ ATM_DATABASE_URL="sqlite:////${DB_PATH#/}"
 
 command -v git >/dev/null || { echo "git not found" >&2; exit 1; }
 command -v uv  >/dev/null || { echo "uv not found. See https://docs.astral.sh/uv/" >&2; exit 1; }
+command -v jq  >/dev/null || { echo "jq not found" >&2; exit 1; }
 
 # Clone or update
 if [[ -d "${INSTALL_DIR}/.git" ]]; then
@@ -23,6 +24,17 @@ uv tool install --force "${INSTALL_DIR}/atm-cli"
 
 # Sync workspace so alembic and uvicorn work from the clone
 (cd "${INSTALL_DIR}" && uv sync)
+
+# Patch plugin hooks.json with the resolved absolute script path
+PLUGIN_DIR="${INSTALL_DIR}/resources/plugin"
+HOOK_SCRIPT="${PLUGIN_DIR}/hooks/atm_session_start.sh"
+
+chmod +x "${HOOK_SCRIPT}"
+
+TMP=$(mktemp)
+jq --arg cmd "${HOOK_SCRIPT}" '
+  (.hooks.SessionStart[].hooks[] | select(.command == "INSTALL_PATH_PLACEHOLDER" or .command != $cmd)).command = $cmd
+' "${PLUGIN_DIR}/hooks/hooks.json" > "${TMP}" && mv "${TMP}" "${PLUGIN_DIR}/hooks/hooks.json"
 
 # Run DB migrations
 export ATM_DATABASE_URL
@@ -50,6 +62,8 @@ cat <<EOF
 
 atm installed at ~/.local/bin/atm
 DB:  ${DB_PATH}
+Plugin: load once in Claude Code with:
+        claude --plugin-dir ${PLUGIN_DIR}
 Reload your shell (or: source ${RC:-~/.profile}) to pick up ATM_DATABASE_URL.
 Ensure ~/.local/bin is on PATH (try: uv tool update-shell).
 EOF
