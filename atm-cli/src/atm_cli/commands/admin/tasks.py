@@ -1,3 +1,5 @@
+import pathlib
+import subprocess
 from typing import Annotated
 
 import typer
@@ -18,8 +20,16 @@ STATUS_LABEL = {
 }
 
 
-def _render_task_md(task) -> str:
-    lines = [
+def _render_task_md(task, story=None) -> str:
+    lines: list[str] = []
+    if story is not None:
+        lines += [
+            f"## Story [{story.seq}] {story.title}",
+            "",
+            story.description or "",
+            "",
+        ]
+    lines += [
         f"# [{task.seq}] {task.title}",
         "",
         f"- **ID:** {task.id}",
@@ -45,20 +55,36 @@ def _render_task_md(task) -> str:
     return "\n".join(lines)
 
 
-@app.command("export")
-def export(
+@app.command("dispatch")
+def dispatch(
     task_id: Annotated[str, typer.Argument()],
+    worktree: Annotated[bool, typer.Option("--worktree")] = False,
     output: Annotated[str | None, typer.Option("--output")] = None,
 ) -> None:
     engine = get_engine()
     task = repo.get_task(engine, task_id)
     if not task:
         raise NotFoundError(f"Task {task_id} not found")
-    md = _render_task_md(task)
-    if output:
+    story = repo.get_story(engine, str(task.story_id)) if task.story_id else None
+    md = _render_task_md(task, story)
+    if worktree:
+        repo_root = pathlib.Path(
+            subprocess.check_output(
+                ["git", "rev-parse", "--show-toplevel"], text=True
+            ).strip()
+        )
+        wt_path = repo_root.parent / f"{repo_root.name}-task-{task.seq}"
+        branch = f"task/{task.seq}"
+        subprocess.run(
+            ["git", "worktree", "add", str(wt_path), "-b", branch], check=True
+        )
+        plan_path = wt_path / "plan.md"
+        plan_path.write_text(md)
+        console.print(f"[green]Dispatched task {task_id} to {wt_path}[/green]")
+    elif output:
         with open(output, "w") as f:
             f.write(md)
-        console.print(f"[green]Exported task {task_id} to {output}[/green]")
+        console.print(f"[green]Wrote task {task_id} to {output}[/green]")
     else:
         print(md)
 
