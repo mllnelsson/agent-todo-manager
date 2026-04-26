@@ -1,14 +1,33 @@
+import logging
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.engine import Engine
 
 from db.engine import create_db_engine
 from db.models import Project
 from db.repo import get_project, list_completions_for_entities, list_projects
 
-from models import ProjectDetail
+from dashboard.models import ProjectDetail
+
+logger = logging.getLogger(__name__)
+
+
+def resolve_gui_dist() -> Path | None:
+    env = os.environ.get("ATM_GUI_DIST")
+    if env:
+        path = Path(env)
+        return path if path.is_dir() else None
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        candidate = parent / "gui" / "dist"
+        if candidate.is_dir():
+            return candidate
+    return None
 
 
 @asynccontextmanager
@@ -56,3 +75,13 @@ def get_project_detail(project_id: str, engine: EngineDep) -> ProjectDetail:
 
     completions = list_completions_for_entities(engine, _collect_entity_ids(project))
     return ProjectDetail(**project.model_dump(), completions=completions)
+
+
+_dist = resolve_gui_dist()
+if _dist is not None:
+    app.mount("/", StaticFiles(directory=_dist, html=True), name="gui")
+else:
+    logger.warning(
+        "GUI dist directory not found. Set ATM_GUI_DIST or build gui/dist. "
+        "API endpoints will still work."
+    )

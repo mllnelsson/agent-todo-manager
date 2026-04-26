@@ -1,2 +1,2 @@
 [tool.uv.workspace]
-members = ["db", "atm-cli", "api"]
+members = ["db", "atm-cli", "dashboard"]

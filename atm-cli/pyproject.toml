@@ -9,10 +9,13 @@ dependencies = [
     "typer>=0.24.1",
     "rich>=14.0.0",
     "db",
+    "dashboard",
+    "uvicorn>=0.34.0",
 ]
 
 [tool.uv.sources]
 db = { workspace = true }
+dashboard = { workspace = true }
 
 [project.scripts]
 atm = "atm_cli:main"
