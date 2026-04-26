@@ -20,6 +20,17 @@ app = typer.Typer(name="projects", no_args_is_help=True)
 def create(
     title: Annotated[str, typer.Option("--title", "-t")],
     description: Annotated[str, typer.Option("--description", "-d")] = "",
+    id_file: Annotated[
+        Path | None,
+        typer.Option(
+            "--id-file",
+            help="Write the new project ID to this file (non-interactive).",
+        ),
+    ] = None,
+    force: Annotated[
+        bool,
+        typer.Option("--force", help="Overwrite an existing --id-file target."),
+    ] = False,
 ) -> None:
     engine = get_engine()
     project = repo.create_project(
@@ -31,6 +42,28 @@ def create(
             title="Project created",
         )
     )
+
+    if id_file is not None:
+        if id_file.exists() and not force:
+            raise typer.BadParameter(
+                f"{id_file} already exists; pass --force to overwrite"
+            )
+        _write_id_file(id_file, project.id)
+        return
+
+    default_path = Path.cwd() / ".atm_project_id"
+    if not confirm(f"Write project ID to {default_path}?", force=False):
+        return
+    if default_path.exists() and not confirm(
+        f"Overwrite existing {default_path}?", force=False
+    ):
+        return
+    _write_id_file(default_path, project.id)
+
+
+def _write_id_file(path: Path, project_id: str) -> None:
+    path.write_text(f"{project_id}\n")
+    console.print(f"[green]Wrote project ID to {path}[/green]")
 
 
 @app.command("list")

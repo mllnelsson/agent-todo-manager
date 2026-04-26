@@ -96,11 +96,19 @@ npm run dev
 
 ### 5. Create a project
 
+From the root of the consumer project (the repo you want ATM to manage):
+
 ```sh
 atm admin projects create --title "My Project"
 ```
 
-This prints the project UUID — save it. You will set it as `ATM_PROJECT_ID` in the next step.
+This prints the project UUID and prompts to write it to `.atm_project_id` in the current directory. Accept the prompt — the SessionStart hook reads that file to populate `ATM_PROJECT_ID` on every Claude Code session.
+
+For scripted setup, skip the prompt with `--id-file PATH` (add `--force` to overwrite an existing file):
+
+```sh
+atm admin projects create --title "My Project" --id-file ./.atm_project_id
+```
 
 To list existing projects:
 
@@ -126,19 +134,25 @@ This installs three skills:
 
 ### 7. Configure agent environment
 
-Every agent session needs two environment variables:
+The CLI reads these three variables from the environment instead of requiring them on every command:
 
 | Variable | Value | Description |
 |---|---|---|
-| `ATM_PROJECT_ID` | UUID from step 5 | Default project for all `--project` flags |
-| `ATM_SESSION_ID` | A unique UUID per session | Ties completions to a specific agent run — generate a fresh one each time you spawn an agent (e.g. `python3 -c "import uuid; print(uuid.uuid4())"`) |
+| `ATM_PROJECT_ID` | UUID from step 5 | Default project for commands that accept `--project`. Set automatically from `<repo-root>/.atm_project_id` |
+| `ATM_SESSION_ID` | A unique UUID per session | Ties completions to a specific agent run |
+| `ATM_AGENT_NAME` | Agent identity (e.g. `Claude`, `plan`, `build`) | Recorded as the `agent` on `tasks start` / `tasks complete` / `steps start` / `steps complete` |
 
-Set these before spawning an agent:
+When running inside Claude Code the SessionStart hook (`resources/plugin/hooks/atm_session_start.sh`) sets all three automatically — `ATM_PROJECT_ID` is read from `<repo-root>/.atm_project_id` (created in step 5) and the other two from the session payload. You can ignore this step in that case.
+
+When invoking the CLI from a plain shell, export them yourself:
 
 ```sh
 export ATM_PROJECT_ID=<uuid from step 5>
 export ATM_SESSION_ID=$(python3 -c "import uuid; print(uuid.uuid4())")
+export ATM_AGENT_NAME=manual
 ```
+
+The corresponding `--project`, `--session`, and `--agent` flags remain available as explicit overrides.
 
 ## What We're NOT Optimizing For
 

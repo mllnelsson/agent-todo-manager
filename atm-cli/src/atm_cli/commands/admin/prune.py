@@ -10,6 +10,7 @@ from db.repo.queries import (
     list_todo_in_completed_stories,
 )
 
+from ..._env import resolve as resolve_env
 from ...db import get_engine
 from .output import confirm, console, print_table
 
@@ -18,10 +19,11 @@ app = typer.Typer(name="prune", no_args_is_help=True)
 
 @app.command("stale")
 def stale(
-    project_id: Annotated[str, typer.Option("--project")],
+    project_id: Annotated[str | None, typer.Option("--project")] = None,
     days: Annotated[int, typer.Option("--days")] = 7,
     force: Annotated[bool, typer.Option("--force")] = False,
 ) -> None:
+    project_id = resolve_env(project_id, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     stale_tasks = list_stale_tasks(engine, project_id, days)
     stale_steps = list_stale_steps(engine, project_id, days)
@@ -60,9 +62,10 @@ def stale(
 
 @app.command("stuck")
 def stuck(
-    project_id: Annotated[str, typer.Option("--project")],
+    project_id: Annotated[str | None, typer.Option("--project")] = None,
     force: Annotated[bool, typer.Option("--force")] = False,
 ) -> None:
+    project_id = resolve_env(project_id, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     steps = list_stale_steps(engine, project_id, days=0)
 
@@ -86,9 +89,10 @@ def stuck(
 
 @app.command("dirty")
 def dirty(
-    project_id: Annotated[str, typer.Option("--project")],
+    project_id: Annotated[str | None, typer.Option("--project")] = None,
     force: Annotated[bool, typer.Option("--force")] = False,
 ) -> None:
+    project_id = resolve_env(project_id, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     orphaned = list_orphaned_tasks(engine, project_id)
     todo_in_completed = list_todo_in_completed_stories(engine, project_id)

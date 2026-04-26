@@ -1,7 +1,10 @@
+import os
+
 import typer
 
 from db.models import Status, TaskCreate, TaskUpdate
 
+from .._env import resolve as resolve_env
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
 from ..services.exceptions import InvalidStatus, NotFound
@@ -53,12 +56,14 @@ def get(
             task = get_task_by_id(id_or_seq, engine)
         elif story:
             task = get_task_by_story_seq(story, int(id_or_seq), engine)
-        elif project:
-            task = get_floating_task_by_project_seq(project, int(id_or_seq), engine)
         else:
-            raise typer.BadParameter(
-                "--story or --project is required when using a sequence number"
-            )
+            project = project or os.environ.get("ATM_PROJECT_ID")
+            if not project:
+                raise typer.BadParameter(
+                    "--story or --project is required when using a sequence number"
+                    " (or set $ATM_PROJECT_ID)"
+                )
+            task = get_floating_task_by_project_seq(project, int(id_or_seq), engine)
 
         print_json(task)
     except NotFound as e:
@@ -69,13 +74,16 @@ def get(
 
 @app.command("list-floating")
 def list_floating(
-    project: str = typer.Option(..., "--project", help="Project ID"),
+    project: str | None = typer.Option(
+        None, "--project", help="Project ID (defaults to $ATM_PROJECT_ID)"
+    ),
 ) -> None:
     """List all floating (story-less) tasks for a project and print them as JSON.
 
     Args:
         project: UUID of the project.
     """
+    project = resolve_env(project, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     try:
         tasks = list_floating_tasks_for_project(project, engine)
@@ -120,11 +128,17 @@ def create(
     engine = get_engine()
     try:
         if story is None and project is None:
-            raise typer.BadParameter("--story or --project is required")
+            project = os.environ.get("ATM_PROJECT_ID")
+            if not project:
+                raise typer.BadParameter(
+                    "--story or --project is required (or set $ATM_PROJECT_ID)"
+                )
         description_text = resolve_description(description, description_file)
         if description_text is None:
             raise typer.BadParameter("--description or --description-file is required")
-        dod_text = resolve_definition_of_done(definition_of_done, definition_of_done_file)
+        dod_text = resolve_definition_of_done(
+            definition_of_done, definition_of_done_file
+        )
         data = TaskCreate(
             story_id=story,
             project_id=project or "",
@@ -171,7 +185,9 @@ def update(
     engine = get_engine()
     try:
         description_text = resolve_description(description, description_file)
-        dod_text = resolve_definition_of_done(definition_of_done, definition_of_done_file)
+        dod_text = resolve_definition_of_done(
+            definition_of_done, definition_of_done_file
+        )
         data = TaskUpdate(
             title=title,
             description=description_text,
@@ -190,10 +206,16 @@ def update(
 @app.command("start")
 def start(
     id: str,
-    agent: str = typer.Option(..., "--agent", help="Agent name"),
-    session: str = typer.Option(..., "--session", help="Session ID"),
+    agent: str | None = typer.Option(
+        None, "--agent", help="Agent name (defaults to $ATM_AGENT_NAME)"
+    ),
+    session: str | None = typer.Option(
+        None, "--session", help="Session ID (defaults to $ATM_SESSION_ID)"
+    ),
     branch: str | None = typer.Option(None, "--branch", help="Git branch"),
 ) -> None:
+    agent = resolve_env(agent, "ATM_AGENT_NAME", "--agent")
+    session = resolve_env(session, "ATM_SESSION_ID", "--session")
     engine = get_engine()
     try:
         task = start_task(id, agent, session, branch, engine)
@@ -209,10 +231,16 @@ def start(
 @app.command("complete")
 def complete(
     id: str,
-    agent: str = typer.Option(..., "--agent", help="Agent name"),
-    session: str = typer.Option(..., "--session", help="Session ID"),
+    agent: str | None = typer.Option(
+        None, "--agent", help="Agent name (defaults to $ATM_AGENT_NAME)"
+    ),
+    session: str | None = typer.Option(
+        None, "--session", help="Session ID (defaults to $ATM_SESSION_ID)"
+    ),
     branch: str | None = typer.Option(None, "--branch", help="Git branch"),
 ) -> None:
+    agent = resolve_env(agent, "ATM_AGENT_NAME", "--agent")
+    session = resolve_env(session, "ATM_SESSION_ID", "--session")
     engine = get_engine()
     try:
         task = complete_task(id, agent, session, branch, engine)

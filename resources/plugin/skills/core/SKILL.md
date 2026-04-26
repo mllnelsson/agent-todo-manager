@@ -7,22 +7,19 @@ description: Common foundation for ATM CLI usage. Covers environment setup, proj
 
 The `atm` CLI manages a hierarchy of project → story → task → step. Load this skill as the common base for both plan and build roles.
 
-## Environment
+## Environment (set automatically by the SessionStart hook)
 
-| Variable | Required | Description |
+| Variable | Set by | Read by |
 |---|---|---|
-| `ATM_PROJECT_ID` | Yes | Default project UUID. Commands that accept `--project` use this unless overridden. Raise an error if empty and no `--project` flag is supplied. |
-| `ATM_SESSION_ID` | Yes | Session UUID. Set by whoever spawns the session. Passed to `steps start` and `steps complete`. |
+| `ATM_PROJECT_ID` | hook (reads `<repo-root>/.atm_project_id`) | every command that accepts `--project` |
+| `ATM_SESSION_ID` | hook | `tasks start` / `tasks complete` / `steps start` / `steps complete` |
+| `ATM_AGENT_NAME` | hook | `tasks start` / `tasks complete` / `steps start` / `steps complete` |
 
-## Identity
+## Calling the CLI
 
-Your caller provides your name (e.g. `plan`, `build`). Pass it as the `--agent` flag when calling `tasks start`, `tasks complete`, `steps start`, and `steps complete`.
+**Do not pass `--project`, `--session`, or `--agent` yourself.** The CLI reads them from the environment. Passing them manually is reserved for the rare case where you must override the session-default project (e.g. acting on a different project from the same shell).
 
-## Project ID Handling
-
-- On any command that accepts `--project`: use `ATM_PROJECT_ID` from the environment.
-- If `--project` is explicitly supplied, use that value instead.
-- If neither is available, raise an error — do not proceed.
+If a command errors with something like "`--project` not provided and `ATM_PROJECT_ID` is not set", treat it as a setup bug — do not work around it by hard-coding a UUID into the flag. Check that `<repo-root>/.atm_project_id` exists and contains the project UUID.
 
 ## Invocation
 

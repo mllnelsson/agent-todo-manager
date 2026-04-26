@@ -2,6 +2,7 @@ import typer
 
 from db.models import StepCreate, StepUpdate
 
+from .._env import resolve as resolve_env
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json
 from ..services.exceptions import InvalidStatus, NotFound
@@ -86,7 +87,9 @@ def create(
         description_text = resolve_description(description, description_file)
         if description_text is None:
             raise typer.BadParameter("--description or --description-file is required")
-        dod_text = resolve_definition_of_done(definition_of_done, definition_of_done_file)
+        dod_text = resolve_definition_of_done(
+            definition_of_done, definition_of_done_file
+        )
         step = create_step_for_task(
             StepCreate(
                 task_id=task,
@@ -129,10 +132,14 @@ def update(
     engine = get_engine()
     try:
         description_text = resolve_description(description, description_file)
-        dod_text = resolve_definition_of_done(definition_of_done, definition_of_done_file)
+        dod_text = resolve_definition_of_done(
+            definition_of_done, definition_of_done_file
+        )
         step = update_step_by_id(
             id,
-            StepUpdate(title=title, description=description_text, definition_of_done=dod_text),
+            StepUpdate(
+                title=title, description=description_text, definition_of_done=dod_text
+            ),
             engine,
         )
         print_json(step)
@@ -145,8 +152,12 @@ def update(
 @app.command("start")
 def start(
     id: str,
-    agent: str = typer.Option(..., "--agent", help="Agent name"),
-    session: str = typer.Option(..., "--session", help="Session ID"),
+    agent: str | None = typer.Option(
+        None, "--agent", help="Agent name (defaults to $ATM_AGENT_NAME)"
+    ),
+    session: str | None = typer.Option(
+        None, "--session", help="Session ID (defaults to $ATM_SESSION_ID)"
+    ),
     branch: str | None = typer.Option(None, "--branch", help="Git branch"),
 ) -> None:
     """Mark a step as IN_PROGRESS, recording which agent claimed it.
@@ -157,6 +168,8 @@ def start(
         session: Agent session identifier.
         branch: Git branch the agent is working on, if any.
     """
+    agent = resolve_env(agent, "ATM_AGENT_NAME", "--agent")
+    session = resolve_env(session, "ATM_SESSION_ID", "--session")
     engine = get_engine()
     try:
         step = start_step(id, agent, session, branch, engine)
@@ -172,8 +185,12 @@ def start(
 @app.command("complete")
 def complete(
     id: str,
-    agent: str = typer.Option(..., "--agent", help="Agent name"),
-    session: str = typer.Option(..., "--session", help="Session ID"),
+    agent: str | None = typer.Option(
+        None, "--agent", help="Agent name (defaults to $ATM_AGENT_NAME)"
+    ),
+    session: str | None = typer.Option(
+        None, "--session", help="Session ID (defaults to $ATM_SESSION_ID)"
+    ),
     branch: str | None = typer.Option(None, "--branch", help="Git branch"),
 ) -> None:
     """Mark a step as COMPLETED, cascading completion to the task and story if applicable.
@@ -184,6 +201,8 @@ def complete(
         session: Agent session identifier.
         branch: Git branch the agent worked on, if any.
     """
+    agent = resolve_env(agent, "ATM_AGENT_NAME", "--agent")
+    session = resolve_env(session, "ATM_SESSION_ID", "--session")
     engine = get_engine()
     try:
         step = complete_step(id, agent, session, branch, engine)

@@ -1,7 +1,10 @@
+import os
+
 import typer
 
 from db.models import StoryCreate, StoryUpdate, Status
 
+from .._env import resolve as resolve_env
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
 from ..services.exceptions import NotFound
@@ -28,12 +31,17 @@ def _is_uuid(value: str) -> bool:
 
 
 @app.command("list")
-def list_cmd(project: str = typer.Option(..., "--project", help="Project ID")) -> None:
+def list_cmd(
+    project: str | None = typer.Option(
+        None, "--project", help="Project ID (defaults to $ATM_PROJECT_ID)"
+    ),
+) -> None:
     """List all active stories for a project.
 
     Args:
         project: UUID of the project.
     """
+    project = resolve_env(project, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     try:
         stories = list_stories(project, engine)
@@ -62,9 +70,11 @@ def get(
         if _is_uuid(id_or_seq):
             story = get_story_by_id(id_or_seq, engine)
         else:
-            if project is None:
+            project = project or os.environ.get("ATM_PROJECT_ID")
+            if not project:
                 raise typer.BadParameter(
                     "--project is required when using a sequence number"
+                    " (or set $ATM_PROJECT_ID)"
                 )
             story = get_story_by_project_seq(project, int(id_or_seq), engine)
         print_json(story)
@@ -76,7 +86,9 @@ def get(
 
 @app.command("create")
 def create(
-    project: str = typer.Option(..., "--project", help="Project ID"),
+    project: str | None = typer.Option(
+        None, "--project", help="Project ID (defaults to $ATM_PROJECT_ID)"
+    ),
     title: str = typer.Option(..., "--title"),
     description: str | None = typer.Option(None, "--description"),
     description_file: str | None = typer.Option(
@@ -93,6 +105,7 @@ def create(
     """
     engine = get_engine()
     try:
+        project = resolve_env(project, "ATM_PROJECT_ID", "--project")
         description_text = resolve_description(description, description_file)
         if description_text is None:
             raise typer.BadParameter("--description or --description-file is required")

@@ -50,7 +50,7 @@ Fetch a project by UUID and print it as JSON.
 #### stories list
 
 ```
-atm stories list --project PROJECT_ID
+atm stories list [--project PROJECT_ID]
 ```
 
 List all active stories for a project and print them as JSON.
@@ -59,7 +59,7 @@ List all active stories for a project and print them as JSON.
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--project` | string (UUID) | Yes | Project UUID |
+| `--project` | string (UUID) | No — defaults to `$ATM_PROJECT_ID`; do not pass unless overriding | Project UUID |
 
 ---
 
@@ -81,7 +81,7 @@ Fetch a story by UUID or project-scoped sequence number and print it as JSON.
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--project` | string (UUID) | Conditional | Required when `ID_OR_SEQ` is a sequence number |
+| `--project` | string (UUID) | Conditional — defaults to `$ATM_PROJECT_ID` when `ID_OR_SEQ` is a sequence number; do not pass unless overriding | Project UUID |
 
 **Notes**
 
@@ -92,7 +92,7 @@ Fetch a story by UUID or project-scoped sequence number and print it as JSON.
 #### stories create
 
 ```
-atm stories create --project PROJECT_ID --title TITLE (--description DESCRIPTION | --description-file PATH)
+atm stories create [--project PROJECT_ID] --title TITLE (--description DESCRIPTION | --description-file PATH)
 ```
 
 Create a new story under a project and print it as JSON.
@@ -101,7 +101,7 @@ Create a new story under a project and print it as JSON.
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--project` | string (UUID) | Yes | Project UUID |
+| `--project` | string (UUID) | No — defaults to `$ATM_PROJECT_ID`; do not pass unless overriding | Project UUID |
 | `--title` | string | Yes | Story title |
 | `--description` | string | Conditional | Story description (mutually exclusive with `--description-file`) |
 | `--description-file` | string (path) | Conditional | Path to a file containing the story description (mutually exclusive with `--description`) |
@@ -159,18 +159,18 @@ Fetch a task by UUID or sequence number and print it as JSON.
 | Flag | Type | Required | Description |
 |---|---|---|---|
 | `--story` | string (UUID) | Conditional | Required when `ID_OR_SEQ` is a seq for a story task |
-| `--project` | string (UUID) | Conditional | Required when `ID_OR_SEQ` is a seq for a floating task |
+| `--project` | string (UUID) | Conditional — defaults to `$ATM_PROJECT_ID` when `ID_OR_SEQ` is a seq for a floating task; do not pass unless overriding | Project UUID |
 
 **Notes**
 
-- When using a sequence number, exactly one of `--story` or `--project` must be supplied.
+- When using a sequence number, supply `--story` for a story task; for a floating task the project is taken from `$ATM_PROJECT_ID` (override with `--project` if needed).
 
 ---
 
 #### tasks list-floating
 
 ```
-atm tasks list-floating --project PROJECT_ID
+atm tasks list-floating [--project PROJECT_ID]
 ```
 
 List all floating (story-less) tasks for a project and print them as JSON.
@@ -179,14 +179,14 @@ List all floating (story-less) tasks for a project and print them as JSON.
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--project` | string (UUID) | Yes | Project UUID |
+| `--project` | string (UUID) | No — defaults to `$ATM_PROJECT_ID`; do not pass unless overriding | Project UUID |
 
 ---
 
 #### tasks create
 
 ```
-atm tasks create (--story STORY_ID | --project PROJECT_ID) --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX]
+atm tasks create [--story STORY_ID | --project PROJECT_ID] --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX]
 ```
 
 Create a new task and print it as JSON.
@@ -196,7 +196,7 @@ Create a new task and print it as JSON.
 | Flag | Type | Required | Description |
 |---|---|---|---|
 | `--story` | string (UUID) | Conditional | Story UUID — use for story-linked tasks. Mutually exclusive with `--project`. |
-| `--project` | string (UUID) | Conditional | Project UUID — use for floating tasks not linked to a story. Mutually exclusive with `--story`. |
+| `--project` | string (UUID) | Conditional — defaults to `$ATM_PROJECT_ID` for floating tasks; do not pass unless overriding | Project UUID — use for floating tasks not linked to a story. Mutually exclusive with `--story`. |
 | `--title` | string | Yes | Task title |
 | `--description` | string | Conditional | Task description (mutually exclusive with `--description-file`) |
 | `--description-file` | string (path) | Conditional | Path to a file containing the task description (mutually exclusive with `--description`) |
@@ -204,9 +204,9 @@ Create a new task and print it as JSON.
 
 **Notes**
 
-- Exactly one of `--story` or `--project` is required.
+- Pass `--story` for a story-linked task. Otherwise the task is floating and is attached to `$ATM_PROJECT_ID` (override with `--project` if needed).
 - Exactly one of `--description` or `--description-file` is required.
-- `--prefix` applies only to floating tasks (i.e. when `--project` is used).
+- `--prefix` applies only to floating tasks.
 - Prefer `--description-file` when the description is long or contains special characters — write to a tempfile and pass the path.
 
 ---
@@ -240,7 +240,7 @@ Update fields on a task and print the result as JSON. Does **not** write a compl
 #### tasks start
 
 ```
-atm tasks start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm tasks start ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
 ```
 
 Mark a task as `in_progress`, recording which agent claimed it. Prints the updated task as JSON.
@@ -255,8 +255,8 @@ Mark a task as `in_progress`, recording which agent claimed it. Prints the updat
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--agent` | string | Yes | Name of the agent claiming the task |
-| `--session` | string (UUID) | Yes | Agent session identifier (`$ATM_SESSION_ID`) |
+| `--agent` | string | No — defaults to `$ATM_AGENT_NAME`; do not pass unless overriding | Name of the agent claiming the task |
+| `--session` | string (UUID) | No — defaults to `$ATM_SESSION_ID`; do not pass unless overriding | Agent session identifier |
 | `--branch` | string | No | Git branch the agent is working on |
 
 **Notes**
@@ -269,7 +269,7 @@ Mark a task as `in_progress`, recording which agent claimed it. Prints the updat
 #### tasks complete
 
 ```
-atm tasks complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm tasks complete ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
 ```
 
 Mark a task as `completed`. Cascades: if the task belongs to a story and all tasks in that story are now done, the story is also marked completed. Prints the updated task as JSON.
@@ -284,8 +284,8 @@ Mark a task as `completed`. Cascades: if the task belongs to a story and all tas
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--agent` | string | Yes | Name of the agent completing the task |
-| `--session` | string (UUID) | Yes | Agent session identifier (`$ATM_SESSION_ID`) |
+| `--agent` | string | No — defaults to `$ATM_AGENT_NAME`; do not pass unless overriding | Name of the agent completing the task |
+| `--session` | string (UUID) | No — defaults to `$ATM_SESSION_ID`; do not pass unless overriding | Agent session identifier |
 | `--branch` | string | No | Git branch the agent worked on |
 
 **Notes**
@@ -390,7 +390,7 @@ Update fields on a step and print the result as JSON.
 #### steps start
 
 ```
-atm steps start ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm steps start ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
 ```
 
 Mark a step as `in_progress`, recording which agent claimed it. Prints the updated step as JSON.
@@ -405,8 +405,8 @@ Mark a step as `in_progress`, recording which agent claimed it. Prints the updat
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--agent` | string | Yes | Name of the agent claiming the step |
-| `--session` | string (UUID) | Yes | Agent session identifier (`$ATM_SESSION_ID`) |
+| `--agent` | string | No — defaults to `$ATM_AGENT_NAME`; do not pass unless overriding | Name of the agent claiming the step |
+| `--session` | string (UUID) | No — defaults to `$ATM_SESSION_ID`; do not pass unless overriding | Agent session identifier |
 | `--branch` | string | No | Git branch the agent is working on |
 
 **Notes**
@@ -418,7 +418,7 @@ Mark a step as `in_progress`, recording which agent claimed it. Prints the updat
 #### steps complete
 
 ```
-atm steps complete ID --agent AGENT_NAME --session SESSION_ID [--branch BRANCH]
+atm steps complete ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
 ```
 
 Mark a step as `completed`. Cascades: if all steps in the task are done, the task is marked completed; if all tasks in the story are done, the story is marked completed. Prints the updated step as JSON.
@@ -433,8 +433,8 @@ Mark a step as `completed`. Cascades: if all steps in the task are done, the tas
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
-| `--agent` | string | Yes | Name of the agent completing the step |
-| `--session` | string (UUID) | Yes | Agent session identifier (`$ATM_SESSION_ID`) |
+| `--agent` | string | No — defaults to `$ATM_AGENT_NAME`; do not pass unless overriding | Name of the agent completing the step |
+| `--session` | string (UUID) | No — defaults to `$ATM_SESSION_ID`; do not pass unless overriding | Agent session identifier |
 | `--branch` | string | No | Git branch the agent worked on |
 
 **Notes**
@@ -477,16 +477,13 @@ None.
 
 ## ENVIRONMENT
 
+These are set automatically by the Claude Code SessionStart hook (`resources/plugin/hooks/atm_session_start.sh`); the CLI reads them directly so **do not forward them as flags**.
+
 | Variable | Required | Description |
 |---|---|---|
-| `ATM_PROJECT_ID` | Yes | Default project UUID used by commands that accept `--project` |
-| `ATM_SESSION_ID` | Yes | Session UUID set by the agent spawner; passed to `tasks start` / `tasks complete` / `steps start` / `steps complete` |
-
-## INPUTS
-
-| Input | Description |
-|---|---|
-| Agent name | Identity string (e.g. `pm`, `dev`). Provided by the caller when spawning the agent. Used as `--agent` on `tasks start` / `tasks complete` / `steps start` / `steps complete`. |
+| `ATM_PROJECT_ID` | Yes | Default project UUID used by commands that accept `--project`. Hook sources it from `<repo-root>/.atm_project_id` |
+| `ATM_SESSION_ID` | Yes | Session UUID; used by `tasks start` / `tasks complete` / `steps start` / `steps complete` |
+| `ATM_AGENT_NAME` | Yes | Agent identity; used by `tasks start` / `tasks complete` / `steps start` / `steps complete` |
 
 ## SEE ALSO
 
