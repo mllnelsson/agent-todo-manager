@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 REPO_URL="git@github.com:mllnelsson/agent-todo-manager.git"
 INSTALL_DIR="${HOME}/.local/share/atm"
@@ -13,7 +13,7 @@ command -v node >/dev/null || { echo "node not found (required to build the GUI)
 command -v npm  >/dev/null || { echo "npm not found (required to build the GUI)" >&2; exit 1; }
 
 # Clone or update
-if [[ -d "${INSTALL_DIR}/.git" ]]; then
+if [ -d "${INSTALL_DIR}/.git" ]; then
   echo "Updating existing clone at ${INSTALL_DIR}"
   git -C "${INSTALL_DIR}" pull --ff-only
 else
@@ -53,7 +53,7 @@ case "${SHELL:-}" in
   *)      RC="" ;;
 esac
 
-if [[ -n "${RC}" ]]; then
+if [ -n "${RC}" ]; then
   if ! grep -q "ATM_DATABASE_URL" "${RC}" 2>/dev/null; then
     printf '\n# agent-todo-manager\nexport ATM_DATABASE_URL=%s\n' "${ATM_DATABASE_URL}" >> "${RC}"
     echo "Added ATM_DATABASE_URL to ${RC}"

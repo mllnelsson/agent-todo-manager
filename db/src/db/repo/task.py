@@ -46,6 +46,7 @@ def _to_model(row: TaskRow, *, full: bool = False) -> Task:
         definition_of_done=row.definition_of_done,
         prefix=row.prefix,
         status=Status(row.status),
+        story_id=str(row.story_id) if row.story_id else None,
         steps=sorted([_step_to_model(s) for s in row.steps], key=lambda s: s.seq)
         if full
         else [],

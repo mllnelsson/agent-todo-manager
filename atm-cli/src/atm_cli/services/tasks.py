@@ -8,7 +8,6 @@ from db.models import (
     TaskCreate,
     TaskUpdate,
 )
-from db.orm import Task as TaskORM
 from db.repo import (
     create_completion,
     create_task,
@@ -21,7 +20,6 @@ from db.repo import (
     update_task,
 )
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session
 
 from .exceptions import InvalidStatus, NotFound
 
@@ -137,6 +135,27 @@ def start_task(
         ),
     )
 
+    if task.story_id:
+        story = get_story(engine, story_id=task.story_id)
+        assert story is not None
+        if story.status == Status.TODO:
+            update_story(
+                engine,
+                story_id=task.story_id,
+                data=StoryUpdate(status=Status.IN_PROGRESS),
+            )
+            create_completion(
+                engine,
+                data=CompletionCreate(
+                    entity_type=EntityType.STORY,
+                    entity_id=task.story_id,
+                    action=Action.STARTED,
+                    agent_name=agent_name,
+                    session_id=session_id,
+                    branch=branch,
+                ),
+            )
+
     updated = get_task(engine, task_id=task_id)
     assert updated is not None
     return updated
@@ -168,22 +187,20 @@ def complete_task(
         ),
     )
 
-    with Session(engine) as session:
-        orm_task = session.get(TaskORM, task_id)
-        story_id = str(orm_task.story_id) if orm_task.story_id else None
-
-    if story_id:
-        story = get_story(engine, story_id=story_id)
+    if task.story_id:
+        story = get_story(engine, story_id=task.story_id)
         assert story is not None
         if story.tasks and all(t.status == Status.COMPLETED for t in story.tasks):
             update_story(
-                engine, story_id=story_id, data=StoryUpdate(status=Status.COMPLETED)
+                engine,
+                story_id=task.story_id,
+                data=StoryUpdate(status=Status.COMPLETED),
             )
             create_completion(
                 engine,
                 data=CompletionCreate(
                     entity_type=EntityType.STORY,
-                    entity_id=story_id,
+                    entity_id=task.story_id,
                     action=Action.COMPLETED,
                     agent_name=agent_name,
                     session_id=session_id,

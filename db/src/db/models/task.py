@@ -14,6 +14,7 @@ class Task(BaseModel):
     definition_of_done: str | None = None
     prefix: str | None
     status: Status
+    story_id: str | None = None
     steps: list[Step] = []
     created_at: datetime
     updated_at: datetime
