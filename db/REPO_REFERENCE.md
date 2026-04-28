@@ -25,7 +25,7 @@ All functions are importable from `db.repo`. Every function takes an `Engine` as
 | `get_story_by_seq` | `(engine, project_id: str, seq: int)` | `Story \| None` | Full: tasks → steps, lookup by project-scoped seq |
 | `list_stories` | `(engine, project_id: str)` | `list[Story]` | Shallow — ordered by seq |
 | `list_active_stories` | `(engine, project_id: str)` | `list[Story]` | Shallow — `status != COMPLETED`, ordered by seq |
-| `update_story` | `(engine, story_id: str, data: StoryUpdate)` | `Story \| None` | Patches title, description, status |
+| `update_story` | `(engine, story_id: str, data: StoryUpdate)` | `Story \| None` | Patches title, description, status. The service layer (`update_story_by_id`) reconciles status from tasks after applying the patch. |
 | `delete_story` | `(engine, story_id: str)` | `bool` | Returns `False` if not found |
 
 ---
@@ -39,7 +39,7 @@ All functions are importable from `db.repo`. Every function takes an `Engine` as
 | `get_task_by_seq` | `(engine, story_id: str, seq: int)` | `Task \| None` | Full: steps, lookup by story-scoped seq |
 | `get_floating_task_by_seq` | `(engine, project_id: str, seq: int)` | `Task \| None` | Full: steps, lookup floating task by project-scoped seq |
 | `list_floating_tasks` | `(engine, project_id: str)` | `list[Task]` | Shallow — tasks with no parent story, ordered by seq |
-| `update_task` | `(engine, task_id: str, data: TaskUpdate)` | `Task \| None` | Patches title, description, status, prefix |
+| `update_task` | `(engine, task_id: str, data: TaskUpdate)` | `Task \| None` | Patches title, description, status, prefix. The service layer (`update_task_by_id`) reconciles the parent story's status when `status` is patched. |
 | `delete_task` | `(engine, task_id: str)` | `bool` | Returns `False` if not found |
 
 ---
@@ -51,8 +51,7 @@ All functions are importable from `db.repo`. Every function takes an `Engine` as
 | `create_step` | `(engine, data: StepCreate)` | `Step` | Auto-assigns next `seq` within the task |
 | `get_step` | `(engine, step_id: str)` | `Step \| None` | Lookup by UUID |
 | `get_step_by_seq` | `(engine, task_id: str, seq: int)` | `Step \| None` | Lookup by task-scoped seq |
-| `get_next_step` | `(engine, task_id: str)` | `Step \| None` | First `TODO` step in the task, ordered by seq |
-| `update_step` | `(engine, step_id: str, data: StepUpdate)` | `Step \| None` | Patches title, description, status |
+| `update_step` | `(engine, step_id: str, data: StepUpdate)` | `Step \| None` | Patches title, description, definition_of_done. Steps have no status. |
 | `delete_step` | `(engine, step_id: str)` | `bool` | Returns `False` if not found |
 
 ---

@@ -30,10 +30,9 @@ function buildEntityIndex(project: Project): Map<string, string> {
 
 export function buildStep(step: Step, address: string): string {
   return `
-    <div class="step" data-status="${step.status}">
+    <div class="step">
       <span class="address">${escapeHtml(address)}</span>
       <span class="step-title">${escapeHtml(step.title)}</span>
-      ${badge(step.status)}
     </div>`;
 }
 

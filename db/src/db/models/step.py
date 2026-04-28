@@ -2,8 +2,6 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from .utils import Status
-
 
 class Step(BaseModel):
     id: str
@@ -11,7 +9,6 @@ class Step(BaseModel):
     title: str
     description: str
     definition_of_done: str | None = None
-    status: Status
     created_at: datetime
     updated_at: datetime
 
@@ -27,4 +24,3 @@ class StepUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
     definition_of_done: str | None = None
-    status: Status | None = None

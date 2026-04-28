@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session
 
-from db.models import Status, Step, StepCreate, StepUpdate
+from db.models import Step, StepCreate, StepUpdate
 from db.orm import Completion as CompletionRow
 from db.orm import Step as StepRow
 
@@ -21,7 +21,6 @@ def _to_model(row: StepRow) -> Step:
         title=row.title,
         description=row.description,
         definition_of_done=row.definition_of_done,
-        status=Status(row.status),
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -38,7 +37,6 @@ def create_step(engine: Engine, data: StepCreate) -> Step:
             title=data.title,
             description=data.description,
             definition_of_done=data.definition_of_done,
-            status=Status.TODO,
         )
         session.add(row)
         session.commit()
@@ -62,22 +60,6 @@ def get_step_by_seq(engine: Engine, task_id: str, seq: int) -> Step | None:
         return _to_model(row) if row else None
 
 
-def get_next_step(engine: Engine, task_id: str) -> Step | None:
-    """First TODO step in a task, ordered by seq."""
-    with Session(engine) as session:
-        stmt = (
-            select(StepRow)
-            .where(
-                StepRow.task_id == uuid.UUID(task_id),
-                StepRow.status == Status.TODO,
-            )
-            .order_by(StepRow.seq)
-            .limit(1)
-        )
-        row = session.execute(stmt).scalar_one_or_none()
-        return _to_model(row) if row else None
-
-
 def update_step(engine: Engine, step_id: str, data: StepUpdate) -> Step | None:
     with Session(engine) as session:
         row = session.get(StepRow, uuid.UUID(step_id))
@@ -89,8 +71,6 @@ def update_step(engine: Engine, step_id: str, data: StepUpdate) -> Step | None:
             row.description = data.description
         if data.definition_of_done is not None:
             row.definition_of_done = data.definition_of_done
-        if data.status is not None:
-            row.status = data.status
         session.commit()
         session.refresh(row)
         return _to_model(row)

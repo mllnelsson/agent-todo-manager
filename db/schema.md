@@ -51,8 +51,16 @@ A story is a meaningful unit of work scoped to a single outcome within a project
 Description should provide enough context for a planning agent to decompose
 the story into tasks and steps without further input.
 
-A story auto-completes when all child tasks reach `COMPLETED`, provided it has
-at least one task. Empty stories never auto-complete.
+Story status is **derived from its tasks** and reconciled on every task or story
+status mutation:
+
+- All tasks `COMPLETED` → story `COMPLETED`
+- All tasks `TODO` → story `TODO`
+- Otherwise (any `IN_PROGRESS`, or a mix) → story `IN_PROGRESS`
+
+A story with no tasks keeps whatever status was set manually. Direct
+`stories update --status` calls are accepted and then reconciled — manual values
+are overridden when they disagree with the task states.
 
 ---
 
@@ -82,8 +90,9 @@ permitted but undocumented.
 among other floating tasks. Rendering: standard tasks show as `x.y`, floating tasks
 show as `<prefix>.y` (e.g. `b.2`).
 
-A task auto-completes when all child steps reach `COMPLETED`, provided it has
-at least one step.
+The task is the unit at which lifecycle status is tracked. Mutating a task's
+status (via `tasks start`, `tasks complete`, or `tasks update --status`) triggers
+reconciliation of the parent story's status.
 
 ---
 
@@ -96,17 +105,19 @@ at least one step.
 | task_id     | TEXT    | FK → tasks.id, NOT NULL                                                       |
 | title       | TEXT    | NOT NULL                                                                      |
 | description | TEXT    | NOT NULL                                                                      |
-| status      | TEXT    | NOT NULL, CHECK(status IN ('TODO','IN_PROGRESS','COMPLETED')), DEFAULT 'TODO' |
 | created_at  | TEXT    | NOT NULL, ISO 8601                                                            |
 | updated_at  | TEXT    | NOT NULL, ISO 8601                                                            |
 
-The atomic unit of execution. Steps never float — they always belong to a task.
-Description is the direct instruction to the coding agent for a single completable action.
+Steps never float — they always belong to a task. Description is the direct
+instruction to the coding agent for a single discrete unit of work.
 
 `seq` is scoped to the parent task. Renders as the `z` in `x.y.z` or `<prefix>.y.z`.
 
-Steps are the only level a coding agent directly marks as done. Rollup to task and
-story is handled automatically by application logic, never by the agent.
+Steps have **no lifecycle status**. They serve only as the planning agent's
+ordered breakdown of how the build agent should sequence work within a task. The
+build agent reads steps as a checklist and calls `tasks complete` once the work
+is done; the parent task's status (and the story's, via cascade) is the single
+source of truth for progress.
 
 ---
 
@@ -117,6 +128,7 @@ story is handled automatically by application logic, never by the agent.
 |-------------|---------|-------------------------------------------------------------------------|
 | id          | TEXT    | PK, UUID                                                                |
 | entity_type | TEXT    | NOT NULL, CHECK(entity_type IN ('story','task','step'))                 |
+
 | entity_id   | TEXT    | NOT NULL                                                                |
 | action      | TEXT    | NOT NULL, CHECK(action IN ('started','completed'))                      |
 | agent_name  | TEXT    | NOT NULL                                                                |

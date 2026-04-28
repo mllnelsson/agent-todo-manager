@@ -5,7 +5,6 @@ import typer
 import db.repo as repo
 from db.repo.queries import (
     list_orphaned_tasks,
-    list_stale_steps,
     list_stale_tasks,
     list_todo_in_completed_stories,
 )
@@ -26,65 +25,26 @@ def stale(
     project_id = resolve_env(project_id, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     stale_tasks = list_stale_tasks(engine, project_id, days)
-    stale_steps = list_stale_steps(engine, project_id, days)
 
-    if not stale_tasks and not stale_steps:
+    if not stale_tasks:
         console.print(f"No stale items found (>{days} days, not completed).")
         return
 
-    if stale_tasks:
-        print_table(
-            f"Stale Tasks (>{days} days)",
-            ["ID", "Title", "Status", "Updated"],
-            [
-                [t.id, t.title, t.status, t.updated_at.strftime("%Y-%m-%d")]
-                for t in stale_tasks
-            ],
-        )
-    if stale_steps:
-        print_table(
-            f"Stuck Steps (IN_PROGRESS >{days} days)",
-            ["ID", "Title", "Updated"],
-            [[s.id, s.title, s.updated_at.strftime("%Y-%m-%d")] for s in stale_steps],
-        )
+    print_table(
+        f"Stale Tasks (>{days} days)",
+        ["ID", "Title", "Status", "Updated"],
+        [
+            [t.id, t.title, t.status, t.updated_at.strftime("%Y-%m-%d")]
+            for t in stale_tasks
+        ],
+    )
 
     if not confirm("Delete these items?", force):
         raise typer.Abort()
 
     for task in stale_tasks:
         repo.delete_task(engine, task.id)
-    for step in stale_steps:
-        repo.delete_step(engine, step.id)
-    console.print(
-        f"[green]Deleted {len(stale_tasks)} tasks and {len(stale_steps)} steps.[/green]"
-    )
-
-
-@app.command("stuck")
-def stuck(
-    project_id: Annotated[str | None, typer.Option("--project")] = None,
-    force: Annotated[bool, typer.Option("--force")] = False,
-) -> None:
-    project_id = resolve_env(project_id, "ATM_PROJECT_ID", "--project")
-    engine = get_engine()
-    steps = list_stale_steps(engine, project_id, days=0)
-
-    if not steps:
-        console.print("No stuck steps found.")
-        return
-
-    print_table(
-        "Stuck Steps (IN_PROGRESS)",
-        ["ID", "Title", "Updated"],
-        [[s.id, s.title, s.updated_at.strftime("%Y-%m-%d")] for s in steps],
-    )
-
-    if not confirm("Delete these steps?", force):
-        raise typer.Abort()
-
-    for step in steps:
-        repo.delete_step(engine, step.id)
-    console.print(f"[green]Deleted {len(steps)} stuck steps.[/green]")
+    console.print(f"[green]Deleted {len(stale_tasks)} tasks.[/green]")
 
 
 @app.command("dirty")

@@ -12,8 +12,8 @@ The `atm` CLI manages a hierarchy of project → story → task → step. Load t
 | Variable | Set by | Read by |
 |---|---|---|
 | `ATM_PROJECT_ID` | hook (reads `<repo-root>/.atm_project_id`) | every command that accepts `--project` |
-| `ATM_SESSION_ID` | hook | `tasks start` / `tasks complete` / `steps start` / `steps complete` |
-| `ATM_AGENT_NAME` | hook | `tasks start` / `tasks complete` / `steps start` / `steps complete` |
+| `ATM_SESSION_ID` | hook | `tasks start` / `tasks complete` |
+| `ATM_AGENT_NAME` | hook | `tasks start` / `tasks complete` |
 
 ## Calling the CLI
 

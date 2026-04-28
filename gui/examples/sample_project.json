@@ -30,7 +30,6 @@
               "seq": 1,
               "title": "Define entity types and relationships",
               "description": "Identify the five tables and how they relate.",
-              "status": "completed",
               "created_at": "2026-03-10T09:15:00Z",
               "updated_at": "2026-03-11T14:00:00Z"
             },
@@ -39,7 +38,6 @@
               "seq": 2,
               "title": "Document addressing scheme",
               "description": "Write the x.y.z and prefix.y addressing rules.",
-              "status": "completed",
               "created_at": "2026-03-11T14:00:00Z",
               "updated_at": "2026-03-12T11:00:00Z"
             },
@@ -48,7 +46,6 @@
               "seq": 3,
               "title": "Write schema.md",
               "description": "Produce the final schema.md with column tables.",
-              "status": "completed",
               "created_at": "2026-03-12T11:00:00Z",
               "updated_at": "2026-03-12T16:00:00Z"
             }
@@ -69,7 +66,6 @@
               "seq": 1,
               "title": "Create DeclarativeBase and TimestampMixin",
               "description": "Set up base ORM infrastructure.",
-              "status": "completed",
               "created_at": "2026-03-13T09:05:00Z",
               "updated_at": "2026-03-13T11:00:00Z"
             },
@@ -78,7 +74,6 @@
               "seq": 2,
               "title": "Map Project, Story, Task, Step, Completion",
               "description": "Implement all five ORM models with relationships.",
-              "status": "completed",
               "created_at": "2026-03-13T11:00:00Z",
               "updated_at": "2026-03-14T16:00:00Z"
             },
@@ -87,7 +82,6 @@
               "seq": 3,
               "title": "Verify FK cascades and nullable columns",
               "description": "Check story_id and prefix nullability.",
-              "status": "completed",
               "created_at": "2026-03-14T16:00:00Z",
               "updated_at": "2026-03-15T17:00:00Z"
             }
@@ -108,7 +102,6 @@
               "seq": 1,
               "title": "project.py repo",
               "description": "create, get, list, list_active, update, delete.",
-              "status": "completed",
               "created_at": "2026-03-16T09:05:00Z",
               "updated_at": "2026-03-16T17:00:00Z"
             },
@@ -117,7 +110,6 @@
               "seq": 2,
               "title": "story.py repo",
               "description": "CRUD for stories scoped to a project.",
-              "status": "completed",
               "created_at": "2026-03-17T09:00:00Z",
               "updated_at": "2026-03-17T14:00:00Z"
             },
@@ -126,7 +118,6 @@
               "seq": 3,
               "title": "task.py repo",
               "description": "CRUD for tasks; handle floating vs story-scoped seq.",
-              "status": "completed",
               "created_at": "2026-03-17T14:00:00Z",
               "updated_at": "2026-03-18T12:00:00Z"
             },
@@ -135,7 +126,6 @@
               "seq": 4,
               "title": "step.py and completion.py repos",
               "description": "CRUD for steps; append-only create for completions.",
-              "status": "completed",
               "created_at": "2026-03-18T12:00:00Z",
               "updated_at": "2026-03-18T17:00:00Z"
             }
@@ -167,7 +157,6 @@
               "seq": 1,
               "title": "Add FastAPI and uvicorn to api/pyproject.toml",
               "description": "Add runtime dependencies.",
-              "status": "completed",
               "created_at": "2026-03-19T09:10:00Z",
               "updated_at": "2026-03-19T10:00:00Z"
             },
@@ -176,7 +165,6 @@
               "seq": 2,
               "title": "Create FastAPI app instance and lifespan handler",
               "description": "Wire up DB engine from ATM_DB env var.",
-              "status": "completed",
               "created_at": "2026-03-19T10:00:00Z",
               "updated_at": "2026-03-20T17:00:00Z"
             }
@@ -195,18 +183,16 @@
             {
               "id": "00000000-0000-0000-0000-000005000001",
               "seq": 1,
-              "title": "GET /projects — list all active projects",
+              "title": "GET /projects \u2014 list all active projects",
               "description": "Return list of Project response models.",
-              "status": "completed",
               "created_at": "2026-03-21T09:05:00Z",
               "updated_at": "2026-03-22T12:00:00Z"
             },
             {
               "id": "00000000-0000-0000-0000-000005000002",
               "seq": 2,
-              "title": "GET /projects/{id} — fetch one project with full tree",
-              "description": "Nested response: stories → tasks → steps.",
-              "status": "in_progress",
+              "title": "GET /projects/{id} \u2014 fetch one project with full tree",
+              "description": "Nested response: stories \u2192 tasks \u2192 steps.",
               "created_at": "2026-03-22T12:00:00Z",
               "updated_at": "2026-03-24T09:00:00Z"
             },
@@ -215,7 +201,6 @@
               "seq": 3,
               "title": "Include floating tasks (bugs/hotfixes) in response",
               "description": "Add bugs and hotfixes lists to the project response.",
-              "status": "todo",
               "created_at": "2026-03-22T12:00:00Z",
               "updated_at": "2026-03-22T12:00:00Z"
             }
@@ -236,7 +221,6 @@
               "seq": 1,
               "title": "GET /projects/{id}/stories",
               "description": "List stories for a project.",
-              "status": "todo",
               "created_at": "2026-03-24T09:00:00Z",
               "updated_at": "2026-03-24T09:00:00Z"
             },
@@ -245,16 +229,14 @@
               "seq": 2,
               "title": "GET /stories/{id}/tasks and GET /tasks/{id}/steps",
               "description": "Nested resource endpoints for tasks and steps.",
-              "status": "todo",
               "created_at": "2026-03-24T09:00:00Z",
               "updated_at": "2026-03-24T09:00:00Z"
             },
             {
               "id": "00000000-0000-0000-0000-000006000003",
               "seq": 3,
-              "title": "POST /completions — record a state transition",
+              "title": "POST /completions \u2014 record a state transition",
               "description": "Append a completion row; update entity status.",
-              "status": "todo",
               "created_at": "2026-03-24T09:00:00Z",
               "updated_at": "2026-03-24T09:00:00Z"
             }
@@ -286,7 +268,6 @@
               "seq": 1,
               "title": "Define types.ts",
               "description": "Mirror Pydantic response models as TS interfaces.",
-              "status": "in_progress",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             },
@@ -295,16 +276,14 @@
               "seq": 2,
               "title": "Implement api.ts",
               "description": "fetchProject(id) and fetchProjects() using the REST API.",
-              "status": "todo",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             },
             {
               "id": "00000000-0000-0000-0000-000007000003",
               "seq": 3,
-              "title": "Implement render.ts — kanban layout",
+              "title": "Implement render.ts \u2014 kanban layout",
               "description": "Three columns: TODO / IN_PROGRESS / COMPLETED per story.",
-              "status": "todo",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             },
@@ -313,7 +292,6 @@
               "seq": 4,
               "title": "Wire up main.ts polling loop",
               "description": "Poll every 3 s; call render on each tick.",
-              "status": "todo",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             }
@@ -334,7 +312,6 @@
               "seq": 1,
               "title": "Fetch GET /completions from API",
               "description": "Add fetchCompletions() to api.ts.",
-              "status": "todo",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             },
@@ -343,7 +320,6 @@
               "seq": 2,
               "title": "Render timeline in render.ts",
               "description": "Each row: timestamp, agent, action, entity address.",
-              "status": "todo",
               "created_at": "2026-03-24T10:00:00Z",
               "updated_at": "2026-03-24T10:00:00Z"
             }
@@ -368,7 +344,6 @@
           "seq": 1,
           "title": "Reproduce with a minimal test case",
           "description": "Write a pytest that creates floating task then story task.",
-          "status": "in_progress",
           "created_at": "2026-03-23T14:05:00Z",
           "updated_at": "2026-03-23T14:05:00Z"
         },
@@ -377,7 +352,6 @@
           "seq": 2,
           "title": "Fix next_seq logic in task repo",
           "description": "Separate the floating-task seq query from story-task seq.",
-          "status": "todo",
           "created_at": "2026-03-23T14:05:00Z",
           "updated_at": "2026-03-23T14:05:00Z"
         }

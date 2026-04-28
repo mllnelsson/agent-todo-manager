@@ -22,7 +22,7 @@ def _step_to_model(row: StepRow) -> Step:
         seq=row.seq,
         title=row.title,
         description=row.description,
-        status=Status(row.status),
+        definition_of_done=row.definition_of_done,
         created_at=row.created_at,
         updated_at=row.updated_at,
     )

@@ -3,7 +3,6 @@ from db.models import (
     CompletionCreate,
     EntityType,
     Status,
-    StoryUpdate,
     Task,
     TaskCreate,
     TaskUpdate,
@@ -12,15 +11,14 @@ from db.repo import (
     create_completion,
     create_task,
     get_floating_task_by_seq,
-    get_story,
     get_task,
     get_task_by_seq,
     list_floating_tasks,
-    update_story,
     update_task,
 )
 from sqlalchemy.engine import Engine
 
+from ._cascade import reconcile_story_status
 from .exceptions import InvalidStatus, NotFound
 
 
@@ -136,25 +134,13 @@ def start_task(
     )
 
     if task.story_id:
-        story = get_story(engine, story_id=task.story_id)
-        assert story is not None
-        if story.status == Status.TODO:
-            update_story(
-                engine,
-                story_id=task.story_id,
-                data=StoryUpdate(status=Status.IN_PROGRESS),
-            )
-            create_completion(
-                engine,
-                data=CompletionCreate(
-                    entity_type=EntityType.STORY,
-                    entity_id=task.story_id,
-                    action=Action.STARTED,
-                    agent_name=agent_name,
-                    session_id=session_id,
-                    branch=branch,
-                ),
-            )
+        reconcile_story_status(
+            engine,
+            story_id=task.story_id,
+            agent_name=agent_name,
+            session_id=session_id,
+            branch=branch,
+        )
 
     updated = get_task(engine, task_id=task_id)
     assert updated is not None
@@ -188,25 +174,13 @@ def complete_task(
     )
 
     if task.story_id:
-        story = get_story(engine, story_id=task.story_id)
-        assert story is not None
-        if story.tasks and all(t.status == Status.COMPLETED for t in story.tasks):
-            update_story(
-                engine,
-                story_id=task.story_id,
-                data=StoryUpdate(status=Status.COMPLETED),
-            )
-            create_completion(
-                engine,
-                data=CompletionCreate(
-                    entity_type=EntityType.STORY,
-                    entity_id=task.story_id,
-                    action=Action.COMPLETED,
-                    agent_name=agent_name,
-                    session_id=session_id,
-                    branch=branch,
-                ),
-            )
+        reconcile_story_status(
+            engine,
+            story_id=task.story_id,
+            agent_name=agent_name,
+            session_id=session_id,
+            branch=branch,
+        )
 
     updated = get_task(engine, task_id=task_id)
     assert updated is not None
@@ -215,6 +189,9 @@ def complete_task(
 
 def update_task_by_id(task_id: str, data: TaskUpdate, engine: Engine) -> Task:
     """Apply partial updates to the task with the given ID.
+
+    When the patch includes `status`, the parent story's status is reconciled
+    from its task statuses afterwards (silent — no completion event recorded).
 
     Args:
         task_id: UUID of the task to update.
@@ -230,4 +207,8 @@ def update_task_by_id(task_id: str, data: TaskUpdate, engine: Engine) -> Task:
     task = update_task(engine, task_id=task_id, data=data)
     if task is None:
         raise NotFound(f"Task {task_id} not found")
+    if data.status is not None:
+        full = get_task(engine, task_id=task_id)
+        if full is not None and full.story_id is not None:
+            reconcile_story_status(engine, story_id=full.story_id)
     return task

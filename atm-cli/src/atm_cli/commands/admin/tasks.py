@@ -46,7 +46,6 @@ def _render_task_md(task, story=None) -> str:
                 "",
                 f"### Step {step.seq}: {step.title}",
                 f"- **ID:** {step.id}",
-                f"- **Status:** {STATUS_LABEL.get(step.status, step.status)}",
                 "",
                 step.description or "",
             ]

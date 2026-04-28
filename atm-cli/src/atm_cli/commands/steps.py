@@ -2,17 +2,13 @@ import typer
 
 from db.models import StepCreate, StepUpdate
 
-from .._env import resolve as resolve_env
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json
-from ..services.exceptions import InvalidStatus, NotFound
+from ..services.exceptions import NotFound
 from ._input import resolve_definition_of_done, resolve_description
 from ..services.steps import (
-    complete_step,
     create_step_for_task,
-    get_next_pending_step,
     get_step_by_task_seq,
-    start_step,
     update_step_by_id,
 )
 
@@ -33,23 +29,6 @@ def get(
     engine = get_engine()
     try:
         step = get_step_by_task_seq(task, seq, engine)
-        print_json(step)
-    except NotFound as e:
-        exit_user_error("not_found", str(e))
-    except Exception as e:
-        exit_system_error("internal_error", str(e))
-
-
-@app.command("next")
-def next_cmd(task: str = typer.Option(..., "--task", help="Task ID")) -> None:
-    """Fetch the next pending (TODO) step for a task and print it as JSON.
-
-    Args:
-        task: UUID of the task.
-    """
-    engine = get_engine()
-    try:
-        step = get_next_pending_step(task, engine)
         print_json(step)
     except NotFound as e:
         exit_user_error("not_found", str(e))
@@ -145,71 +124,5 @@ def update(
         print_json(step)
     except NotFound as e:
         exit_user_error("not_found", str(e))
-    except Exception as e:
-        exit_system_error("internal_error", str(e))
-
-
-@app.command("start")
-def start(
-    id: str,
-    agent: str | None = typer.Option(
-        None, "--agent", help="Agent name (defaults to $ATM_AGENT_NAME)"
-    ),
-    session: str | None = typer.Option(
-        None, "--session", help="Session ID (defaults to $ATM_SESSION_ID)"
-    ),
-    branch: str | None = typer.Option(None, "--branch", help="Git branch"),
-) -> None:
-    """Mark a step as IN_PROGRESS, recording which agent claimed it.
-
-    Args:
-        id: UUID of the step to start.
-        agent: Name of the agent claiming the step.
-        session: Agent session identifier.
-        branch: Git branch the agent is working on, if any.
-    """
-    agent = resolve_env(agent, "ATM_AGENT_NAME", "--agent")
-    session = resolve_env(session, "ATM_SESSION_ID", "--session")
-    engine = get_engine()
-    try:
-        step = start_step(id, agent, session, branch, engine)
-        print_json(step)
-    except NotFound as e:
-        exit_user_error("not_found", str(e))
-    except InvalidStatus as e:
-        exit_user_error("invalid_status", str(e))
-    except Exception as e:
-        exit_system_error("internal_error", str(e))
-
-
-@app.command("complete")
-def complete(
-    id: str,
-    agent: str | None = typer.Option(
-        None, "--agent", help="Agent name (defaults to $ATM_AGENT_NAME)"
-    ),
-    session: str | None = typer.Option(
-        None, "--session", help="Session ID (defaults to $ATM_SESSION_ID)"
-    ),
-    branch: str | None = typer.Option(None, "--branch", help="Git branch"),
-) -> None:
-    """Mark a step as COMPLETED, cascading completion to the task and story if applicable.
-
-    Args:
-        id: UUID of the step to complete.
-        agent: Name of the agent completing the step.
-        session: Agent session identifier.
-        branch: Git branch the agent worked on, if any.
-    """
-    agent = resolve_env(agent, "ATM_AGENT_NAME", "--agent")
-    session = resolve_env(session, "ATM_SESSION_ID", "--session")
-    engine = get_engine()
-    try:
-        step = complete_step(id, agent, session, branch, engine)
-        print_json(step)
-    except NotFound as e:
-        exit_user_error("not_found", str(e))
-    except InvalidStatus as e:
-        exit_user_error("invalid_status", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))

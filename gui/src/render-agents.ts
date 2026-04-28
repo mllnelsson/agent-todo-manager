@@ -76,8 +76,7 @@ function buildAgentView(projects: Project[]): string {
       const taskCount = entries.length;
       const taskItems = entries
         .map(({ task, address, projectTitle, context }) => {
-          const inProgressSteps = task.steps
-            .filter((s) => s.status === 'in_progress')
+          const stepList = task.steps
             .map((s) => buildStep(s, `${address}.${s.seq}`))
             .join('');
           return `
@@ -88,7 +87,7 @@ function buildAgentView(projects: Project[]): string {
                 ${badge(task.status)}
               </div>
               <p class="agent-task-context">${escapeHtml(projectTitle)} › ${escapeHtml(context)}</p>
-              ${inProgressSteps ? `<div class="step-list">${inProgressSteps}</div>` : ''}
+              ${stepList ? `<div class="step-list">${stepList}</div>` : ''}
             </div>`;
         })
         .join('');

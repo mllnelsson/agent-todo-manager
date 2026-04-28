@@ -37,11 +37,12 @@ Load the common foundation first: `/atm:core`
 
 - **`stories list` returns story metadata only — no tasks.** To see a story's tasks, use `atm stories get <ID_OR_SEQ>`; the response embeds the full task array. There is no `tasks list --story` command.
 - Tasks must have at least one step defined before the build role can pick them up. Always create steps for every task before handoff.
+- **Steps have no status.** They are an ordered breakdown — sequencing hints — that tell the build agent how to slice up a task's work. The build agent reads them in order and calls `tasks complete` when finished. Do not attempt to mark steps `in_progress` or `completed`; there is no command for it.
 - The step **description** is the implementation specification — it should contain enough detail to complete the step without further questions. Write descriptions as clear, actionable instructions.
 - Always use `--description-file` rather than `--description` for descriptions (and `--definition-of-done-file` rather than `--definition-of-done`). Write the content to a tempfile first, then pass the path. This avoids shell escaping issues with long text, newlines, and special characters: `cat > /tmp/desc.md << 'EOF' ... EOF && atm steps create ... --description-file /tmp/desc.md`
 - Use `--story` to create a story-linked task. Use `--project` for floating tasks (bugs, hotfixes not part of a story).
-- Status values for stories and tasks: `todo` | `in_progress` | `completed`
-- **Story status cascades automatically.** Starting the first task of a `todo` story flips the story to `in_progress`; completing the last `in_progress` task of a story flips it to `completed`. Do not call `stories update --status` to drive these transitions.
+- Status values for stories and tasks: `todo` | `in_progress` | `completed`. Steps have no status.
+- **Story status is derived from its tasks and reconciled on every status mutation** — `tasks start`, `tasks complete`, `tasks update --status`, and `stories update --status` all trigger reconciliation. Rules: all tasks `completed` → story `completed`; all tasks `todo` → story `todo`; otherwise → story `in_progress`. A manual `stories update --status` value that disagrees with the task states is overridden.
 
 ## Definition of Done
 

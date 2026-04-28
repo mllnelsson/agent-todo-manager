@@ -30,7 +30,6 @@
               "seq": 1,
               "title": "Identify required fields from upstream sources",
               "description": "Survey Nginx, Python app, and syslog formats.",
-              "status": "completed",
               "created_at": "2026-03-15T08:15:00Z",
               "updated_at": "2026-03-16T12:00:00Z"
             },
@@ -39,7 +38,6 @@
               "seq": 2,
               "title": "Write schema.md with field table",
               "description": "Document each field: name, type, nullable, source.",
-              "status": "completed",
               "created_at": "2026-03-16T12:00:00Z",
               "updated_at": "2026-03-17T16:00:00Z"
             }
@@ -60,7 +58,6 @@
               "seq": 1,
               "title": "Implement HTTP ingest endpoint",
               "description": "POST /ingest accepting JSON or NDJSON payloads.",
-              "status": "completed",
               "created_at": "2026-03-18T09:05:00Z",
               "updated_at": "2026-03-20T14:00:00Z"
             },
@@ -69,7 +66,6 @@
               "seq": 2,
               "title": "Implement syslog UDP listener",
               "description": "Parse RFC 5424 frames into LogEvent.",
-              "status": "completed",
               "created_at": "2026-03-20T14:00:00Z",
               "updated_at": "2026-03-21T17:00:00Z"
             },
@@ -78,7 +74,6 @@
               "seq": 3,
               "title": "Unit tests for both parsers",
               "description": "Cover malformed input, large payloads, and encoding edge cases.",
-              "status": "completed",
               "created_at": "2026-03-21T17:00:00Z",
               "updated_at": "2026-03-22T17:00:00Z"
             }
@@ -110,7 +105,6 @@
               "seq": 1,
               "title": "Define rule DSL",
               "description": "Simple JSON rules: match field, apply tag or transformation.",
-              "status": "completed",
               "created_at": "2026-03-23T09:10:00Z",
               "updated_at": "2026-03-24T15:00:00Z"
             },
@@ -119,7 +113,6 @@
               "seq": 2,
               "title": "Implement rule evaluator",
               "description": "Load rules from config and evaluate against each event.",
-              "status": "completed",
               "created_at": "2026-03-24T15:00:00Z",
               "updated_at": "2026-03-26T17:00:00Z"
             }
@@ -140,7 +133,6 @@
               "seq": 1,
               "title": "Define enrichment contract",
               "description": "Interface for pluggable enrichers; return value merges into LogEvent.",
-              "status": "completed",
               "created_at": "2026-03-27T09:05:00Z",
               "updated_at": "2026-03-28T12:00:00Z"
             },
@@ -149,7 +141,6 @@
               "seq": 2,
               "title": "Implement IP geo-lookup enricher",
               "description": "Query MaxMind GeoLite2 database; attach country, city, ASN.",
-              "status": "in_progress",
               "created_at": "2026-03-28T12:00:00Z",
               "updated_at": "2026-03-30T09:00:00Z"
             },
@@ -158,7 +149,6 @@
               "seq": 3,
               "title": "Unit tests for enrichment service",
               "description": "Mock external APIs; cover cache hit, cache miss, and error paths.",
-              "status": "todo",
               "created_at": "2026-03-28T12:00:00Z",
               "updated_at": "2026-03-28T12:00:00Z"
             }
@@ -179,7 +169,6 @@
               "seq": 1,
               "title": "Implement JSON lines serialiser",
               "description": "Write enriched events as NDJSON to stdout or file sink.",
-              "status": "todo",
               "created_at": "2026-03-30T09:00:00Z",
               "updated_at": "2026-03-30T09:00:00Z"
             },
@@ -188,7 +177,6 @@
               "seq": 2,
               "title": "Add HTTP sink for downstream consumers",
               "description": "POST batches of events to a configurable webhook URL.",
-              "status": "todo",
               "created_at": "2026-03-30T09:00:00Z",
               "updated_at": "2026-03-30T09:00:00Z"
             }
@@ -213,7 +201,6 @@
           "seq": 1,
           "title": "Profile memory with tracemalloc",
           "description": "Run tracemalloc snapshots at 60 s intervals during the soak test.",
-          "status": "in_progress",
           "created_at": "2026-03-29T11:05:00Z",
           "updated_at": "2026-03-30T08:00:00Z"
         },
@@ -222,7 +209,6 @@
           "seq": 2,
           "title": "Fix buffer lifecycle in syslog listener",
           "description": "Release byte buffer after LogEvent is handed off to queue.",
-          "status": "todo",
           "created_at": "2026-03-29T11:05:00Z",
           "updated_at": "2026-03-29T11:05:00Z"
         }

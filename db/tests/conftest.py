@@ -77,7 +77,6 @@ def step_id(engine, task_id):
             task_id=uuid.UUID(task_id),
             title="Test Step",
             description="A test step",
-            status=Status.TODO,
         ))
         session.commit()
     return str(sid)

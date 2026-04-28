@@ -12,7 +12,7 @@ The CLI is role-agnostic — any agent can call any command. By convention, two 
 - Update story and task status during replanning
 
 **Worker agent** — responsible for execution:
-- Claim work by logging a `started` completion
-- Progress through steps, updating status as it goes
+- Claim a task with `tasks start`
+- Work through the task's steps in order — steps are a sequencing checklist with no per-step state
 - Create or delete steps when breaking down or recovering from mistakes
-- Log a `completed` completion when done
+- Mark the task done with `tasks complete`; the story's status is reconciled automatically

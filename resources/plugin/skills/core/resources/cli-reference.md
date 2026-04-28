@@ -17,11 +17,11 @@ atm [COMMAND_GROUP] [SUBCOMMAND] [ARGUMENTS] [OPTIONS]
 - A **project** is the top-level container.
 - A **story** groups related tasks under a project.
 - A **task** is a discrete unit of work, either under a story or floating (not linked to a story).
-- A **step** is an atomic action within a task, executed sequentially by a Dev agent.
+- A **step** is an ordered breakdown of a task's work — sequencing hints from the planning agent for the build agent. Steps have no status of their own.
 
-**Completions** record when agents start or complete tasks and steps, providing an audit trail and active-assignment view.
+**Completions** record when agents start or complete stories and tasks, providing an audit trail and active-assignment view.
 
-Status values: `todo` | `in_progress` | `completed`
+Status values (stories and tasks only): `todo` | `in_progress` | `completed`. Steps have no status.
 
 ---
 
@@ -136,6 +136,10 @@ Update fields on a story and print the result as JSON.
 | `--description-file` | string (path) | No | Path to a file containing the new description (mutually exclusive with `--description`) |
 | `--status` | string | No | New status: `todo` \| `in_progress` \| `completed` |
 
+**Notes**
+
+- Story status is derived from its tasks. After applying `--status`, the value is reconciled against the story's task statuses; manual values are overridden when they disagree. Use `--status` only when the story has no tasks, or when you want to nudge the reconciler to recompute (e.g. after editing tasks directly).
+
 ---
 
 ### tasks
@@ -217,7 +221,7 @@ Create a new task and print it as JSON.
 atm tasks update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS] [--prefix PREFIX]
 ```
 
-Update fields on a task and print the result as JSON. Does **not** write a completion record — use `tasks start` / `tasks complete` for status transitions that must be tracked.
+Update fields on a task and print the result as JSON. Does **not** write a completion record — use `tasks start` / `tasks complete` for status transitions that must be tracked. When `--status` is patched, the parent story's status is reconciled silently (no completion event).
 
 **Arguments**
 
@@ -262,7 +266,7 @@ Mark a task as `in_progress`, recording which agent claimed it. Prints the updat
 **Notes**
 
 - The task must be in `todo` status. Starting an `in_progress` or `completed` task returns `invalid_status`.
-- Use this for tasks without steps. For tasks with steps, use `steps start` on the individual steps instead.
+- If the task belongs to a story, the story's status is reconciled (e.g. a `todo` story flips to `in_progress`) and a `started` completion is recorded for the story.
 
 ---
 
@@ -272,7 +276,7 @@ Mark a task as `in_progress`, recording which agent claimed it. Prints the updat
 atm tasks complete ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
 ```
 
-Mark a task as `completed`. Cascades: if the task belongs to a story and all tasks in that story are now done, the story is also marked completed. Prints the updated task as JSON.
+Mark a task as `completed`. Cascades: the parent story's status is reconciled — if all sibling tasks are now `completed`, the story is marked `completed`. Prints the updated task as JSON.
 
 **Arguments**
 
@@ -291,7 +295,7 @@ Mark a task as `completed`. Cascades: if the task belongs to a story and all tas
 **Notes**
 
 - The task must be in `in_progress` status. Completing a `todo` or already `completed` task returns `invalid_status`.
-- Use this for tasks without steps. For tasks with steps, completion cascades automatically via `steps complete`.
+- The build agent calls this once a task's steps have been worked through; steps themselves have no status to mark.
 
 ---
 
@@ -310,22 +314,6 @@ Fetch a step by its task-scoped sequence number and print it as JSON.
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SEQ` | integer | Yes | Task-scoped sequence number of the step |
-
-**Options**
-
-| Flag | Type | Required | Description |
-|---|---|---|---|
-| `--task` | string (UUID) | Yes | Task UUID |
-
----
-
-#### steps next
-
-```
-atm steps next --task TASK_ID
-```
-
-Get the next pending (`todo`) step for a task and print it as JSON. Returns `{"error": "not_found", ...}` when no pending steps remain.
 
 **Options**
 
@@ -383,63 +371,7 @@ Update fields on a step and print the result as JSON.
 
 **Notes**
 
-- Status cannot be changed via `update`. Use `steps start` and `steps complete` instead.
-
----
-
-#### steps start
-
-```
-atm steps start ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
-```
-
-Mark a step as `in_progress`, recording which agent claimed it. Prints the updated step as JSON.
-
-**Arguments**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `ID` | string (UUID) | Yes | Step UUID |
-
-**Options**
-
-| Flag | Type | Required | Description |
-|---|---|---|---|
-| `--agent` | string | No — defaults to `$ATM_AGENT_NAME`; do not pass unless overriding | Name of the agent claiming the step |
-| `--session` | string (UUID) | No — defaults to `$ATM_SESSION_ID`; do not pass unless overriding | Agent session identifier |
-| `--branch` | string | No | Git branch the agent is working on |
-
-**Notes**
-
-- The step must be in `todo` status. Starting an `in_progress` or `completed` step returns `invalid_status`.
-
----
-
-#### steps complete
-
-```
-atm steps complete ID [--agent AGENT_NAME] [--session SESSION_ID] [--branch BRANCH]
-```
-
-Mark a step as `completed`. Cascades: if all steps in the task are done, the task is marked completed; if all tasks in the story are done, the story is marked completed. Prints the updated step as JSON.
-
-**Arguments**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `ID` | string (UUID) | Yes | Step UUID |
-
-**Options**
-
-| Flag | Type | Required | Description |
-|---|---|---|---|
-| `--agent` | string | No — defaults to `$ATM_AGENT_NAME`; do not pass unless overriding | Name of the agent completing the step |
-| `--session` | string (UUID) | No — defaults to `$ATM_SESSION_ID`; do not pass unless overriding | Agent session identifier |
-| `--branch` | string | No | Git branch the agent worked on |
-
-**Notes**
-
-- The step must be in `in_progress` status. Completing a `todo` or already `completed` step returns `invalid_status`.
+- Steps have no status. The build agent reads steps in order and calls `tasks complete` once the work is done.
 
 ---
 
@@ -467,7 +399,7 @@ List all completion records for an entity (story, task, or step) and print them 
 atm completions active
 ```
 
-List all active assignments (steps currently `in_progress`) with agent and session info. Prints as JSON.
+List all active assignments (tasks/stories whose latest completion event is `started` and not yet `completed`) with agent and session info. Prints as JSON.
 
 **Options**
 
@@ -482,8 +414,8 @@ These are set automatically by the Claude Code SessionStart hook (`resources/plu
 | Variable | Required | Description |
 |---|---|---|
 | `ATM_PROJECT_ID` | Yes | Default project UUID used by commands that accept `--project`. Hook sources it from `<repo-root>/.atm_project_id` |
-| `ATM_SESSION_ID` | Yes | Session UUID; used by `tasks start` / `tasks complete` / `steps start` / `steps complete` |
-| `ATM_AGENT_NAME` | Yes | Agent identity; used by `tasks start` / `tasks complete` / `steps start` / `steps complete` |
+| `ATM_SESSION_ID` | Yes | Session UUID; used by `tasks start` / `tasks complete` |
+| `ATM_AGENT_NAME` | Yes | Agent identity; used by `tasks start` / `tasks complete` |
 
 ## SEE ALSO
 

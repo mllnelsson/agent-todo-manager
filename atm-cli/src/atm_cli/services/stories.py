@@ -9,6 +9,7 @@ from db.repo import (
 )
 from sqlalchemy.engine import Engine
 
+from ._cascade import reconcile_story_status
 from .exceptions import NotFound
 
 
@@ -86,6 +87,11 @@ def create_story_for_project(data: StoryCreate, engine: Engine) -> Story:
 def update_story_by_id(story_id: str, data: StoryUpdate, engine: Engine) -> Story:
     """Apply partial updates to the story with the given ID.
 
+    After applying the patch the story's status is reconciled from its tasks:
+    a manual `--status` value is overridden when it disagrees with the task
+    states (story status is derived from tasks). Stories with no tasks keep
+    whatever status was set.
+
     Args:
         story_id: UUID of the story to update.
         data: Fields to update; None values are ignored.
@@ -100,4 +106,6 @@ def update_story_by_id(story_id: str, data: StoryUpdate, engine: Engine) -> Stor
     story = update_story(engine, story_id=story_id, data=data)
     if story is None:
         raise NotFound(f"Story {story_id} not found")
-    return story
+    reconcile_story_status(engine, story_id=story_id)
+    reconciled = get_story(engine, story_id=story_id)
+    return reconciled if reconciled is not None else story

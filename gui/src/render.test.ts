@@ -10,7 +10,6 @@ function makeStep(overrides: Partial<Step> = {}): Step {
     seq: 1,
     title: 'A step',
     description: 'Step description',
-    status: 'todo',
     created_at: '2024-01-15T10:00:00Z',
     updated_at: '2024-01-15T10:00:00Z',
     ...overrides,
@@ -235,13 +234,6 @@ describe('renderProject', () => {
       const story = makeStory({ seq: 1, tasks: [task] });
       renderProject(makeProject({ stories: [story] }));
       expect(document.querySelector('.step .address')?.textContent).toBe('1.2.3');
-    });
-
-    it('renders step status badge', () => {
-      const step = makeStep({ status: 'completed' });
-      const task = makeTask({ steps: [step] });
-      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }));
-      expect(document.querySelector('.step .badge--completed')).not.toBeNull();
     });
 
     it('escapes HTML in step title', () => {

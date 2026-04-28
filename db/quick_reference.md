@@ -10,7 +10,7 @@
 (**id**, seq, project_id→projects, story_id→stories, prefix, title, description, status, created_at, updated_at)
  
 ## steps
-(**id**, seq, task_id→tasks, title, description, status, created_at, updated_at)
+(**id**, seq, task_id→tasks, title, description, created_at, updated_at)
  
 
 ## completions

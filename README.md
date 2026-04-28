@@ -113,7 +113,7 @@ The CLI reads these three variables from the environment instead of requiring th
 |---|---|---|
 | `ATM_PROJECT_ID` | UUID from step 3 | Default project for commands that accept `--project`. Set automatically from `<repo-root>/.atm_project_id` |
 | `ATM_SESSION_ID` | A unique UUID per session | Ties completions to a specific agent run |
-| `ATM_AGENT_NAME` | Agent identity (e.g. `Claude`, `plan`, `build`) | Recorded as the `agent` on `tasks start` / `tasks complete` / `steps start` / `steps complete` |
+| `ATM_AGENT_NAME` | Agent identity (e.g. `Claude`, `plan`, `build`) | Recorded as the `agent` on `tasks start` / `tasks complete` |
 
 When running inside Claude Code the SessionStart hook (`resources/plugin/hooks/atm_session_start.sh`) sets all three automatically — `ATM_PROJECT_ID` is read from `<repo-root>/.atm_project_id` (created in step 3) and the other two from the session payload. You can ignore this step in that case.
 

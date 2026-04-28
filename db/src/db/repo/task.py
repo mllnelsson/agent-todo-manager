@@ -31,7 +31,6 @@ def _step_to_model(row: StepRow) -> Step:
         title=row.title,
         description=row.description,
         definition_of_done=row.definition_of_done,
-        status=Status(row.status),
         created_at=row.created_at,
         updated_at=row.updated_at,
     )

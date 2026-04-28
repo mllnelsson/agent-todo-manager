@@ -4,12 +4,10 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
-from db.models import Status, Step, Task
-from db.orm import Step as StepRow
+from db.models import Status, Task
 from db.orm import Story as StoryRow
 from db.orm import Task as TaskRow
 
-from .step import _to_model as _step_to_model
 from .task import _to_model as _task_to_model
 
 
@@ -27,28 +25,6 @@ def list_stale_tasks(engine: Engine, project_id: str, days: int) -> list[Task]:
         )
         rows = session.execute(stmt).scalars().all()
         return [_task_to_model(r) for r in rows]
-
-
-def list_stale_steps(engine: Engine, project_id: str, days: int) -> list[Step]:
-    cutoff = datetime.now(tz=timezone.utc) - timedelta(days=days)
-    with Session(engine) as session:
-        task_ids_stmt = select(TaskRow.id).where(
-            TaskRow.project_id == uuid.UUID(project_id)
-        )
-        task_ids = session.execute(task_ids_stmt).scalars().all()
-        if not task_ids:
-            return []
-        stmt = (
-            select(StepRow)
-            .where(
-                StepRow.task_id.in_(task_ids),
-                StepRow.status == Status.IN_PROGRESS,
-                StepRow.updated_at < cutoff,
-            )
-            .order_by(StepRow.updated_at)
-        )
-        rows = session.execute(stmt).scalars().all()
-        return [_step_to_model(r) for r in rows]
 
 
 def list_orphaned_tasks(engine: Engine, project_id: str) -> list[Task]:

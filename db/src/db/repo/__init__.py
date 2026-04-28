@@ -15,14 +15,12 @@ from .project import (
 )
 from .queries import (
     list_orphaned_tasks,
-    list_stale_steps,
     list_stale_tasks,
     list_todo_in_completed_stories,
 )
 from .step import (
     create_step,
     delete_step,
-    get_next_step,
     get_step,
     get_step_by_seq,
     update_step,
@@ -62,7 +60,6 @@ __all__ = [
     "list_active_projects",
     # queries
     "list_stale_tasks",
-    "list_stale_steps",
     "list_orphaned_tasks",
     "list_todo_in_completed_stories",
     # story
@@ -85,7 +82,6 @@ __all__ = [
     "create_step",
     "get_step",
     "get_step_by_seq",
-    "get_next_step",
     "update_step",
     "delete_step",
 ]
