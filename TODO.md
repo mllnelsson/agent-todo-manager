@@ -11,5 +11,6 @@ General improvements for the project.
 8. [x] Uv tool install, not uv run for agents.
 9. [x] Add hooks for resolving agent name and agent session, asserting project exists
 10. [x] Wrap everything as a plugin
-11. [ ] Add more sophisticated dispatch
-12. [ ] Remove api/ use reads to local db from fe
+11. [x] Add more sophisticated dispatch
+12. [x] Remove api/ use reads to local db from fe
+13. [ ] Add atm admin update for self updating
