@@ -299,6 +299,27 @@ Mark a task as `completed`. Cascades: the parent story's status is reconciled â€
 
 ---
 
+#### tasks delete
+
+```
+atm tasks delete ID
+```
+
+Delete a task and all its steps by UUID. Prints `{"deleted": "task", "id": "..."}` on success.
+
+**Arguments**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `ID` | string (UUID) | Yes | Task UUID |
+
+**Notes**
+
+- Cascades: all steps and completion records for the task and its steps are deleted.
+- Irreversible.
+
+---
+
 ### steps
 
 #### steps get
@@ -372,6 +393,28 @@ Update fields on a step and print the result as JSON.
 **Notes**
 
 - Steps have no status. The build agent reads steps in order and calls `tasks complete` once the work is done.
+
+---
+
+#### steps delete
+
+```
+atm steps delete SEQ --task TASK_ID
+```
+
+Delete a step by its task-scoped sequence number. Prints `{"deleted": "step", "task_id": "...", "seq": N}` on success.
+
+**Arguments**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `SEQ` | integer | Yes | Task-scoped sequence number of the step |
+
+**Options**
+
+| Flag | Type | Required | Description |
+|---|---|---|---|
+| `--task` | string (UUID) | Yes | Task UUID |
 
 ---
 

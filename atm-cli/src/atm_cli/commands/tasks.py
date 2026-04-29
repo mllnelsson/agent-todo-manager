@@ -1,3 +1,4 @@
+import json
 import os
 
 import typer
@@ -12,6 +13,7 @@ from ._input import resolve_definition_of_done, resolve_description
 from ..services.tasks import (
     complete_task,
     create_task_for_story,
+    delete_task_by_id,
     get_floating_task_by_project_seq,
     get_task_by_id,
     get_task_by_story_seq,
@@ -249,5 +251,18 @@ def complete(
         exit_user_error("not_found", str(e))
     except InvalidStatus as e:
         exit_user_error("invalid_status", str(e))
+    except Exception as e:
+        exit_system_error("internal_error", str(e))
+
+
+@app.command("delete")
+def delete(id: str) -> None:
+    """Delete a task and all its steps by UUID and print a confirmation as JSON."""
+    engine = get_engine()
+    try:
+        delete_task_by_id(id, engine)
+        print(json.dumps({"deleted": "task", "id": id}))
+    except NotFound as e:
+        exit_user_error("not_found", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))

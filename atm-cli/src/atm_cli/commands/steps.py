@@ -1,3 +1,5 @@
+import json
+
 import typer
 
 from db.models import StepCreate, StepUpdate
@@ -8,6 +10,7 @@ from ..services.exceptions import NotFound
 from ._input import resolve_definition_of_done, resolve_description
 from ..services.steps import (
     create_step_for_task,
+    delete_step_by_task_seq,
     get_step_by_task_seq,
     update_step_by_id,
 )
@@ -122,6 +125,22 @@ def update(
             engine,
         )
         print_json(step)
+    except NotFound as e:
+        exit_user_error("not_found", str(e))
+    except Exception as e:
+        exit_system_error("internal_error", str(e))
+
+
+@app.command("delete")
+def delete(
+    seq: int,
+    task: str = typer.Option(..., "--task", help="Task ID"),
+) -> None:
+    """Delete a step by its task-scoped sequence number and print a confirmation as JSON."""
+    engine = get_engine()
+    try:
+        delete_step_by_task_seq(task, seq, engine)
+        print(json.dumps({"deleted": "step", "task_id": task, "seq": seq}))
     except NotFound as e:
         exit_user_error("not_found", str(e))
     except Exception as e:

@@ -1,6 +1,7 @@
 from db.models import Step, StepCreate, StepUpdate
 from db.repo import (
     create_step,
+    delete_step,
     get_step_by_seq,
     update_step,
 )
@@ -60,3 +61,10 @@ def update_step_by_id(step_id: str, data: StepUpdate, engine: Engine) -> Step:
     if step is None:
         raise NotFound(f"Step {step_id} not found")
     return step
+
+
+def delete_step_by_task_seq(task_id: str, seq: int, engine: Engine) -> None:
+    step = get_step_by_seq(engine, task_id=task_id, seq=seq)
+    if step is None:
+        raise NotFound(f"Step {seq} not found in task {task_id}")
+    delete_step(engine, step_id=step.id)

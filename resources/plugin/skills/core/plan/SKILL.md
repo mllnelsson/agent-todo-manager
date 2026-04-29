@@ -23,6 +23,8 @@ Load the common foundation first: `/atm:core`
 | `atm tasks list-floating --project <PROJECT_ID>` | List floating tasks |
 | `atm steps create --task <TASK_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file PATH]` | Define a step within a task |
 | `atm steps get <SEQ> --task <TASK_ID>` | Fetch step details |
+| `atm tasks delete <ID>` | Delete a task and all its steps (cleanup) |
+| `atm steps delete <SEQ> --task <TASK_ID>` | Delete a step within a task (cleanup) |
 
 ## Workflow
 
@@ -43,6 +45,7 @@ Load the common foundation first: `/atm:core`
 - Use `--story` to create a story-linked task. Use `--project` for floating tasks (bugs, hotfixes not part of a story).
 - Status values for stories and tasks: `todo` | `in_progress` | `completed`. Steps have no status.
 - **Story status is derived from its tasks and reconciled on every status mutation** — `tasks start`, `tasks complete`, `tasks update --status`, and `stories update --status` all trigger reconciliation. Rules: all tasks `completed` → story `completed`; all tasks `todo` → story `todo`; otherwise → story `in_progress`. A manual `stories update --status` value that disagrees with the task states is overridden.
+- **Cleanup**: use `atm tasks delete <ID>` to remove a task and all its steps, or `atm steps delete <SEQ> --task <TASK_ID>` to remove a single step. Both confirm deletion as JSON. Only delete tasks or steps that have not been started.
 
 ## Definition of Done
 

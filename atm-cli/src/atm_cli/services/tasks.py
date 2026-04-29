@@ -10,6 +10,7 @@ from db.models import (
 from db.repo import (
     create_completion,
     create_task,
+    delete_task,
     get_floating_task_by_seq,
     get_task,
     get_task_by_seq,
@@ -212,3 +213,9 @@ def update_task_by_id(task_id: str, data: TaskUpdate, engine: Engine) -> Task:
         if full is not None and full.story_id is not None:
             reconcile_story_status(engine, story_id=full.story_id)
     return task
+
+
+def delete_task_by_id(task_id: str, engine: Engine) -> None:
+    deleted = delete_task(engine, task_id=task_id)
+    if not deleted:
+        raise NotFound(f"Task {task_id} not found")
