@@ -1,4 +1,5 @@
 export type Status = 'todo' | 'in_progress' | 'completed';
+export type ProjectStatus = 'active' | 'archived';
 export type Action = 'started' | 'completed';
 export type EntityType = 'story' | 'task' | 'step';
 
@@ -50,7 +51,7 @@ export interface Project {
   id: string;
   title: string;
   description: string;
-  status: Status;
+  status: ProjectStatus;
   created_at: string;
   updated_at: string;
   stories: Story[];

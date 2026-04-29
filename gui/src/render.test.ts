@@ -65,7 +65,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     id: 'project-id-1',
     title: 'My Project',
     description: 'Project description',
-    status: 'in_progress',
+    status: 'active',
     created_at: '2024-01-15T10:00:00Z',
     updated_at: '2024-01-15T10:00:00Z',
     stories: [],
@@ -75,6 +75,9 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     ...overrides,
   };
 }
+
+const STORY_ID = 'story-id-1';
+const expanded = new Set([STORY_ID]);
 
 // --- Tests ---
 
@@ -99,25 +102,16 @@ describe('renderProject', () => {
       expect(document.querySelector('.project-header p')?.textContent).toBe('My description');
     });
 
-    it('renders in_progress status badge', () => {
-      renderProject(makeProject({ status: 'in_progress' }));
-      const badge = document.querySelector('.badge--in-progress');
-      expect(badge).not.toBeNull();
-      expect(badge?.textContent).toBe('IN PROGRESS');
+    it('renders no status badge for active projects', () => {
+      renderProject(makeProject({ status: 'active' }));
+      expect(document.querySelector('.project-title .badge')).toBeNull();
     });
 
-    it('renders todo status badge', () => {
-      renderProject(makeProject({ status: 'todo' }));
-      const badge = document.querySelector('.badge--todo');
+    it('renders archived status badge', () => {
+      renderProject(makeProject({ status: 'archived' }));
+      const badge = document.querySelector('.badge--archived');
       expect(badge).not.toBeNull();
-      expect(badge?.textContent).toBe('TODO');
-    });
-
-    it('renders completed status badge', () => {
-      renderProject(makeProject({ status: 'completed' }));
-      const badge = document.querySelector('.badge--completed');
-      expect(badge).not.toBeNull();
-      expect(badge?.textContent).toBe('COMPLETED');
+      expect(badge?.textContent).toBe('ARCHIVED');
     });
 
     it('escapes HTML in project title', () => {
@@ -150,8 +144,8 @@ describe('renderProject', () => {
       expect(document.querySelector('.story h3')?.textContent).toBe('My Story');
     });
 
-    it('renders a story description', () => {
-      renderProject(makeProject({ stories: [makeStory({ description: 'Story desc' })] }));
+    it('renders a story description when expanded', () => {
+      renderProject(makeProject({ stories: [makeStory({ description: 'Story desc' })] }), expanded);
       expect(document.querySelector('.story-description')?.textContent).toBe('Story desc');
     });
 
@@ -165,8 +159,8 @@ describe('renderProject', () => {
       expect(document.querySelector('.story .badge--completed')).not.toBeNull();
     });
 
-    it('shows empty task state when story has no tasks', () => {
-      renderProject(makeProject({ stories: [makeStory({ tasks: [] })] }));
+    it('shows empty task state when story has no tasks and is expanded', () => {
+      renderProject(makeProject({ stories: [makeStory({ tasks: [] })] }), expanded);
       expect(document.querySelector('.task-list')?.textContent).toContain('No tasks yet.');
     });
 
@@ -187,59 +181,59 @@ describe('renderProject', () => {
   });
 
   describe('task rendering', () => {
-    it('renders task title', () => {
+    it('renders task title when story is expanded', () => {
       const story = makeStory({ tasks: [makeTask({ title: 'My Task' })] });
-      renderProject(makeProject({ stories: [story] }));
+      renderProject(makeProject({ stories: [story] }), expanded);
       expect(document.querySelector('.task-title')?.textContent).toBe('My Task');
     });
 
-    it('renders task description', () => {
+    it('renders task description when story is expanded', () => {
       const story = makeStory({ tasks: [makeTask({ description: 'Task desc' })] });
-      renderProject(makeProject({ stories: [story] }));
+      renderProject(makeProject({ stories: [story] }), expanded);
       expect(document.querySelector('.task-description')?.textContent).toBe('Task desc');
     });
 
-    it('renders task address as story.task seq', () => {
+    it('renders task address as story.task seq when story is expanded', () => {
       const task = makeTask({ seq: 2 });
       const story = makeStory({ seq: 1, tasks: [task] });
-      renderProject(makeProject({ stories: [story] }));
+      renderProject(makeProject({ stories: [story] }), expanded);
       expect(document.querySelector('.task-header .address')?.textContent).toBe('1.2');
     });
 
-    it('renders task status badge', () => {
+    it('renders task status badge when story is expanded', () => {
       const story = makeStory({ tasks: [makeTask({ status: 'in_progress' })] });
-      renderProject(makeProject({ stories: [story] }));
+      renderProject(makeProject({ stories: [story] }), expanded);
       expect(document.querySelector('.task .badge--in-progress')).not.toBeNull();
     });
 
-    it('renders steps nested inside a task', () => {
+    it('renders steps nested inside a task when story is expanded', () => {
       const step = makeStep({ title: 'My Step', seq: 1 });
       const task = makeTask({ steps: [step] });
-      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }));
+      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }), expanded);
       expect(document.querySelector('.step-title')?.textContent).toBe('My Step');
     });
   });
 
   describe('step rendering', () => {
-    it('renders step title', () => {
+    it('renders step title when story is expanded', () => {
       const step = makeStep({ title: 'Do the thing' });
       const task = makeTask({ steps: [step] });
-      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }));
+      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }), expanded);
       expect(document.querySelector('.step-title')?.textContent).toBe('Do the thing');
     });
 
-    it('renders step address as story.task.step seq', () => {
+    it('renders step address as story.task.step seq when story is expanded', () => {
       const step = makeStep({ seq: 3 });
       const task = makeTask({ seq: 2, steps: [step] });
       const story = makeStory({ seq: 1, tasks: [task] });
-      renderProject(makeProject({ stories: [story] }));
+      renderProject(makeProject({ stories: [story] }), expanded);
       expect(document.querySelector('.step .address')?.textContent).toBe('1.2.3');
     });
 
-    it('escapes HTML in step title', () => {
+    it('escapes HTML in step title when story is expanded', () => {
       const step = makeStep({ title: '<script>' });
       const task = makeTask({ steps: [step] });
-      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }));
+      renderProject(makeProject({ stories: [makeStory({ tasks: [task] })] }), expanded);
       expect(document.querySelector('.step-title')?.textContent).toBe('<script>');
       expect(document.body.innerHTML).toContain('&lt;script&gt;');
     });

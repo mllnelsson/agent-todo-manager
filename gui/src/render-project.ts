@@ -1,5 +1,5 @@
 import type { Completion, Project, Step, Story, Task } from './types.ts';
-import { badge, buildTabBar, escapeHtml, formatDate } from './render-utils.ts';
+import { badge, buildTabBar, escapeHtml, formatDate, projectBadge } from './render-utils.ts';
 import type { TabId } from './render-utils.ts';
 
 function buildEntityIndex(project: Project): Map<string, string> {
@@ -52,21 +52,25 @@ function buildTask(task: Task, address: string): string {
     </div>`;
 }
 
-function buildStory(story: Story): string {
-  const tasks = story.tasks
-    .map((t) => buildTask(t, `${story.seq}.${t.seq}`))
-    .join('');
+function buildStory(story: Story, expandedStoryIds: Set<string>): string {
+  const expanded = expandedStoryIds.has(story.id);
+  const chevron = expanded ? '▼' : '▶';
+  const tasksHtml = expanded
+    ? story.tasks.map((t) => buildTask(t, `${story.seq}.${t.seq}`)).join('')
+    : '';
   return `
     <article class="story" data-status="${story.status}">
-      <div class="story-header">
+      <div class="story-header" data-story-toggle="${escapeHtml(story.id)}">
+        <span class="story-chevron">${chevron}</span>
         <span class="address">${story.seq}</span>
         <h3>${escapeHtml(story.title)}</h3>
         ${badge(story.status)}
       </div>
+      ${expanded ? `
       <p class="story-description">${escapeHtml(story.description)}</p>
       <div class="task-list">
-        ${tasks || '<p class="empty-state">No tasks yet.</p>'}
-      </div>
+        ${tasksHtml || '<p class="empty-state">No tasks yet.</p>'}
+      </div>` : ''}
     </article>`;
 }
 
@@ -123,10 +127,10 @@ function buildActivityFeed(completions: Completion[], entityIndex: Map<string, s
     </div>`;
 }
 
-function buildProjectDetail(project: Project): string {
+function buildProjectDetail(project: Project, expandedStoryIds: Set<string>): string {
   const entityIndex = buildEntityIndex(project);
   const hasFloating = project.bugs.length > 0 || project.hotfixes.length > 0;
-  const storiesHtml = project.stories.map(buildStory).join('');
+  const storiesHtml = project.stories.map((s) => buildStory(s, expandedStoryIds)).join('');
 
   const floatingHtml = hasFloating
     ? `
@@ -143,7 +147,7 @@ function buildProjectDetail(project: Project): string {
     <header class="project-header">
       <div class="project-title">
         <h1>${escapeHtml(project.title)}</h1>
-        ${badge(project.status)}
+        ${projectBadge(project.status)}
       </div>
       <p>${escapeHtml(project.description)}</p>
       <div class="project-meta">
@@ -164,23 +168,29 @@ function buildProjectDetail(project: Project): string {
     </section>`;
 }
 
-export function renderProjectTab(projects: Project[], selected: Project | null, activeTab: TabId): void {
+export function renderProjectTab(
+  projects: Project[],
+  selected: Project | null,
+  activeTab: TabId,
+  expandedStoryIds: Set<string>,
+): void {
   const app = document.getElementById('app');
   if (!app) return;
 
   const navItems = projects
     .map((p) => {
       const active = p.id === selected?.id ? ' project-nav-item--active' : '';
+      const archived = p.status === 'archived' ? ' project-nav-item--archived' : '';
       return `
-        <button class="project-nav-item${active}" data-project-id="${p.id}">
+        <button class="project-nav-item${active}${archived}" data-project-id="${p.id}">
           <span class="project-nav-title">${escapeHtml(p.title)}</span>
-          ${badge(p.status)}
+          ${projectBadge(p.status)}
         </button>`;
     })
     .join('');
 
   const detailHtml = selected
-    ? buildProjectDetail(selected)
+    ? buildProjectDetail(selected, expandedStoryIds)
     : '<p class="empty-state">Select a project.</p>';
 
   app.innerHTML = `
@@ -196,9 +206,9 @@ export function renderProjectTab(projects: Project[], selected: Project | null, 
     </div>`;
 }
 
-export function renderProject(project: Project): void {
+export function renderProject(project: Project, expandedStoryIds: Set<string> = new Set()): void {
   const app = document.getElementById('app');
   if (!app) return;
 
-  app.innerHTML = `<main class="container">${buildProjectDetail(project)}</main>`;
+  app.innerHTML = `<main class="container">${buildProjectDetail(project, expandedStoryIds)}</main>`;
 }

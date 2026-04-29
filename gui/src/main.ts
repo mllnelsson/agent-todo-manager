@@ -8,6 +8,8 @@ const POLL_INTERVAL_MS = 3000;
 
 let activeTab: TabId = 'projects';
 let selectedProjectId: string | null = null;
+const expandedStoryIds = new Set<string>();
+const manuallyToggled = new Set<string>();
 
 function renderError(message: string): void {
   const app = document.getElementById('app');
@@ -24,7 +26,14 @@ async function tick(): Promise<void> {
     }
     if (activeTab === 'projects') {
       const selected = selectedProjectId ? await provider.getProject(selectedProjectId) : null;
-      renderProjectTab(projects, selected, activeTab);
+      if (selected) {
+        for (const story of selected.stories) {
+          if (story.status === 'in_progress' && !manuallyToggled.has(story.id)) {
+            expandedStoryIds.add(story.id);
+          }
+        }
+      }
+      renderProjectTab(projects, selected, activeTab, expandedStoryIds);
     } else {
       const fullProjects = await Promise.all(projects.map((p) => provider.getProject(p.id)));
       renderAgentTab(fullProjects, activeTab);
@@ -44,6 +53,19 @@ document.addEventListener('click', (e) => {
       activeTab = newTab;
       void tick();
     }
+    return;
+  }
+
+  const storyHeader = target.closest<HTMLElement>('[data-story-toggle]');
+  if (storyHeader?.dataset['storyToggle']) {
+    const storyId = storyHeader.dataset['storyToggle'];
+    manuallyToggled.add(storyId);
+    if (expandedStoryIds.has(storyId)) {
+      expandedStoryIds.delete(storyId);
+    } else {
+      expandedStoryIds.add(storyId);
+    }
+    void tick();
     return;
   }
 

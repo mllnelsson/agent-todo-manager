@@ -1,4 +1,4 @@
-import type { Status } from './types.ts';
+import type { ProjectStatus, Status } from './types.ts';
 
 export type TabId = 'projects' | 'agents';
 
@@ -18,6 +18,11 @@ export function badge(status: Status): string {
   };
   const cls = status.replace('_', '-');
   return `<span class="badge badge--${cls}">${label[status]}</span>`;
+}
+
+export function projectBadge(status: ProjectStatus): string {
+  if (status === 'active') return '';
+  return `<span class="badge badge--archived">ARCHIVED</span>`;
 }
 
 export function formatDate(iso: string): string {

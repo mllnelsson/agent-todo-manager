@@ -21,6 +21,7 @@
   --c-done:       #00C48C;
   --c-bug:        #F0404A;
   --c-accent:     #1E80FF;
+  --c-archived:   #6A3D80;
 
   --font-ui:   'Chakra Petch', sans-serif;
   --font-data: 'JetBrains Mono', monospace;
@@ -237,6 +238,15 @@ body {
   background: var(--c-done);
 }
 
+.badge--archived {
+  background: rgba(106, 61, 128, 0.12);
+  color: var(--c-archived);
+  border: 1px solid rgba(106, 61, 128, 0.3);
+}
+.badge--archived::before {
+  background: var(--c-archived);
+}
+
 @keyframes blink-dot {
   0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--c-progress); }
   50%       { opacity: 0.3; box-shadow: none; }
@@ -275,6 +285,21 @@ body {
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-bottom: 0.35rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.story-header:hover {
+  opacity: 0.85;
+}
+
+.story-chevron {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  color: var(--c-accent);
+  opacity: 0.5;
+  min-width: 0.8em;
+  flex-shrink: 0;
 }
 
 .story-header h3 {
@@ -502,6 +527,11 @@ body {
   border-color: var(--border-dim);
   border-left-color: var(--c-accent);
   color: var(--text-hi);
+}
+
+.project-nav-item--archived {
+  opacity: 0.6;
+  border-left-color: var(--c-archived);
 }
 
 .project-nav-title {
