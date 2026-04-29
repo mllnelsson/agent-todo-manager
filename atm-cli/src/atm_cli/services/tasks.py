@@ -20,7 +20,8 @@ from db.repo import (
 from sqlalchemy.engine import Engine
 
 from ._cascade import reconcile_story_status
-from .exceptions import InvalidStatus, NotFound
+from .exceptions import InvalidStatus, NotFound, ProjectArchived
+from .project import assert_project_active_by_id, assert_project_active_for_task
 
 
 def get_task_by_id(task_id: str, engine: Engine) -> Task:
@@ -104,7 +105,11 @@ def create_task_for_story(data: TaskCreate, engine: Engine) -> Task:
 
     Returns:
         The newly created Task.
+
+    Raises:
+        ProjectArchived: If the project is archived.
     """
+    assert_project_active_by_id(data.project_id, engine)
     return create_task(engine, data=data)
 
 
@@ -115,6 +120,7 @@ def start_task(
     branch: str | None,
     engine: Engine,
 ) -> Task:
+    assert_project_active_for_task(task_id, engine)
     task = get_task(engine, task_id=task_id)
     if task is None:
         raise NotFound(f"Task {task_id} not found")
@@ -155,6 +161,7 @@ def complete_task(
     branch: str | None,
     engine: Engine,
 ) -> Task:
+    assert_project_active_for_task(task_id, engine)
     task = get_task(engine, task_id=task_id)
     if task is None:
         raise NotFound(f"Task {task_id} not found")
@@ -204,7 +211,9 @@ def update_task_by_id(task_id: str, data: TaskUpdate, engine: Engine) -> Task:
 
     Raises:
         NotFound: If no task with the given ID exists.
+        ProjectArchived: If the task's project is archived.
     """
+    assert_project_active_for_task(task_id, engine)
     task = update_task(engine, task_id=task_id, data=data)
     if task is None:
         raise NotFound(f"Task {task_id} not found")
@@ -216,6 +225,7 @@ def update_task_by_id(task_id: str, data: TaskUpdate, engine: Engine) -> Task:
 
 
 def delete_task_by_id(task_id: str, engine: Engine) -> None:
+    assert_project_active_for_task(task_id, engine)
     deleted = delete_task(engine, task_id=task_id)
     if not deleted:
         raise NotFound(f"Task {task_id} not found")

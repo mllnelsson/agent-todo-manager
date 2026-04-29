@@ -7,7 +7,7 @@ from db.models import StoryCreate, StoryUpdate, Status
 from .._env import resolve as resolve_env
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
-from ..services.exceptions import NotFound
+from ..services.exceptions import NotFound, ProjectArchived
 from ._input import resolve_description
 from ..services.stories import (
     create_story_for_project,
@@ -114,6 +114,8 @@ def create(
             engine,
         )
         print_json(story)
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -149,5 +151,7 @@ def update(
         print_json(story)
     except NotFound as e:
         exit_user_error("not_found", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))

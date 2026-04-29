@@ -2,14 +2,14 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from db.models import Status
+from db.models import ProjectStatus, Status
 from db.orm import Project as ProjectRow
 from db.orm import Story as StoryRow
 from db.orm import Task as TaskRow
 from db.repo import get_project, list_active_projects, list_projects
 
 
-def _insert_project(engine, status: Status = Status.TODO) -> str:
+def _insert_project(engine, status: ProjectStatus = ProjectStatus.ACTIVE) -> str:
     pid = uuid.uuid4()
     with Session(engine) as session:
         session.add(ProjectRow(
@@ -32,17 +32,17 @@ def test_list_projects_returns_all(engine):
     assert len(list_projects(engine)) == 2
 
 
-def test_list_active_projects_excludes_completed(engine):
-    _insert_project(engine, Status.TODO)
-    _insert_project(engine, Status.IN_PROGRESS)
-    _insert_project(engine, Status.COMPLETED)
+def test_list_active_projects_excludes_archived(engine):
+    _insert_project(engine, ProjectStatus.ACTIVE)
+    _insert_project(engine, ProjectStatus.ACTIVE)
+    _insert_project(engine, ProjectStatus.ARCHIVED)
     result = list_active_projects(engine)
     assert len(result) == 2
-    assert all(p.status != Status.COMPLETED for p in result)
+    assert all(p.status != ProjectStatus.ARCHIVED for p in result)
 
 
-def test_list_active_projects_returns_empty_when_all_completed(engine):
-    _insert_project(engine, Status.COMPLETED)
+def test_list_active_projects_returns_empty_when_all_archived(engine):
+    _insert_project(engine, ProjectStatus.ARCHIVED)
     assert list_active_projects(engine) == []
 
 

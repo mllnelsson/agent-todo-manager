@@ -139,6 +139,13 @@ def update_story(engine: Engine, story_id: str, data: StoryUpdate) -> Story | No
         return _to_model(row)
 
 
+def get_project_id_for_story(engine: Engine, story_id: str) -> str | None:
+    """Return the project_id for a story without loading related entities."""
+    with Session(engine) as session:
+        row = session.get(StoryRow, uuid.UUID(story_id))
+        return str(row.project_id) if row else None
+
+
 def delete_story(engine: Engine, story_id: str) -> bool:
     sid = uuid.UUID(story_id)
     with Session(engine) as session:

@@ -7,6 +7,11 @@ class Status(StrEnum):
     COMPLETED = auto()
 
 
+class ProjectStatus(StrEnum):
+    ACTIVE = auto()
+    ARCHIVED = auto()
+
+
 class EntityType(StrEnum):
     STORY = auto()
     TASK = auto()

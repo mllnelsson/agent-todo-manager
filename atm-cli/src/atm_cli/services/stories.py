@@ -10,7 +10,8 @@ from db.repo import (
 from sqlalchemy.engine import Engine
 
 from ._cascade import reconcile_story_status
-from .exceptions import NotFound
+from .exceptions import NotFound, ProjectArchived
+from .project import assert_project_active_by_id, assert_project_active_for_story
 
 
 def list_stories(project_id: str, engine: Engine) -> list[Story]:
@@ -80,7 +81,11 @@ def create_story_for_project(data: StoryCreate, engine: Engine) -> Story:
 
     Returns:
         The newly created Story.
+
+    Raises:
+        ProjectArchived: If the project is archived.
     """
+    assert_project_active_by_id(data.project_id, engine)
     return create_story(engine, data=data)
 
 
@@ -102,7 +107,9 @@ def update_story_by_id(story_id: str, data: StoryUpdate, engine: Engine) -> Stor
 
     Raises:
         NotFound: If no story with the given ID exists.
+        ProjectArchived: If the story's project is archived.
     """
+    assert_project_active_for_story(story_id, engine)
     story = update_story(engine, story_id=story_id, data=data)
     if story is None:
         raise NotFound(f"Story {story_id} not found")

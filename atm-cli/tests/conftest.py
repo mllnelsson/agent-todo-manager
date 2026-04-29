@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from db.models import Status
+from db.models import ProjectStatus, Status
 from db.orm import Base
 from db.orm import Project as ProjectRow
 from db.orm import Story as StoryRow
@@ -28,7 +28,7 @@ def project_id(engine):
                 id=pid,
                 title="Test Project",
                 description="A test project",
-                status=Status.TODO,
+                status=ProjectStatus.ACTIVE,
             )
         )
         session.commit()

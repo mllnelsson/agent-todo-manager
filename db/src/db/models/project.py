@@ -4,14 +4,14 @@ from pydantic import BaseModel
 
 from .story import Story
 from .task import Task
-from .utils import Status
+from .utils import ProjectStatus
 
 
 class Project(BaseModel):
     id: str
     title: str
     description: str
-    status: Status
+    status: ProjectStatus
     stories: list[Story] = []
     bugs: list[Task] = []
     hotfixes: list[Task] = []
@@ -27,4 +27,4 @@ class ProjectCreate(BaseModel):
 class ProjectUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
-    status: Status | None = None
+    status: ProjectStatus | None = None

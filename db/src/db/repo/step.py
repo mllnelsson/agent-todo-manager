@@ -76,6 +76,13 @@ def update_step(engine: Engine, step_id: str, data: StepUpdate) -> Step | None:
         return _to_model(row)
 
 
+def get_task_id_for_step(engine: Engine, step_id: str) -> str | None:
+    """Return the task_id for a step without loading related entities."""
+    with Session(engine) as session:
+        row = session.get(StepRow, uuid.UUID(step_id))
+        return str(row.task_id) if row else None
+
+
 def delete_step(engine: Engine, step_id: str) -> bool:
     sid = uuid.UUID(step_id)
     with Session(engine) as session:

@@ -4,7 +4,7 @@ from .project import Project, ProjectCreate, ProjectUpdate
 from .step import Step, StepCreate, StepUpdate
 from .story import Story, StoryCreate, StoryUpdate
 from .task import Task, TaskCreate, TaskUpdate
-from .utils import Action, EntityType, Status
+from .utils import Action, EntityType, ProjectStatus, Status
 
 __all__ = [
     "Completion",
@@ -26,6 +26,7 @@ __all__ = [
     "TaskUpdate",
     "TaskCreate",
     "Action",
+    "ProjectStatus",
     "Status",
     "EntityType",
 ]

@@ -150,6 +150,13 @@ def update_task(engine: Engine, task_id: str, data: TaskUpdate) -> Task | None:
         return _to_model(row)
 
 
+def get_project_id_for_task(engine: Engine, task_id: str) -> str | None:
+    """Return the project_id for a task without loading related entities."""
+    with Session(engine) as session:
+        row = session.get(TaskRow, uuid.UUID(task_id))
+        return str(row.project_id) if row else None
+
+
 def delete_task(engine: Engine, task_id: str) -> bool:
     tid = uuid.UUID(task_id)
     with Session(engine) as session:

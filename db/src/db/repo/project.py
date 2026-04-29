@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Engine, delete, select
 from sqlalchemy.orm import Session, selectinload
 
-from db.models import Project, ProjectCreate, Status, Step, Story, Task
+from db.models import Project, ProjectCreate, ProjectStatus, Status, Step, Story, Task
 from db.models.ingest import ProjectIngest
 from db.orm import Completion as CompletionRow
 from db.orm import Project as ProjectRow
@@ -57,7 +57,7 @@ def _to_model(row: ProjectRow) -> Project:
         id=str(row.id),
         title=row.title,
         description=row.description,
-        status=Status(row.status),
+        status=ProjectStatus(row.status),
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -69,7 +69,7 @@ def create_project(engine: Engine, data: ProjectCreate) -> Project:
             id=uuid.uuid4(),
             title=data.title,
             description=data.description,
-            status=Status.TODO,
+            status=ProjectStatus.ACTIVE,
         )
         session.add(row)
         session.commit()
@@ -125,7 +125,7 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
             id=project_id,
             title=data.title,
             description=data.description,
-            status=Status.TODO,
+            status=ProjectStatus.ACTIVE,
         )
         session.add(project_row)
 
@@ -227,7 +227,7 @@ def get_project(engine: Engine, project_id: str) -> Project | None:
             id=str(row.id),
             title=row.title,
             description=row.description,
-            status=Status(row.status),
+            status=ProjectStatus(row.status),
             stories=stories,
             bugs=bugs,
             hotfixes=hotfixes,
@@ -243,8 +243,29 @@ def list_projects(engine: Engine) -> list[Project]:
 
 
 def list_active_projects(engine: Engine) -> list[Project]:
-    """Projects not yet completed."""
+    """Projects that are not archived."""
     with Session(engine) as session:
-        stmt = select(ProjectRow).where(ProjectRow.status != Status.COMPLETED)
+        stmt = select(ProjectRow).where(ProjectRow.status != ProjectStatus.ARCHIVED)
         rows = session.execute(stmt).scalars().all()
         return [_to_model(r) for r in rows]
+
+
+def get_project_status(engine: Engine, project_id: str) -> ProjectStatus | None:
+    """Return the status of a project without loading related entities."""
+    with Session(engine) as session:
+        row = session.get(ProjectRow, uuid.UUID(project_id))
+        return ProjectStatus(row.status) if row else None
+
+
+def update_project_status(
+    engine: Engine, project_id: str, status: ProjectStatus
+) -> Project | None:
+    """Update the status of a project and return the updated project."""
+    with Session(engine) as session:
+        row = session.get(ProjectRow, uuid.UUID(project_id))
+        if not row:
+            return None
+        row.status = status
+        session.commit()
+        session.refresh(row)
+        return _to_model(row)

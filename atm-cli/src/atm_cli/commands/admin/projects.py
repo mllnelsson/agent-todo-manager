@@ -6,7 +6,7 @@ import typer
 from rich.panel import Panel
 
 import db.repo as repo
-from db.models import ProjectCreate
+from db.models import ProjectCreate, ProjectStatus
 from db.models.ingest import ProjectIngest
 
 from ...db import get_engine
@@ -110,6 +110,30 @@ def delete(
         raise typer.Abort()
     repo.delete_project(engine, project_id)
     console.print(f"[green]Deleted project {project_id}[/green]")
+
+
+@app.command("archive")
+def archive(
+    project_id: Annotated[str, typer.Argument()],
+) -> None:
+    engine = get_engine()
+    project = repo.get_project(engine, project_id)
+    if not project:
+        raise NotFoundError(f"Project {project_id} not found")
+    repo.update_project_status(engine, project_id, ProjectStatus.ARCHIVED)
+    console.print(f"[yellow]Archived project {project.title} ({project_id})[/yellow]")
+
+
+@app.command("unarchive")
+def unarchive(
+    project_id: Annotated[str, typer.Argument()],
+) -> None:
+    engine = get_engine()
+    project = repo.get_project(engine, project_id)
+    if not project:
+        raise NotFoundError(f"Project {project_id} not found")
+    repo.update_project_status(engine, project_id, ProjectStatus.ACTIVE)
+    console.print(f"[green]Unarchived project {project.title} ({project_id})[/green]")
 
 
 @app.command("ingest")

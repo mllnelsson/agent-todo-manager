@@ -6,7 +6,7 @@ from db.models import StepCreate, StepUpdate
 
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json
-from ..services.exceptions import NotFound
+from ..services.exceptions import NotFound, ProjectArchived
 from ._input import resolve_definition_of_done, resolve_description
 from ..services.steps import (
     create_step_for_task,
@@ -82,6 +82,8 @@ def create(
             engine,
         )
         print_json(step)
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -127,6 +129,8 @@ def update(
         print_json(step)
     except NotFound as e:
         exit_user_error("not_found", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -143,5 +147,7 @@ def delete(
         print(json.dumps({"deleted": "step", "task_id": task, "seq": seq}))
     except NotFound as e:
         exit_user_error("not_found", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))

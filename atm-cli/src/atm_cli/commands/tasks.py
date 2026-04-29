@@ -8,7 +8,7 @@ from db.models import Status, TaskCreate, TaskUpdate
 from .._env import resolve as resolve_env
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json, print_list
-from ..services.exceptions import InvalidStatus, NotFound
+from ..services.exceptions import InvalidStatus, NotFound, ProjectArchived
 from ._input import resolve_definition_of_done, resolve_description
 from ..services.tasks import (
     complete_task,
@@ -151,6 +151,8 @@ def create(
         )
         task = create_task_for_story(data, engine)
         print_json(task)
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -201,6 +203,8 @@ def update(
         print_json(task)
     except NotFound as e:
         exit_user_error("not_found", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -226,6 +230,8 @@ def start(
         exit_user_error("not_found", str(e))
     except InvalidStatus as e:
         exit_user_error("invalid_status", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -251,6 +257,8 @@ def complete(
         exit_user_error("not_found", str(e))
     except InvalidStatus as e:
         exit_user_error("invalid_status", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))
 
@@ -264,5 +272,7 @@ def delete(id: str) -> None:
         print(json.dumps({"deleted": "task", "id": id}))
     except NotFound as e:
         exit_user_error("not_found", str(e))
+    except ProjectArchived as e:
+        exit_user_error("project_archived", str(e))
     except Exception as e:
         exit_system_error("internal_error", str(e))

@@ -7,7 +7,8 @@ from db.repo import (
 )
 from sqlalchemy.engine import Engine
 
-from .exceptions import NotFound
+from .exceptions import NotFound, ProjectArchived
+from .project import assert_project_active_for_step, assert_project_active_for_task
 
 
 def get_step_by_task_seq(task_id: str, seq: int, engine: Engine) -> Step:
@@ -39,7 +40,11 @@ def create_step_for_task(data: StepCreate, engine: Engine) -> Step:
 
     Returns:
         The newly created Step.
+
+    Raises:
+        ProjectArchived: If the task's project is archived.
     """
+    assert_project_active_for_task(data.task_id, engine)
     return create_step(engine, data=data)
 
 
@@ -56,7 +61,9 @@ def update_step_by_id(step_id: str, data: StepUpdate, engine: Engine) -> Step:
 
     Raises:
         NotFound: If no step with the given ID exists.
+        ProjectArchived: If the step's project is archived.
     """
+    assert_project_active_for_step(step_id, engine)
     step = update_step(engine, step_id=step_id, data=data)
     if step is None:
         raise NotFound(f"Step {step_id} not found")
@@ -64,6 +71,7 @@ def update_step_by_id(step_id: str, data: StepUpdate, engine: Engine) -> Step:
 
 
 def delete_step_by_task_seq(task_id: str, seq: int, engine: Engine) -> None:
+    assert_project_active_for_task(task_id, engine)
     step = get_step_by_seq(engine, task_id=task_id, seq=seq)
     if step is None:
         raise NotFound(f"Step {seq} not found in task {task_id}")

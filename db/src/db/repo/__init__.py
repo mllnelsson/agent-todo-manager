@@ -9,9 +9,11 @@ from .project import (
     create_project,
     delete_project,
     get_project,
+    get_project_status,
     ingest_project,
     list_active_projects,
     list_projects,
+    update_project_status,
 )
 from .queries import (
     list_orphaned_tasks,
@@ -23,11 +25,13 @@ from .step import (
     delete_step,
     get_step,
     get_step_by_seq,
+    get_task_id_for_step,
     update_step,
 )
 from .story import (
     create_story,
     delete_story,
+    get_project_id_for_story,
     get_story,
     get_story_by_seq,
     list_active_stories,
@@ -38,6 +42,7 @@ from .task import (
     create_task,
     delete_task,
     get_floating_task_by_seq,
+    get_project_id_for_task,
     get_task,
     get_task_by_seq,
     list_floating_tasks,
@@ -55,15 +60,18 @@ __all__ = [
     "create_project",
     "delete_project",
     "get_project",
+    "get_project_status",
     "ingest_project",
     "list_projects",
     "list_active_projects",
+    "update_project_status",
     # queries
     "list_stale_tasks",
     "list_orphaned_tasks",
     "list_todo_in_completed_stories",
     # story
     "create_story",
+    "get_project_id_for_story",
     "get_story",
     "get_story_by_seq",
     "list_stories",
@@ -72,6 +80,7 @@ __all__ = [
     "delete_story",
     # task
     "create_task",
+    "get_project_id_for_task",
     "get_task",
     "get_task_by_seq",
     "get_floating_task_by_seq",
@@ -82,6 +91,7 @@ __all__ = [
     "create_step",
     "get_step",
     "get_step_by_seq",
+    "get_task_id_for_step",
     "update_step",
     "delete_step",
 ]

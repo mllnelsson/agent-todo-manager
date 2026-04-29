@@ -4,3 +4,7 @@ class NotFound(Exception):
 
 class InvalidStatus(Exception):
     pass
+
+
+class ProjectArchived(Exception):
+    pass
