@@ -21,8 +21,9 @@ else
   git clone "${REPO_URL}" "${INSTALL_DIR}"
 fi
 
-# Install CLI globally — run from workspace root so uv resolves db/dashboard as workspace packages
-(cd "${INSTALL_DIR}" && uv tool install --force --reinstall-package db --reinstall-package dashboard ./atm-cli)
+# Install CLI globally — --with injects local db and dashboard into the isolated tool environment
+# (uv tool install does not resolve workspace = true sources; it falls back to PyPI without this)
+(cd "${INSTALL_DIR}" && uv tool install --force --with ./db --with ./dashboard ./atm-cli)
 
 # Sync workspace so alembic and uvicorn work from the clone
 (cd "${INSTALL_DIR}" && uv sync)

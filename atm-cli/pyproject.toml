@@ -14,8 +14,8 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-db = { path = "../db", editable = true }
-dashboard = { path = "../dashboard", editable = true }
+db = { workspace = true }
+dashboard = { workspace = true }
 
 [project.scripts]
 atm = "atm_cli:main"
