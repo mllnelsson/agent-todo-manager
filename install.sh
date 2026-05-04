@@ -22,7 +22,7 @@ else
 fi
 
 # Install CLI globally
-uv tool install --force "${INSTALL_DIR}/atm-cli"
+uv tool install --force --reinstall-package db --reinstall-package dashboard "${INSTALL_DIR}/atm-cli"
 
 # Sync workspace so alembic and uvicorn work from the clone
 (cd "${INSTALL_DIR}" && uv sync)
