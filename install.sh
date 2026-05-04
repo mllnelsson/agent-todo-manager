@@ -21,8 +21,8 @@ else
   git clone "${REPO_URL}" "${INSTALL_DIR}"
 fi
 
-# Install CLI globally
-uv tool install --force --reinstall-package db --reinstall-package dashboard "${INSTALL_DIR}/atm-cli"
+# Install CLI globally — run from workspace root so uv resolves db/dashboard as workspace packages
+(cd "${INSTALL_DIR}" && uv tool install --force --reinstall-package db --reinstall-package dashboard ./atm-cli)
 
 # Sync workspace so alembic and uvicorn work from the clone
 (cd "${INSTALL_DIR}" && uv sync)
