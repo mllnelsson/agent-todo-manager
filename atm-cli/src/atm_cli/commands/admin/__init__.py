@@ -1,6 +1,6 @@
 import typer
 
-from . import projects, prune, serve, steps, stories, tasks
+from . import projects, prune, self_update, serve, steps, stories, tasks
 
 app = typer.Typer(name="admin", no_args_is_help=True)
 app.add_typer(projects.app, name="projects")
@@ -9,3 +9,4 @@ app.add_typer(tasks.app, name="tasks")
 app.add_typer(steps.app, name="steps")
 app.add_typer(prune.app, name="prune")
 app.command("serve")(serve.serve)
+app.command("self-update")(self_update.self_update)
