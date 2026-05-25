@@ -108,11 +108,10 @@ def create(
     description_file: str | None = typer.Option(
         None, "--description-file", help="Path to a file containing the description"
     ),
-    definition_of_done: str | None = typer.Option(None, "--definition-of-done"),
     definition_of_done_file: str | None = typer.Option(
         None,
         "--definition-of-done-file",
-        help="Path to a file containing the definition of done",
+        help="Path to a JSON file containing the definition of done items",
     ),
 ) -> None:
     """Create a new task under a story or as a floating task under a project.
@@ -124,8 +123,7 @@ def create(
         title: Task title.
         description: Task description.
         description_file: Path to a file containing the task description.
-        definition_of_done: Acceptance criteria for the task.
-        definition_of_done_file: Path to a file containing the definition of done.
+        definition_of_done_file: Path to a JSON file containing the definition of done items.
     """
     engine = get_engine()
     try:
@@ -138,16 +136,14 @@ def create(
         description_text = resolve_description(description, description_file)
         if description_text is None:
             raise typer.BadParameter("--description or --description-file is required")
-        dod_text = resolve_definition_of_done(
-            definition_of_done, definition_of_done_file
-        )
+        dod = resolve_definition_of_done(definition_of_done_file)
         data = TaskCreate(
             story_id=story,
             project_id=project or "",
             prefix=prefix,
             title=title,
             description=description_text,
-            definition_of_done=dod_text,
+            definition_of_done=dod,
         )
         task = create_task_for_story(data, engine)
         print_json(task)
@@ -167,11 +163,10 @@ def update(
     ),
     status: str | None = typer.Option(None, "--status"),
     prefix: str | None = typer.Option(None, "--prefix"),
-    definition_of_done: str | None = typer.Option(None, "--definition-of-done"),
     definition_of_done_file: str | None = typer.Option(
         None,
         "--definition-of-done-file",
-        help="Path to a file containing the definition of done",
+        help="Path to a JSON file containing the definition of done items",
     ),
 ) -> None:
     """Update fields on a task and print the result as JSON.
@@ -183,19 +178,16 @@ def update(
         description_file: Path to a file containing the new description.
         status: New status value, if updating.
         prefix: New prefix, if updating.
-        definition_of_done: New acceptance criteria, if updating.
-        definition_of_done_file: Path to a file containing the new definition of done.
+        definition_of_done_file: Path to a JSON file containing the new definition of done items.
     """
     engine = get_engine()
     try:
         description_text = resolve_description(description, description_file)
-        dod_text = resolve_definition_of_done(
-            definition_of_done, definition_of_done_file
-        )
+        dod = resolve_definition_of_done(definition_of_done_file)
         data = TaskUpdate(
             title=title,
             description=description_text,
-            definition_of_done=dod_text,
+            definition_of_done=dod,
             status=Status(status) if status else None,
             prefix=prefix,
         )

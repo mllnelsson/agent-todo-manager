@@ -17,9 +17,9 @@ Load the common foundation first: `/atm:core`
 | `atm stories get <ID_OR_SEQ> [--project PROJECT_ID]` | Fetch a story by UUID or seq |
 | `atm stories create --project <PROJECT_ID> --title <TITLE> --description-file <PATH>` | Create a new story |
 | `atm stories update <ID> [--title TITLE] [--description-file PATH] [--status STATUS]` | Update story fields or status |
-| `atm tasks create --story <STORY_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file PATH]` | Create a task under a story |
-| `atm tasks create --project <PROJECT_ID> --title <TITLE> --description-file <PATH> [--prefix PREFIX] [--definition-of-done-file PATH]` | Create a floating task (bug, hotfix) |
-| `atm tasks update <ID> [--title TITLE] [--description-file PATH] [--status STATUS] [--prefix PREFIX] [--definition-of-done-file PATH]` | Update task fields |
+| `atm tasks create --story <STORY_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file JSON_PATH]` | Create a task under a story |
+| `atm tasks create --project <PROJECT_ID> --title <TITLE> --description-file <PATH> [--prefix PREFIX] [--definition-of-done-file JSON_PATH]` | Create a floating task (bug, hotfix) |
+| `atm tasks update <ID> [--title TITLE] [--description-file PATH] [--status STATUS] [--prefix PREFIX] [--definition-of-done-file JSON_PATH]` | Update task fields |
 | `atm tasks list-floating --project <PROJECT_ID>` | List floating tasks |
 | `atm steps create --task <TASK_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file PATH]` | Define a step within a task |
 | `atm steps get <SEQ> --task <TASK_ID>` | Fetch step details |
@@ -47,22 +47,46 @@ Load the common foundation first: `/atm:core`
 - **Story status is derived from its tasks and reconciled on every status mutation** — `tasks start`, `tasks complete`, `tasks update --status`, and `stories update --status` all trigger reconciliation. Rules: all tasks `completed` → story `completed`; all tasks `todo` → story `todo`; otherwise → story `in_progress`. A manual `stories update --status` value that disagrees with the task states is overridden.
 - **Cleanup**: use `atm tasks delete <ID>` to remove a task and all its steps, or `atm steps delete <SEQ> --task <TASK_ID>` to remove a single step. Both confirm deletion as JSON. Only delete tasks or steps that have not been started.
 
+## Task Sizing
+
+A task is one coherent unit of deliverable work — a single feature addition, a focused bug fix, or a self-contained refactor of one component. Size tasks so a build agent can complete the work within a single context window without pausing for scope reasons.
+
+**Too small:** The work is a step, not a task. If completing it takes under a few minutes or makes no independently meaningful change, it belongs inside a larger task.
+
+**Too broad:** The work spans multiple subsystems or requires fundamentally different context mid-way through. Split it into multiple tasks or promote it to a story.
+
+**Secondary signal:** 2–5 steps per task is a natural sizing check. Fewer than 2 suggests the task is too granular; more than 6 suggests it is too broad.
+
 ## Definition of Done
 
-Both tasks and steps support an optional `definition_of_done` field — explicit, verifiable acceptance criteria for that unit of work.
+Tasks support an optional `definition_of_done` field — a JSON array of structured, verifiable acceptance criteria. Steps retain a freetext `definition_of_done` string.
+
+Each DoD item has three fields:
+- `description` — what the criterion is
+- `expected_outcome` — what a passing result looks like
+- `exec` — command to run to verify (optional but strongly recommended)
+
+**`exec` convention:** Append `&& echo 'OK'` to every exec command. This keeps the signal binary (exit code 0 = pass, non-zero = fail) and produces visible confirmation in logs without requiring output parsing. This convention anticipates a future hook that gates `tasks complete` by running all exec commands automatically.
 
 **When to write a definition of done:**
-- Write one for every task and step. A DoD makes handoff unambiguous: the build role knows exactly when the work is considered complete.
-- Keep it concrete and testable. Avoid vague language — write criteria that can be checked mechanically (e.g. "all tests pass", "endpoint returns 200 with schema X", "no lint errors").
+- Write one for every task. A DoD makes handoff unambiguous: the build role knows exactly when the work is complete and has a mechanical way to verify it.
+- Keep criteria concrete and testable. Avoid vague language — each item must be checkable by running its `exec` command or by inspection.
 
 **How to write it:**
-```
-cat > /tmp/dod.md << 'EOF'
-- All unit tests for the new function pass
-- The CLI command returns the correct JSON shape
-- No ruff lint errors
+```bash
+cat > /tmp/dod.json << 'EOF'
+[
+  {
+    "description": "All unit tests pass",
+    "expected_outcome": "pytest exits with code 0",
+    "exec": "uv run pytest && echo 'OK'"
+  },
+  {
+    "description": "No lint errors",
+    "expected_outcome": "ruff reports no issues",
+    "exec": "uv run ruff check . && echo 'OK'"
+  }
+]
 EOF
-atm tasks create --story <STORY_ID> --title "..." --description-file /tmp/desc.md --definition-of-done-file /tmp/dod.md
+atm tasks create --story <STORY_ID> --title "..." --description-file /tmp/desc.md --definition-of-done-file /tmp/dod.json
 ```
-
-Step-level DoD should be more granular than task-level — describe the specific outcome of that one implementation step.

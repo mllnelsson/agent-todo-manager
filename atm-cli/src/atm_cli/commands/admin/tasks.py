@@ -38,7 +38,11 @@ def _render_task_md(task, story=None) -> str:
         task.description or "",
     ]
     if task.definition_of_done:
-        lines += ["", f"**Definition of Done:** {task.definition_of_done}"]
+        lines += ["", "**Definition of Done:**"]
+        for i, item in enumerate(task.definition_of_done, 1):
+            lines += [f"{i}. {item.description}", f"   - Expected: {item.expected_outcome}"]
+            if item.exec:
+                lines += [f"   - Run: `{item.exec}`"]
     if task.steps:
         lines += ["", "## Steps"]
         for step in task.steps:

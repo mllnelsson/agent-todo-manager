@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from .dod import DoDItem
 from .step import Step
 from .utils import Status
 
@@ -11,7 +12,7 @@ class Task(BaseModel):
     seq: int
     title: str
     description: str
-    definition_of_done: str | None = None
+    definition_of_done: list[DoDItem] | None = None
     prefix: str | None
     status: Status
     story_id: str | None = None
@@ -24,7 +25,7 @@ class TaskCreate(BaseModel):
     project_id: str
     title: str
     description: str
-    definition_of_done: str | None = None
+    definition_of_done: list[DoDItem] | None = None
     story_id: str | None = None
     prefix: str | None = None
 
@@ -32,6 +33,6 @@ class TaskCreate(BaseModel):
 class TaskUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
-    definition_of_done: str | None = None
+    definition_of_done: list[DoDItem] | None = None
     status: Status | None = None
     prefix: str | None = None

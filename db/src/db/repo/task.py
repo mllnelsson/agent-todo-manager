@@ -1,12 +1,28 @@
+import json
 import uuid
 
 from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session, selectinload
 
-from db.models import Status, Step, Task, TaskCreate, TaskUpdate
+from db.models import DoDItem, Status, Step, Task, TaskCreate, TaskUpdate
 from db.orm import Completion as CompletionRow
 from db.orm import Step as StepRow
 from db.orm import Task as TaskRow
+
+
+def _serialize_dod(items: list[DoDItem] | None) -> str | None:
+    if not items:
+        return None
+    return json.dumps([item.model_dump() for item in items])
+
+
+def _deserialize_dod(text: str | None) -> list[DoDItem] | None:
+    if not text:
+        return None
+    try:
+        return [DoDItem(**i) for i in json.loads(text)]
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return None
 
 
 def _next_story_seq(session: Session, story_id: uuid.UUID) -> int:
@@ -42,7 +58,7 @@ def _to_model(row: TaskRow, *, full: bool = False) -> Task:
         seq=row.seq,
         title=row.title,
         description=row.description,
-        definition_of_done=row.definition_of_done,
+        definition_of_done=_deserialize_dod(row.definition_of_done),
         prefix=row.prefix,
         status=Status(row.status),
         story_id=str(row.story_id) if row.story_id else None,
@@ -67,7 +83,7 @@ def create_task(engine: Engine, data: TaskCreate) -> Task:
             prefix=data.prefix,
             title=data.title,
             description=data.description,
-            definition_of_done=data.definition_of_done,
+            definition_of_done=_serialize_dod(data.definition_of_done),
             status=Status.TODO,
         )
         session.add(row)
@@ -140,7 +156,7 @@ def update_task(engine: Engine, task_id: str, data: TaskUpdate) -> Task | None:
         if data.description is not None:
             row.description = data.description
         if data.definition_of_done is not None:
-            row.definition_of_done = data.definition_of_done
+            row.definition_of_done = _serialize_dod(data.definition_of_done)
         if data.status is not None:
             row.status = data.status
         if data.prefix is not None:

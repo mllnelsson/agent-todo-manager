@@ -1,6 +1,9 @@
+import json
 from pathlib import Path
 
 import typer
+
+from db.models import DoDItem
 
 
 def resolve_description(
@@ -24,20 +27,21 @@ def resolve_description(
 
 
 def resolve_definition_of_done(
-    definition_of_done: str | None, definition_of_done_file: str | None
-) -> str | None:
-    """Resolve definition-of-done text from --definition-of-done or --definition-of-done-file.
+    definition_of_done_file: str | None,
+) -> list[DoDItem] | None:
+    """Resolve definition-of-done items from a JSON file.
 
-    Returns None if neither is provided (valid for update commands).
-    Raises BadParameter if both are provided or the file cannot be read.
+    Returns None if no file is provided (valid for update commands).
+    Raises BadParameter if the file cannot be read or contains invalid JSON.
     """
-    if definition_of_done is not None and definition_of_done_file is not None:
-        raise typer.BadParameter(
-            "--definition-of-done and --definition-of-done-file are mutually exclusive"
-        )
-    if definition_of_done_file is not None:
-        try:
-            return Path(definition_of_done_file).read_text()
-        except OSError as e:
-            raise typer.BadParameter(f"cannot read definition-of-done file: {e}")
-    return definition_of_done
+    if definition_of_done_file is None:
+        return None
+    try:
+        raw = Path(definition_of_done_file).read_text()
+    except OSError as e:
+        raise typer.BadParameter(f"cannot read definition-of-done file: {e}")
+    try:
+        parsed = json.loads(raw)
+        return [DoDItem(**item) for item in parsed]
+    except (json.JSONDecodeError, TypeError, ValueError) as e:
+        raise typer.BadParameter(f"definition-of-done file must be a JSON array of objects: {e}")

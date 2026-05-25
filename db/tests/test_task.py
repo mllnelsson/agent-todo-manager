@@ -1,6 +1,6 @@
 import uuid
 
-from db.models import Status, TaskCreate, TaskUpdate
+from db.models import DoDItem, Status, TaskCreate, TaskUpdate
 from db.repo import (
     create_task,
     delete_task,
@@ -131,6 +131,7 @@ def test_delete_task_returns_false_when_not_found(engine):
 
 
 def test_create_task_with_definition_of_done(engine, project_id, story_id):
+    dod = [DoDItem(description="All tests pass", expected_outcome="pytest exits 0", exec="uv run pytest && echo 'OK'")]
     task = create_task(
         engine,
         TaskCreate(
@@ -138,10 +139,14 @@ def test_create_task_with_definition_of_done(engine, project_id, story_id):
             story_id=story_id,
             title="T",
             description="d",
-            definition_of_done="All tests pass and PR approved",
+            definition_of_done=dod,
         ),
     )
-    assert task.definition_of_done == "All tests pass and PR approved"
+    assert task.definition_of_done is not None
+    assert len(task.definition_of_done) == 1
+    assert task.definition_of_done[0].description == "All tests pass"
+    assert task.definition_of_done[0].expected_outcome == "pytest exits 0"
+    assert task.definition_of_done[0].exec == "uv run pytest && echo 'OK'"
 
 
 def test_create_task_without_definition_of_done_defaults_to_none(engine, project_id, story_id):
@@ -150,6 +155,8 @@ def test_create_task_without_definition_of_done_defaults_to_none(engine, project
 
 
 def test_update_task_sets_definition_of_done(engine, task_id):
-    updated = update_task(engine, task_id, TaskUpdate(definition_of_done="Reviewed and deployed"))
+    dod = [DoDItem(description="Reviewed and deployed", expected_outcome="no errors", exec=None)]
+    updated = update_task(engine, task_id, TaskUpdate(definition_of_done=dod))
     assert updated is not None
-    assert updated.definition_of_done == "Reviewed and deployed"
+    assert updated.definition_of_done is not None
+    assert updated.definition_of_done[0].description == "Reviewed and deployed"

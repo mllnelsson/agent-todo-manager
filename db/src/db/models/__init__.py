@@ -1,4 +1,5 @@
 from .completions import Completion, CompletionCreate
+from .dod import DoDItem
 from .ingest import ProjectIngest, StepIngest, StoryIngest, TaskIngest
 from .project import Project, ProjectCreate, ProjectUpdate
 from .step import Step, StepCreate, StepUpdate
@@ -9,6 +10,7 @@ from .utils import Action, EntityType, ProjectStatus, Status
 __all__ = [
     "Completion",
     "CompletionCreate",
+    "DoDItem",
     "ProjectIngest",
     "StepIngest",
     "StoryIngest",

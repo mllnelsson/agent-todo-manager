@@ -190,7 +190,7 @@ List all floating (story-less) tasks for a project and print them as JSON.
 #### tasks create
 
 ```
-atm tasks create [--story STORY_ID | --project PROJECT_ID] --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX]
+atm tasks create [--story STORY_ID | --project PROJECT_ID] --title TITLE (--description DESCRIPTION | --description-file PATH) [--prefix PREFIX] [--definition-of-done-file JSON_PATH]
 ```
 
 Create a new task and print it as JSON.
@@ -205,6 +205,33 @@ Create a new task and print it as JSON.
 | `--description` | string | Conditional | Task description (mutually exclusive with `--description-file`) |
 | `--description-file` | string (path) | Conditional | Path to a file containing the task description (mutually exclusive with `--description`) |
 | `--prefix` | string | No | Short prefix for floating tasks (e.g. `b` = bug, `h` = hotfix) |
+| `--definition-of-done-file` | string (path) | No | Path to a JSON file containing the definition of done items (see schema below) |
+
+**Definition of Done schema** (`--definition-of-done-file`)
+
+The file must be a JSON array. Each object has the following fields:
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `description` | string | Yes | What the criterion is |
+| `expected_outcome` | string | Yes | What a passing result looks like |
+| `exec` | string | No | Command to run to verify. Append `&& echo 'OK'` — exit code 0 = pass, non-zero = fail. |
+
+Example:
+```json
+[
+  {
+    "description": "All unit tests pass",
+    "expected_outcome": "pytest exits with code 0",
+    "exec": "uv run pytest && echo 'OK'"
+  },
+  {
+    "description": "No lint errors",
+    "expected_outcome": "ruff reports no issues",
+    "exec": "uv run ruff check . && echo 'OK'"
+  }
+]
+```
 
 **Notes**
 
@@ -218,7 +245,7 @@ Create a new task and print it as JSON.
 #### tasks update
 
 ```
-atm tasks update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS] [--prefix PREFIX]
+atm tasks update ID [--title TITLE] [--description DESCRIPTION | --description-file PATH] [--status STATUS] [--prefix PREFIX] [--definition-of-done-file JSON_PATH]
 ```
 
 Update fields on a task and print the result as JSON. Does **not** write a completion record — use `tasks start` / `tasks complete` for status transitions that must be tracked. When `--status` is patched, the parent story's status is reconciled silently (no completion event).
@@ -238,6 +265,7 @@ Update fields on a task and print the result as JSON. Does **not** write a compl
 | `--description-file` | string (path) | No | Path to a file containing the new description (mutually exclusive with `--description`) |
 | `--status` | string | No | New status: `todo` \| `in_progress` \| `completed` |
 | `--prefix` | string | No | New prefix |
+| `--definition-of-done-file` | string (path) | No | Path to a JSON file containing the new definition of done items (see `tasks create` for schema) |
 
 ---
 
