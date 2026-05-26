@@ -60,6 +60,51 @@ The install script:
 
 Reload your shell and verify: `atm --help`. Ensure `~/.local/bin` is on your `PATH` (try `uv tool update-shell` if not).
 
+### Alternative: Install from a local clone
+
+If you already have the repo cloned, skip the install script and run these steps from the repo root:
+
+**1. Install the CLI tool**
+```sh
+uv tool install --force --with ./db --with ./dashboard ./atm-cli
+```
+
+**2. Sync the workspace** (required for alembic and uvicorn)
+```sh
+uv sync
+```
+
+**3. Build the GUI**
+```sh
+cd gui && npm install && npm run build && cd ..
+```
+
+**4. Patch the plugin hook** — edit `resources/plugin/hooks/hooks.json` and replace `INSTALL_PATH_PLACEHOLDER` with the absolute path to `resources/plugin/hooks/atm_session_start.sh`, then make it executable:
+```sh
+chmod +x resources/plugin/hooks/atm_session_start.sh
+```
+
+**5. Run DB migrations** — pick a location for the database file and set the URL:
+```sh
+export ATM_DATABASE_URL="sqlite:////$(pwd)/app.db"
+cd db && uv run alembic upgrade head && cd ..
+```
+
+**6. Set env vars** — add to your `~/.zshrc` or `~/.bashrc`:
+```sh
+export ATM_DATABASE_URL="sqlite:////path/to/your/app.db"
+export ATM_GUI_DIST="/path/to/agent-todo-manager/gui/dist"
+```
+
+**7. Ensure `~/.local/bin` is on your PATH**
+```sh
+uv tool update-shell
+```
+
+Reload your shell and verify: `atm --help`.
+
+---
+
 ### 2. Launch the dashboard *(optional)*
 
 ```sh
