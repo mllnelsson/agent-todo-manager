@@ -1,5 +1,5 @@
 ---
-name: core:build
+name: build
 description: ATM skill for executing work — picking up tasks, working through their steps, and marking the task complete.
 ---
 

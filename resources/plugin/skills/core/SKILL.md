@@ -48,5 +48,5 @@ See `resources/cli-reference.md` for the complete man-page-style reference cover
 
 ## Role Skills
 
-- **Plan** → `plan/SKILL.md` (`/atm:core:plan`)
-- **Build** → `build/SKILL.md` (`/atm:core:build`)
+- **Plan** → `/atm:plan`
+- **Build** → `/atm:build`

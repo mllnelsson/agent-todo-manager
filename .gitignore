@@ -2,7 +2,7 @@
 __pycache__/
 *.py[oc]
 build/
-!resources/plugin/skills/core/build/
+!resources/plugin/skills/build/
 dist/
 wheels/
 *.egg-info

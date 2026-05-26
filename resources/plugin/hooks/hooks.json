@@ -2,7 +2,7 @@
   "hooks": {
     "SessionStart": [
       {
-        "hooks": [{ "type": "command", "command": "INSTALL_PATH_PLACEHOLDER" }]
+        "hooks": [{ "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/atm_session_start.sh\"" }]
       }
     ]
   }

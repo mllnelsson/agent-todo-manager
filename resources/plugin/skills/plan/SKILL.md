@@ -1,5 +1,5 @@
 ---
-name: core:plan
+name: plan
 description: ATM skill for planning and structuring work — owns hierarchy creation (stories, tasks, steps).
 ---
 

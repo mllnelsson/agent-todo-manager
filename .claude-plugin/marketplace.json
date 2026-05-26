@@ -1,0 +1,13 @@
+{
+  "name": "atm-local",
+  "owner": {
+    "name": "MLNelsson"
+  },
+  "plugins": [
+    {
+      "name": "atm",
+      "source": "./resources/plugin",
+      "description": "Agent Todo Manager — hooks and skills for the atm CLI tool"
+    }
+  ]
+}
