@@ -32,16 +32,11 @@ fi
 (cd "${INSTALL_DIR}/gui" && npm install && npm run build)
 GUI_DIST="${INSTALL_DIR}/gui/dist"
 
-# Patch plugin hooks.json with the resolved absolute script path
+# Make the hook executable
 PLUGIN_DIR="${INSTALL_DIR}/resources/plugin"
 HOOK_SCRIPT="${PLUGIN_DIR}/hooks/atm_session_start.sh"
 
 chmod +x "${HOOK_SCRIPT}"
-
-TMP=$(mktemp)
-jq --arg cmd "${HOOK_SCRIPT}" '
-  (.hooks.SessionStart[].hooks[] | select(.command == "INSTALL_PATH_PLACEHOLDER" or .command != $cmd)).command = $cmd
-' "${PLUGIN_DIR}/hooks/hooks.json" > "${TMP}" && mv "${TMP}" "${PLUGIN_DIR}/hooks/hooks.json"
 
 # Run DB migrations
 export ATM_DATABASE_URL
@@ -79,8 +74,9 @@ atm installed at ~/.local/bin/atm
 DB:       ${DB_PATH}
 GUI:      ${GUI_DIST}
 Dashboard: launch with  atm admin serve  then open http://127.0.0.1:8000/
-Plugin:   load once in Claude Code with:
-          claude --plugin-dir ${PLUGIN_DIR}
+Plugin:   install once in Claude Code:
+          1. Inside a Claude Code session: /plugin marketplace add ${INSTALL_DIR}
+          2. Then: claude plugin install atm@atm-local
 Reload your shell (or: source ${RC:-~/.profile}) to pick up ATM_DATABASE_URL and ATM_GUI_DIST.
 Ensure ~/.local/bin is on PATH (try: uv tool update-shell).
 EOF

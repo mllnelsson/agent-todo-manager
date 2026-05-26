@@ -491,5 +491,5 @@ These are set automatically by the Claude Code SessionStart hook (`resources/plu
 ## SEE ALSO
 
 - `SKILL.md` — common foundation (`/atm:core`)
-- `plan/SKILL.md` — plan agent workflow (`/atm:core:plan`)
-- `build/SKILL.md` — build agent workflow (`/atm:core:build`)
+- `/atm:plan` — plan agent workflow
+- `/atm:build` — build agent workflow

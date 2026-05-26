@@ -79,7 +79,7 @@ uv sync
 cd gui && npm install && npm run build && cd ..
 ```
 
-**4. Patch the plugin hook** — edit `resources/plugin/hooks/hooks.json` and replace `INSTALL_PATH_PLACEHOLDER` with the absolute path to `resources/plugin/hooks/atm_session_start.sh`, then make it executable:
+**4. Make the hook executable**
 ```sh
 chmod +x resources/plugin/hooks/atm_session_start.sh
 ```
@@ -134,12 +134,18 @@ To list existing projects:
 atm admin projects list
 ```
 
-### 4. Load the Claude Code plugin
+### 4. Install the Claude Code plugin
 
-ATM ships as a Claude Code plugin (skills + SessionStart hook). Load it once:
+ATM ships as a Claude Code plugin (skills + SessionStart hook). Install it once:
 
+Inside a Claude Code session:
+```
+/plugin marketplace add ~/.local/share/atm
+```
+
+Then in your terminal:
 ```sh
-claude --plugin-dir ~/.local/share/atm/resources/plugin
+claude plugin install atm@atm-local
 ```
 
 The plugin provides three skills:
@@ -147,8 +153,8 @@ The plugin provides three skills:
 | Slash command | Role |
 |---|---|
 | `/atm:core` | Common foundation — load this first |
-| `/atm:core:plan` | Plan agent — creates stories, tasks, steps |
-| `/atm:core:build` | Build agent — executes steps |
+| `/atm:plan` | Plan agent — creates stories, tasks, steps |
+| `/atm:build` | Build agent — executes steps |
 
 ### 5. Configure agent environment
 
