@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from sqlalchemy.orm import Session
@@ -97,6 +98,43 @@ def test_get_project_orders_stories_by_seq(engine, project_id):
     project = get_project(engine, project_id)
     assert project is not None
     assert [s.seq for s in project.stories] == [1, 2, 3]
+
+
+def test_get_project_deserializes_task_definition_of_done(engine, project_id):
+    pid_uuid = uuid.UUID(project_id)
+    dod_json = json.dumps([
+        {"description": "Check output", "expected_outcome": "exit 0", "exec": None}
+    ])
+    with Session(engine) as session:
+        session.add(TaskRow(
+            id=uuid.uuid4(), seq=1, project_id=pid_uuid,
+            title="Task with DoD", description="d", status=Status.TODO,
+            prefix="b", definition_of_done=dod_json,
+        ))
+        session.commit()
+    project = get_project(engine, project_id)
+    assert project is not None
+    assert len(project.bugs) == 1
+    dod = project.bugs[0].definition_of_done
+    assert dod is not None
+    assert len(dod) == 1
+    assert dod[0].description == "Check output"
+    assert dod[0].expected_outcome == "exit 0"
+
+
+def test_get_project_handles_legacy_plain_text_definition_of_done(engine, project_id):
+    pid_uuid = uuid.UUID(project_id)
+    with Session(engine) as session:
+        session.add(TaskRow(
+            id=uuid.uuid4(), seq=1, project_id=pid_uuid,
+            title="Legacy task", description="d", status=Status.TODO,
+            prefix="b", definition_of_done="Write tests and verify manually",
+        ))
+        session.commit()
+    project = get_project(engine, project_id)
+    assert project is not None
+    assert len(project.bugs) == 1
+    assert project.bugs[0].definition_of_done is None
 
 
 def test_get_project_orders_bugs_by_seq(engine, project_id):

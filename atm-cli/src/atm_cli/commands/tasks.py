@@ -127,19 +127,19 @@ def create(
     """
     engine = get_engine()
     try:
-        if story is None and project is None:
+        if project is None:
             project = os.environ.get("ATM_PROJECT_ID")
             if not project:
                 raise typer.BadParameter(
-                    "--story or --project is required (or set $ATM_PROJECT_ID)"
+                    "--project is required (or set $ATM_PROJECT_ID)"
                 )
         description_text = resolve_description(description, description_file)
         if description_text is None:
             raise typer.BadParameter("--description or --description-file is required")
-        dod = resolve_definition_of_done(definition_of_done_file)
+        dod = resolve_definition_of_done(None, definition_of_done_file)
         data = TaskCreate(
             story_id=story,
-            project_id=project or "",
+            project_id=project,
             prefix=prefix,
             title=title,
             description=description_text,
@@ -183,7 +183,7 @@ def update(
     engine = get_engine()
     try:
         description_text = resolve_description(description, description_file)
-        dod = resolve_definition_of_done(definition_of_done_file)
+        dod = resolve_definition_of_done(None, definition_of_done_file)
         data = TaskUpdate(
             title=title,
             description=description_text,

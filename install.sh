@@ -23,7 +23,7 @@ fi
 
 # Install CLI globally — --with injects local db and dashboard into the isolated tool environment
 # (uv tool install does not resolve workspace = true sources; it falls back to PyPI without this)
-(cd "${INSTALL_DIR}" && uv tool install --force --with ./db --with ./dashboard ./atm-cli)
+(uv cache clean atm-cli && cd "${INSTALL_DIR}" && uv tool install --force --with ./db --with ./dashboard ./atm-cli)
 
 # Sync workspace so alembic and uvicorn work from the clone
 (cd "${INSTALL_DIR}" && uv sync)

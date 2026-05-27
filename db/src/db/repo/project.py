@@ -1,15 +1,25 @@
+import json
 import uuid
 
 from sqlalchemy import Engine, delete, select
 from sqlalchemy.orm import Session, selectinload
 
-from db.models import Project, ProjectCreate, ProjectStatus, Status, Step, Story, Task
+from db.models import DoDItem, Project, ProjectCreate, ProjectStatus, Status, Step, Story, Task
 from db.models.ingest import ProjectIngest
 from db.orm import Completion as CompletionRow
 from db.orm import Project as ProjectRow
 from db.orm import Step as StepRow
 from db.orm import Story as StoryRow
 from db.orm import Task as TaskRow
+
+
+def _deserialize_dod(text: str | None) -> list[DoDItem] | None:
+    if not text:
+        return None
+    try:
+        return [DoDItem(**i) for i in json.loads(text)]
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return None
 
 
 def _step_to_model(row: StepRow) -> Step:
@@ -30,7 +40,7 @@ def _task_to_model(row: TaskRow) -> Task:
         seq=row.seq,
         title=row.title,
         description=row.description,
-        definition_of_done=row.definition_of_done,
+        definition_of_done=_deserialize_dod(row.definition_of_done),
         prefix=row.prefix,
         status=Status(row.status),
         steps=sorted([_step_to_model(s) for s in row.steps], key=lambda s: s.seq),
