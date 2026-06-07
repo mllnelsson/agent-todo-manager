@@ -35,16 +35,20 @@ def list_cmd(
     project: str | None = typer.Option(
         None, "--project", help="Project ID (defaults to $ATM_PROJECT_ID)"
     ),
+    all_stories: bool = typer.Option(
+        False, "--all", help="Include completed stories"
+    ),
 ) -> None:
-    """List all active stories for a project.
+    """List stories for a project (active only by default).
 
     Args:
         project: UUID of the project.
+        all_stories: Include completed stories in the output.
     """
     project = resolve_env(project, "ATM_PROJECT_ID", "--project")
     engine = get_engine()
     try:
-        stories = list_stories(project, engine)
+        stories = list_stories(project, engine, include_completed=all_stories)
         print_list(stories)
     except NotFound as e:
         exit_user_error("not_found", str(e))

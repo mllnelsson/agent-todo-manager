@@ -5,6 +5,7 @@ from db.repo import (
     get_story,
     get_story_by_seq,
     list_active_stories,
+    list_stories as list_all_stories,
     update_story,
 )
 from sqlalchemy.engine import Engine
@@ -14,15 +15,18 @@ from .exceptions import NotFound, ProjectArchived
 from .project import assert_project_active_by_id, assert_project_active_for_story
 
 
-def list_stories(project_id: str, engine: Engine) -> list[Story]:
-    """Return all active stories for the given project.
+def list_stories(
+    project_id: str, engine: Engine, *, include_completed: bool = False
+) -> list[Story]:
+    """Return stories for the given project.
 
     Args:
         project_id: UUID of the project.
         engine: SQLAlchemy engine.
+        include_completed: When True, include completed stories.
 
     Returns:
-        List of active Story objects belonging to the project.
+        List of Story objects belonging to the project.
 
     Raises:
         NotFound: If the project does not exist.
@@ -30,6 +34,8 @@ def list_stories(project_id: str, engine: Engine) -> list[Story]:
     project = get_project(engine, project_id=project_id)
     if project is None:
         raise NotFound(f"Project {project_id} not found")
+    if include_completed:
+        return list_all_stories(engine, project_id=project_id)
     return list_active_stories(engine, project_id=project_id)
 
 

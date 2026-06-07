@@ -13,7 +13,7 @@ Load the common foundation first: `/atm:core`
 
 | Command | Purpose |
 |---|---|
-| `atm stories list --project <PROJECT_ID>` | List active stories |
+| `atm stories list [--all]` | List stories (active only by default; `--all` includes completed) |
 | `atm stories get <ID_OR_SEQ> [--project PROJECT_ID]` | Fetch a story by UUID or seq |
 | `atm stories create --project <PROJECT_ID> --title <TITLE> --description-file <PATH>` | Create a new story |
 | `atm stories update <ID> [--title TITLE] [--description-file PATH] [--status STATUS]` | Update story fields or status |
@@ -37,7 +37,7 @@ Load the common foundation first: `/atm:core`
 
 ## Notes
 
-- **`stories list` returns story metadata only — no tasks.** To see a story's tasks, use `atm stories get <ID_OR_SEQ>`; the response embeds the full task array. There is no `tasks list --story` command.
+- **`stories list` returns story metadata only — no tasks.** To see a story's tasks, use `atm stories get <ID_OR_SEQ>`; the response embeds the full task array. There is no `tasks list --story` command. Pass `--all` to include completed stories.
 - Tasks must have at least one step defined before the build role can pick them up. Always create steps for every task before handoff.
 - **Steps have no status.** They are an ordered breakdown — sequencing hints — that tell the build agent how to slice up a task's work. The build agent reads them in order and calls `tasks complete` when finished. Do not attempt to mark steps `in_progress` or `completed`; there is no command for it.
 - The step **description** is the implementation specification — it should contain enough detail to complete the step without further questions. Write descriptions as clear, actionable instructions.

@@ -50,16 +50,17 @@ Fetch a project by UUID and print it as JSON.
 #### stories list
 
 ```
-atm stories list [--project PROJECT_ID]
+atm stories list [--project PROJECT_ID] [--all]
 ```
 
-List all active stories for a project and print them as JSON.
+List stories for a project and print them as JSON. By default only active (non-completed) stories are shown.
 
 **Options**
 
 | Flag | Type | Required | Description |
 |---|---|---|---|
 | `--project` | string (UUID) | No — defaults to `$ATM_PROJECT_ID`; do not pass unless overriding | Project UUID |
+| `--all` | flag | No | Include completed stories in the output |
 
 ---
 
