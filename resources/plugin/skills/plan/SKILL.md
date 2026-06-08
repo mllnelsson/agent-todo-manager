@@ -11,29 +11,36 @@ Load the common foundation first: `/atm:core`
 
 ## Commands
 
+### Retrieval (delegate to `atm-lookup`)
+
 | Command | Purpose |
 |---|---|
 | `atm stories list [--all]` | List stories (active only by default; `--all` includes completed) |
 | `atm stories get <ID_OR_SEQ> [--project PROJECT_ID]` | Fetch a story by UUID or seq |
+| `atm tasks list-floating --project <PROJECT_ID>` | List floating tasks |
+| `atm steps get <SEQ> --task <TASK_ID>` | Fetch step details |
+
+### Mutations (run directly)
+
+| Command | Purpose |
+|---|---|
 | `atm stories create --project <PROJECT_ID> --title <TITLE> --description-file <PATH>` | Create a new story |
 | `atm stories update <ID> [--title TITLE] [--description-file PATH] [--status STATUS]` | Update story fields or status |
 | `atm tasks create --story <STORY_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file JSON_PATH]` | Create a task under a story |
 | `atm tasks create --project <PROJECT_ID> --title <TITLE> --description-file <PATH> [--prefix PREFIX] [--definition-of-done-file JSON_PATH]` | Create a floating task (bug, hotfix) |
 | `atm tasks update <ID> [--title TITLE] [--description-file PATH] [--status STATUS] [--prefix PREFIX] [--definition-of-done-file JSON_PATH]` | Update task fields |
-| `atm tasks list-floating --project <PROJECT_ID>` | List floating tasks |
 | `atm steps create --task <TASK_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file PATH]` | Define a step within a task |
-| `atm steps get <SEQ> --task <TASK_ID>` | Fetch step details |
 | `atm tasks delete <ID>` | Delete a task and all its steps (cleanup) |
 | `atm steps delete <SEQ> --task <TASK_ID>` | Delete a step within a task (cleanup) |
 
 ## Workflow
 
-1. **Load project context** → `projects get <PROJECT_ID>`
-2. **Review existing stories** → `stories list --project <PROJECT_ID>`
+1. **Load project context** → delegate to `atm-lookup`: "get project `<PROJECT_ID>`"
+2. **Review existing stories** → delegate to `atm-lookup`: "list stories"
 3. **Create or update stories** → `stories create` / `stories update`
 4. **Decompose stories into tasks** → `tasks create --story <STORY_ID> ...`
 5. **Define steps for each task** → `steps create --task <TASK_ID> ...` (one step per discrete unit of work)
-6. **Monitor progress** → `completions active` / `completions list --entity <ENTITY_ID>`
+6. **Monitor progress** → delegate to `atm-lookup`: "show active assignments" / "list completions for `<ENTITY_ID>`"
 
 ## Notes
 

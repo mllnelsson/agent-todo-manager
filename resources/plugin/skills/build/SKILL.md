@@ -11,9 +11,16 @@ Load the common foundation first: `/atm:core`
 
 ## Commands
 
+### Retrieval (delegate to `atm-lookup`)
+
 | Command | Purpose |
 |---|---|
 | `atm tasks get <ID_OR_SEQ> [--story STORY_ID] [--project PROJECT_ID]` | Fetch the task (with its steps) as JSON |
+
+### Mutations (run directly)
+
+| Command | Purpose |
+|---|---|
 | `atm tasks start <TASK_ID> --agent <AGENT_NAME> --session <SESSION_ID> [--branch BRANCH]` | Claim a task as in-progress (cascades story status) |
 | `atm tasks complete <TASK_ID> --agent <AGENT_NAME> --session <SESSION_ID> [--branch BRANCH]` | Mark the task done (cascades story status) |
 
@@ -30,7 +37,7 @@ Load the common foundation first: `/atm:core`
 
 Either:
 - Given a task export markdown by the caller → use the task ID from the export
-- Discovering incomplete work → use `completions active` to find in-progress assignments
+- Discovering incomplete work → delegate to `atm-lookup`: "show active assignments"
 
 ## Notes
 
