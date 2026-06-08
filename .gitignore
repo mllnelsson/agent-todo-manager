@@ -19,3 +19,6 @@ db/data
 # per-checkout project pointer (read by the SessionStart hook)
 .atm_project_id
 
+
+# db
+app.db
