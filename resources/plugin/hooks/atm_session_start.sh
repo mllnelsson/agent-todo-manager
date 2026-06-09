@@ -1,5 +1,7 @@
 #!/bin/bash
 
+command -v jq >/dev/null 2>&1 || exit 0
+
 DEFAULT_AGENT_NAME="Claude"
 
 INPUT=$(cat)
@@ -19,11 +21,11 @@ fi
 agent_name="${agent_type:-$DEFAULT_AGENT_NAME}"
 
 if [ -n "$CLAUDE_ENV_FILE" ]; then
-    echo "export ATM_SESSION_ID=$session_id" >> "$CLAUDE_ENV_FILE"
+    echo "export ATM_SESSION_ID=\"$session_id\"" >> "$CLAUDE_ENV_FILE"
     if [ -n "$project_id" ]; then
-        echo "export ATM_PROJECT_ID=$project_id" >> "$CLAUDE_ENV_FILE"
+        echo "export ATM_PROJECT_ID=\"$project_id\"" >> "$CLAUDE_ENV_FILE"
     fi
-    echo "export ATM_AGENT_NAME=$agent_name" >> "$CLAUDE_ENV_FILE"
+    echo "export ATM_AGENT_NAME=\"$agent_name\"" >> "$CLAUDE_ENV_FILE"
 fi
 
 exit 0

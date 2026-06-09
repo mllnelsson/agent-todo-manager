@@ -33,7 +33,7 @@ atm [COMMAND_GROUP] [SUBCOMMAND] [FLAGS]
 |---|---|
 | `atm projects get <PROJECT_ID>` | Load project context |
 | `atm tasks get <ID_OR_SEQ> [--story STORY_ID] [--project PROJECT_ID]` | Fetch task details as JSON |
-| `atm completions active` | List all active in-progress step assignments |
+| `atm completions active` | List all active in-progress task assignments |
 | `atm completions list --entity <ENTITY_ID>` | Check completion history for a specific entity |
 
 ## Retrieval via Subagent

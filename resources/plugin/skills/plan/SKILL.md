@@ -16,22 +16,27 @@ Load the common foundation first: `/atm:core`
 | Command | Purpose |
 |---|---|
 | `atm stories list [--all]` | List stories (active only by default; `--all` includes completed) |
-| `atm stories get <ID_OR_SEQ> [--project PROJECT_ID]` | Fetch a story by UUID or seq |
-| `atm tasks list-floating --project <PROJECT_ID>` | List floating tasks |
+| `atm stories get <ID_OR_SEQ>` | Fetch a story by UUID or seq (embeds task array) |
+| `atm tasks list-floating` | List floating tasks |
 | `atm steps get <SEQ> --task <TASK_ID>` | Fetch step details |
+
+See cli-reference.md for full syntax and optional flags on all commands.
 
 ### Mutations (run directly)
 
 | Command | Purpose |
 |---|---|
-| `atm stories create --project <PROJECT_ID> --title <TITLE> --description-file <PATH>` | Create a new story |
-| `atm stories update <ID> [--title TITLE] [--description-file PATH] [--status STATUS]` | Update story fields or status |
-| `atm tasks create --story <STORY_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file JSON_PATH]` | Create a task under a story |
-| `atm tasks create --project <PROJECT_ID> --title <TITLE> --description-file <PATH> [--prefix PREFIX] [--definition-of-done-file JSON_PATH]` | Create a floating task (bug, hotfix) |
-| `atm tasks update <ID> [--title TITLE] [--description-file PATH] [--status STATUS] [--prefix PREFIX] [--definition-of-done-file JSON_PATH]` | Update task fields |
-| `atm steps create --task <TASK_ID> --title <TITLE> --description-file <PATH> [--definition-of-done-file PATH]` | Define a step within a task |
+| `atm stories create` | Create a new story |
+| `atm stories update <ID>` | Update story fields or status |
+| `atm tasks create --story <STORY_ID>` | Create a task under a story |
+| `atm tasks create --project <PROJECT_ID>` | Create a floating task (bug, hotfix) |
+| `atm tasks update <ID>` | Update task fields |
+| `atm steps create --task <TASK_ID>` | Define a step within a task |
+| `atm steps update <ID>` | Update step title or description |
 | `atm tasks delete <ID>` | Delete a task and all its steps (cleanup) |
 | `atm steps delete <SEQ> --task <TASK_ID>` | Delete a step within a task (cleanup) |
+
+See cli-reference.md for full syntax and optional flags on all commands.
 
 ## Workflow
 
@@ -52,6 +57,7 @@ Load the common foundation first: `/atm:core`
 - Use `--story` to create a story-linked task. Use `--project` for floating tasks (bugs, hotfixes not part of a story).
 - Status values for stories and tasks: `todo` | `in_progress` | `completed`. Steps have no status.
 - **Story status is derived from its tasks and reconciled on every status mutation** — `tasks start`, `tasks complete`, `tasks update --status`, and `stories update --status` all trigger reconciliation. Rules: all tasks `completed` → story `completed`; all tasks `todo` → story `todo`; otherwise → story `in_progress`. A manual `stories update --status` value that disagrees with the task states is overridden.
+- **There is no `stories delete` command.** To remove a story, delete all its tasks individually, then mark it completed via `stories update --status completed`.
 - **Cleanup**: use `atm tasks delete <ID>` to remove a task and all its steps, or `atm steps delete <SEQ> --task <TASK_ID>` to remove a single step. Both confirm deletion as JSON. Only delete tasks or steps that have not been started.
 
 ## Task Sizing
@@ -66,7 +72,7 @@ A task is one coherent unit of deliverable work — a single feature addition, a
 
 ## Definition of Done
 
-Tasks support an optional `definition_of_done` field — a JSON array of structured, verifiable acceptance criteria. Steps retain a freetext `definition_of_done` string.
+Tasks support an optional `definition_of_done` field — a JSON array of structured, verifiable acceptance criteria.
 
 Each DoD item has three fields:
 - `description` — what the criterion is
