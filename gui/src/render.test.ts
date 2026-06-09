@@ -240,9 +240,9 @@ describe('renderProject', () => {
   });
 
   describe('bugs and hotfixes section', () => {
-    it('does not render floating section when bugs and hotfixes are empty', () => {
+    it('renders floating section even when bugs and hotfixes are empty', () => {
       renderProject(makeProject({ bugs: [], hotfixes: [] }));
-      expect(document.querySelector('.floating-tasks-section')).toBeNull();
+      expect(document.querySelector('.floating-tasks-section')).not.toBeNull();
     });
 
     it('renders floating section when bugs exist', () => {

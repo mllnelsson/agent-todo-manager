@@ -129,19 +129,16 @@ function buildActivityFeed(completions: Completion[], entityIndex: Map<string, s
 
 function buildProjectDetail(project: Project, expandedStoryIds: Set<string>): string {
   const entityIndex = buildEntityIndex(project);
-  const hasFloating = project.bugs.length > 0 || project.hotfixes.length > 0;
   const storiesHtml = project.stories.map((s) => buildStory(s, expandedStoryIds)).join('');
 
-  const floatingHtml = hasFloating
-    ? `
+  const floatingHtml = `
       <section class="floating-tasks-section">
         <h2>Bugs &amp; Hotfixes</h2>
         <div class="floating-columns">
           ${buildFloatingTaskGroup(project.bugs, 'b', 'Bugs')}
           ${buildFloatingTaskGroup(project.hotfixes, 'h', 'Hotfixes')}
         </div>
-      </section>`
-    : '';
+      </section>`;
 
   return `
     <header class="project-header">
