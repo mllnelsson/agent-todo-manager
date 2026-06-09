@@ -7,7 +7,7 @@ from db.models import StepCreate, StepUpdate
 from ..db import get_engine
 from ..output import exit_system_error, exit_user_error, print_json
 from ..services.exceptions import NotFound, ProjectArchived
-from ._input import resolve_definition_of_done, resolve_description
+from ._input import resolve_description
 from ..services.steps import (
     create_step_for_task,
     delete_step_by_task_seq,
@@ -47,12 +47,6 @@ def create(
     description_file: str | None = typer.Option(
         None, "--description-file", help="Path to a file containing the description"
     ),
-    definition_of_done: str | None = typer.Option(None, "--definition-of-done"),
-    definition_of_done_file: str | None = typer.Option(
-        None,
-        "--definition-of-done-file",
-        help="Path to a file containing the definition of done",
-    ),
 ) -> None:
     """Create a new step under a task and print it as JSON.
 
@@ -61,23 +55,17 @@ def create(
         title: Step title.
         description: Step description.
         description_file: Path to a file containing the step description.
-        definition_of_done: Acceptance criteria for the step.
-        definition_of_done_file: Path to a file containing the definition of done.
     """
     engine = get_engine()
     try:
         description_text = resolve_description(description, description_file)
         if description_text is None:
             raise typer.BadParameter("--description or --description-file is required")
-        dod_text = resolve_definition_of_done(
-            definition_of_done, definition_of_done_file
-        )
         step = create_step_for_task(
             StepCreate(
                 task_id=task,
                 title=title,
                 description=description_text,
-                definition_of_done=dod_text,
             ),
             engine,
         )
@@ -96,12 +84,6 @@ def update(
     description_file: str | None = typer.Option(
         None, "--description-file", help="Path to a file containing the description"
     ),
-    definition_of_done: str | None = typer.Option(None, "--definition-of-done"),
-    definition_of_done_file: str | None = typer.Option(
-        None,
-        "--definition-of-done-file",
-        help="Path to a file containing the definition of done",
-    ),
 ) -> None:
     """Update fields on a step and print the result as JSON.
 
@@ -110,20 +92,13 @@ def update(
         title: New title, if updating.
         description: New description, if updating.
         description_file: Path to a file containing the new description.
-        definition_of_done: New acceptance criteria, if updating.
-        definition_of_done_file: Path to a file containing the new definition of done.
     """
     engine = get_engine()
     try:
         description_text = resolve_description(description, description_file)
-        dod_text = resolve_definition_of_done(
-            definition_of_done, definition_of_done_file
-        )
         step = update_step_by_id(
             id,
-            StepUpdate(
-                title=title, description=description_text, definition_of_done=dod_text
-            ),
+            StepUpdate(title=title, description=description_text),
             engine,
         )
         print_json(step)

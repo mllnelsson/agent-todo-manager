@@ -20,7 +20,6 @@ def _to_model(row: StepRow) -> Step:
         seq=row.seq,
         title=row.title,
         description=row.description,
-        definition_of_done=row.definition_of_done,
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -36,7 +35,6 @@ def create_step(engine: Engine, data: StepCreate) -> Step:
             task_id=tid,
             title=data.title,
             description=data.description,
-            definition_of_done=data.definition_of_done,
         )
         session.add(row)
         session.commit()
@@ -69,8 +67,6 @@ def update_step(engine: Engine, step_id: str, data: StepUpdate) -> Step | None:
             row.title = data.title
         if data.description is not None:
             row.description = data.description
-        if data.definition_of_done is not None:
-            row.definition_of_done = data.definition_of_done
         session.commit()
         session.refresh(row)
         return _to_model(row)

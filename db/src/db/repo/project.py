@@ -28,7 +28,6 @@ def _step_to_model(row: StepRow) -> Step:
         seq=row.seq,
         title=row.title,
         description=row.description,
-        definition_of_done=row.definition_of_done,
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
@@ -171,7 +170,6 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
                         task_id=task_id,
                         title=step_data.title,
                         description=step_data.description,
-                        definition_of_done=step_data.definition_of_done,
                     )
                     session.add(step_row)
 
@@ -197,7 +195,6 @@ def ingest_project(engine: Engine, data: ProjectIngest) -> Project:
                         task_id=task_id,
                         title=step_data.title,
                         description=step_data.description,
-                        definition_of_done=step_data.definition_of_done,
                     )
                     session.add(step_row)
 
