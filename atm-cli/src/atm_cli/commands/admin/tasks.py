@@ -53,8 +53,6 @@ def _render_task_md(task, story=None) -> str:
                 "",
                 step.description or "",
             ]
-            if step.definition_of_done:
-                lines += ["", f"**Definition of Done:** {step.definition_of_done}"]
     return "\n".join(lines)
 
 
